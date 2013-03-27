@@ -1,0 +1,5 @@
+*.gch
+*.so
+*.out
+/gen
+log

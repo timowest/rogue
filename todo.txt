@@ -1,0 +1,78 @@
+Rogue
+
+synd
+stk
+faust
+
+32 voice polyphonic subtractive synth
+
+per voice    3 lfos, 5 envs,
+
+4 oscs, 2 filters
+
+amps
+
+effects        chorus, flanger, reverb
+
+issues
+
+    - per sample or per block
+
+    - how to do the modulation matrix
+
+-
+
+osc    pitch modulation
+
+    amplitude modulation
+
+    pulse width modulation
+
+filter     frequency modulation
+
+    resoance modulation ?
+
+modulation
+
+    constant on
+
+    mod wheel (block)
+
+    pressure (block)
+
+    key (block)
+
+    velocity (block)       
+
+    global lfo bi/uni
+
+    lfo1, lfo2, lfo3 bi/uni (3)
+
+    eg0, eg1, eg2, eg3, eg4 (5)
+
+
+process
+
+ lfo0
+
+ voice
+
+     lfo1, lfo2, lfo3
+
+     eg0, eg1, eg2, eg3, eg4
+
+     osc1, osc2, osc3, osc4
+
+     filter1, filter2
+
+     amps
+
+ effects
+
+     chorus
+
+     flanger
+
+     reverb
+
+
