@@ -19,6 +19,7 @@
  * USA.
  */
 
+#include <stdlib.h>
 #include <math.h>
 
 float gb(float x) {
@@ -105,8 +106,7 @@ float gripple2(float x, float m1, float m2) {
 
 class PhaseShaping {
 
-    // TODO 10 types
-    enum {SIN, HARD, SOFT, PULSE, SLOPE, TRI, SUPERSAW, SLICES, SINUSOIDS};
+    enum {SIN, HARD, SOFT, PULSE, SLOPE, TRI, SUPERSAW, SLICES, SINUSOIDS, NOISE};
 
   public:
     void clear() {
@@ -159,6 +159,10 @@ class PhaseShaping {
         return sin2(gvslope(in, a1));
     }
 
+    float noise() {
+        return (double) (2.0 * rand() / (RAND_MAX + 1.0) - 1.0);
+    }
+
     void process(float* output, int samples) {
         float inc = sampleRate / freq;
 
@@ -188,6 +192,8 @@ class PhaseShaping {
             output[i] = waveslices(phase);
             // sinusoids
             output[i] = sinusoids(phase);
+            // noise
+            output[i] = noise();
         }
     }
 
