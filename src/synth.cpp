@@ -2,6 +2,8 @@
  * rogue - multimode synth
  *
  * Copyright (C) 2013 Timo Westkämper
+ *
+ * uses code from https://github.com/rekado/lv2-mdaPiano
  */
 
 #include "synth.h"
@@ -15,7 +17,7 @@ rogueSynth::rogueSynth(double rate)
     sustain = 0;
 
     for(int i = 0; i < NVOICES; i++) {
-        voices[i] = new rogueVoice(rate);
+        voices[i] = new rogueVoice(rate, &data);
         add_voices(voices[i]);
     }
 
@@ -130,6 +132,8 @@ void rogueSynth::update() {
 void rogueSynth::pre_process(uint32_t from, uint32_t to) {
     update();
 }
+
+// TODO post_proces
 
 void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
 
