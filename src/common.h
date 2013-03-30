@@ -2,19 +2,16 @@
  * rogue - multimode synth
  *
  * Copyright (C) 2013 Timo Westkämper
- *
- * This header is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published
- * by the Free Software Foundation; either version 2.1 of the License,
- * or (at your option) any later version.
- *
- * This header is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301
- * USA.
  */
+
+#ifndef ROGUE_COMMON_H
+#define ROGUE_COMMON_H
+
+#define NPARAMS 12       //number of parameters
+#define NOUTS    2       //number of outputs
+#define NVOICES 32       //max polyphony
+#define SUSTAIN 128
+#define SILENCE 0.0001f  //voice choking
+#define PARAM_OFFSET 3   //offset for param enum
+
+#endif
