@@ -19,38 +19,68 @@ namespace rogue {
 struct rogueOsc {
     dsp::PhaseShaping osc;
     float buffer[BUFFER_SIZE];
+
+    void reset() {
+        osc.reset();
+    }
+
+    void setSamplerate(float r) {
+        osc.setSamplerate(r);
+    }
 };
 
 struct rogueFilter {
     dsp::MoogFilter moog;
     dsp::StateVariableFilter svf;
     float buffer[BUFFER_SIZE];
+
+    void setSamplerate(float r) {
+        moog.setSamplerate(r);
+        svf.setSamplerate(r);
+    }
 };
 
-struct rogueLfo {
-    // TODO
+struct rogueLFO {
+    dsp::LFO lfo;
     float current, last;
+
+    void on() {
+        lfo.on();
+    }
+
+    void off() {
+        lfo.off();
+    }
 };
 
 struct rogueEnv {
     dsp::ADSR adsr;
     float current, last;
+
+    void on() {
+        adsr.on();
+    }
+
+    void off() {
+        adsr.off();
+    }
 };
 
 class rogueVoice : public daps::Voice {
     private:
-      float env, volume;
-      short sustain;
+      float env = 0.0, volume = 1.0f;
+      short sustain = 0;
       SynthData* data;
-      rogueOsc oscs[4];
-      rogueFilter filters[2];
-      rogueLfo lfos[3];
-      rogueEnv envs[5];
+      rogueOsc oscs[NOSC];
+      rogueFilter filters[NDCF];
+      rogueLFO lfos[NLFO];
+      rogueEnv envs[NENV];
 
       float bus_a[BUFFER_SIZE], bus_b[BUFFER_SIZE];
 
     protected:
       float sample_rate;
+      float m_velocity;
       unsigned char m_key;
 
     public:
@@ -58,10 +88,15 @@ class rogueVoice : public daps::Voice {
       void set_sustain(unsigned short v) { sustain = v; }
       void set_volume(float v) { volume = v; }
       void on(unsigned char key, unsigned char velocity);
-      void release(unsigned char velocity);
+      void off(unsigned char velocity);
       void reset(void);
       bool is_sustained(void) { return (m_key == SUSTAIN); }
       unsigned char get_key(void) const { return m_key; }
+
+      void runLFO(int i, uint32_t from, uint32_t to);
+      void runEnv(int i, uint32_t from, uint32_t to);
+      void runOsc(int i, uint32_t from, uint32_t to);
+      void runFilter(int i, uint32_t from, uint32_t to);
 
       // generates the sound for this voice
       void render(uint32_t, uint32_t);

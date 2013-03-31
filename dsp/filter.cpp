@@ -170,12 +170,8 @@ void MoogFilter::clear() {
     dlin_[0] = dlin_[1] = dlin_[2] = dlin_[3] = dlin_[4] = 0.0;
 }
 
-void MoogFilter::setType(int t) {
-    type_ = t;
-}
-
 void MoogFilter::setCoefficients(float freq, float res) {
-    wc_ = 2 * M_PI * freq / sampleRate_;
+    wc_ = 2 * M_PI * freq / sample_rate_;
     g_ = 0.9892 * wc_ - 0.4342 * pow(wc_, 2) + 0.1381 * pow(wc_, 3) - 0.0202 * pow(wc_, 4);
     gres_ = res * (1.0029 + 0.0526 * wc_ - 0.926 * pow(wc_, 2) + 0.0218 * pow(wc_, 3));
 }
@@ -241,7 +237,7 @@ void StateVariableFilter::setType(int type) {
 }
 
 void StateVariableFilter::setCoefficients(float fc, float res) {
-    freq = 2.0 * sin(M_PI * std::min(0.25, fc / (sampleRate * 2.0)));
+    freq = 2.0 * sin(M_PI * std::min(0.25, fc / (sample_rate * 2.0)));
     damp = std::min(2.0*(1.0 - pow(res, 0.25)), std::min(2.0, 2.0 / freq - freq * 0.5));
 }
 

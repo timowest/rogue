@@ -90,7 +90,7 @@ def main():
             ["free"       , 0, 1, 0], # toggled
             ["tracking"   , 0, 1, 0], # toggled
             ["ratio"      , 0, 16.0, 1],
-            ["coarse"     , -48.0, 48.0, 0],
+            ["coarse"     , -48, 48, 0],
             ["fine"       , -1.0, 1.0, 0],
             ["param1"     , 0, 1.0, 0],
             ["param2"     , 0, 1.0, 0],

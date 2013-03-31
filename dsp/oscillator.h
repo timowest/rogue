@@ -25,7 +25,13 @@ class PhaseShaping {
   public:
     void clear ();
     void reset ();
+    void setFreq(float f) { freq = f; }
+    void setParams(float a1, float a0);
+    void setType(int t) { type = t; }
+    void setSamplerate(float r) { sample_rate = r; }
+    void process(float* output, int samples);
 
+  protected:
     float sin2 (float in);
     float hardsync (float in);
     float softsync (float in);
@@ -37,11 +43,10 @@ class PhaseShaping {
     float sinusoids (float in);
     float noise ();
 
-    void process (float* output, int samples);
-
   private:
     float phase, freq, a1, a0;
-    int sampleRate, type;
+    float sample_rate;
+    int type;
 };
 
 }

@@ -147,15 +147,19 @@ class MoogFilter : Filter {
 
   public:
     void clear();
-    void setType(int t);
+    void setType(int t) { type_ = t; }
+    void setSamplerate(float r) { sample_rate_ = r; }
     void setCoefficients(float freq, float res);
-    void compute(float in);
     void process(float* input, float* output, int samples);
+
+  protected:
+    void compute(float in);
 
   private:
     float dlout_[5], dlin_[5];
     float drive_, wc_, g_, gres_, gcomp_;
-    int sampleRate_, type_;
+    float sample_rate_;
+    int type_;
 };
 
 /**
@@ -170,6 +174,7 @@ class StateVariableFilter : Filter {
   public:
     void clear();
     void setType(int type);
+    void setSamplerate(float rate) { sample_rate = rate; }
     void setCoefficients(float fc, float res);
     void process(float* input, float* output, int samples);
 
@@ -178,8 +183,7 @@ class StateVariableFilter : Filter {
     float notch, low, high, band;
     float freq, damp;
     float drive; // internal distortion
-
-    int sampleRate;
+    float sample_rate;
 };
 
 // TODO CombFilter

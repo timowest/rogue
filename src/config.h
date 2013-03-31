@@ -9,7 +9,7 @@
 
 namespace rogue {
 
-struct OscillatorData {
+struct OscData {
     bool on;
     int type;
     bool inv; // output inversion
@@ -57,7 +57,7 @@ struct LFOData {
     float key_to_f;
 };
 
-struct EnvelopeData {
+struct EnvData {
     bool on;
     float pre_delay;
     float attack;
@@ -78,10 +78,10 @@ struct DelaylineData {
 };
 
 struct SynthData {
-    OscillatorData oscs[4];
-    FilterData filters[2];
-    LFOData lfos[3];
-    EnvelopeData envs[5];
+    OscData oscs[NOSC];
+    FilterData filters[NDCF];
+    LFOData lfos[NLFO];
+    EnvData envs[NENV];
 
     float bus_a_level, bus_a_pan;
     float bus_b_level, bus_b_pan;

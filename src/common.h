@@ -15,4 +15,9 @@
 #define PARAM_OFFSET 3   //offset for param enum
 #define BUFFER_SIZE 64
 
+#define NOSC    4
+#define NDCF    2
+#define NLFO    3
+#define NENV    5
+
 #endif

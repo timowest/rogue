@@ -66,7 +66,7 @@ void rogueSynth::update() {
     data.bend_range  = *p(p_bend_range);
 
     // oscs
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < NOSC; i++) {
         int off = i * 9;
         data.oscs[i].on          = *p(p_osc1_on + off);
         data.oscs[i].type        = *p(p_osc1_type + off);
@@ -82,7 +82,7 @@ void rogueSynth::update() {
     }
 
     // filters
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < NDCF; i++) {
         int off = i * 10;
         data.filters[i].on       = *p(p_filter1_on + off);
         data.filters[i].type     = *p(p_filter1_type + off);
@@ -97,7 +97,7 @@ void rogueSynth::update() {
     }
 
     // lfos
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < NLFO; i++) {
         int off = i * 10;
         data.lfos[i].on          = *p(p_lfo1_on + off);
         data.lfos[i].type        = *p(p_lfo1_type + off);
@@ -112,7 +112,7 @@ void rogueSynth::update() {
     }
 
     // envs
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < NENV; i++) {
         int off = i * 11;
         data.envs[i].on          = *p(p_env1_on + off);
         data.envs[i].pre_delay   = *p(p_env1_pre_delay + off);
@@ -133,7 +133,7 @@ void rogueSynth::pre_process(uint32_t from, uint32_t to) {
     update();
 }
 
-// TODO post_proces
+// TODO post_process with effects
 
 void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
 
@@ -147,7 +147,7 @@ void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
     case 0x80: //note off
         for (unsigned i = 0; i < NVOICES; ++i) {
             if (voices[i]->get_key() == data[1]) {
-                voices[i]->release(data[2]);
+                voices[i]->off(data[2]);
             break;
            }
         }
@@ -181,7 +181,7 @@ void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
                 voices[i]->set_sustain(sustain);
                 //if pedal was released: dampen sustained notes
                 if((sustain == 0) && (voices[i]->is_sustained())) {
-                    voices[i]->release(0);
+                    voices[i]->off(0);
                 }
             }
             break;

@@ -33,7 +33,6 @@ class rogueSynth : public daps::Synth<rogueVoice, rogueSynth> {
     rogueVoice *voices[NVOICES];
     bool sustain;
     SynthData data;
-
 };
 
 }

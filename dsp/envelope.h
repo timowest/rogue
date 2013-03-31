@@ -27,15 +27,16 @@ class ADSR {
     void on();
     void off();
     void setADSR(float _a, float _d, float _s, float _r);
-    double lastOut();
-    int state();
-    double tick();
+    float lastOut() { return last; }
+    int state() { return state_; }
+    float tick(int samples);
+    float tick();
 
   private:
-    double attackTarget = 1.0; // TODO : make modifiable
-    double attackRate, decayRate, releaseSamples, releaseRate = 0.0;
-    double sustain = 0.5;
-    double last = 0.0;
+    float attackTarget = 1.0; // TODO : make modifiable
+    float attackRate, decayRate, releaseSamples, releaseRate = 0.0;
+    float sustain = 0.5;
+    float last = 0.0;
     int state_ = IDLE;
 };
 

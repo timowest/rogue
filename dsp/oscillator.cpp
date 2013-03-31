@@ -21,6 +21,11 @@ void PhaseShaping::reset() {
     phase = 0.0;
 }
 
+void PhaseShaping::setParams(float a1_, float a0_) {
+    a1 = a1_;
+    a0 = a0_;
+}
+
 float PhaseShaping::sin2(float in) {
     // TODO use lookup table
     return sin(2.0 * M_PI * in);
@@ -65,37 +70,37 @@ float PhaseShaping::noise() {
     return (double) (2.0 * rand() / (RAND_MAX + 1.0) - 1.0);
 }
 
+#define PHASE_SHAPING_LOOP(x) \
+    for (int i = 0; i < samples; i++) { \
+        phase = fmod(phase + inc, 1.0); \
+        output[i] = x; \
+    } \
+    break
+
 void PhaseShaping::process(float* output, int samples) {
-    float inc = sampleRate / freq;
+    float inc = sample_rate / freq;
 
-    for (int i = 0; i < samples; i++) {
-        phase += inc;
-        if (phase > 1.0) {
-            phase -= 1.0;
-        }
-
-        // TODO type switch
-
-        // sin
-        output[i] = sin2(phase);
-        // hard sync
-        output[i] = hardsync(phase);
-        // soft sync
-        output[i] = softsync(phase);
-        // pulse
-        output[i] = pulse(phase);
-        // slope
-        output[i] = slope(phase);
-        // jp8000 tri
-        output[i] = jp8000_tri(phase);
-        // jp8000 supersaw
-        output[i] = jp8000_supersaw(phase);
-        // waveslices
-        output[i] = waveslices(phase);
-        // sinusoids
-        output[i] = sinusoids(phase);
-        // noise
-        output[i] = noise();
+    switch(type) {
+    case SIN:
+        PHASE_SHAPING_LOOP(sin2(phase));
+    case HARD:
+        PHASE_SHAPING_LOOP(hardsync(phase));
+    case SOFT:
+        PHASE_SHAPING_LOOP(softsync(phase));
+    case PULSE:
+        PHASE_SHAPING_LOOP(pulse(phase));
+    case SLOPE:
+        PHASE_SHAPING_LOOP(slope(phase));
+    case TRI:
+        PHASE_SHAPING_LOOP(jp8000_tri(phase));
+    case SUPERSAW:
+        PHASE_SHAPING_LOOP(jp8000_supersaw(phase));
+    case SLICES:
+        PHASE_SHAPING_LOOP(waveslices(phase));
+    case SINUSOIDS:
+        PHASE_SHAPING_LOOP(sinusoids(phase));
+    case NOISE:
+        PHASE_SHAPING_LOOP(noise());
     }
 }
 

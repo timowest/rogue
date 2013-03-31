@@ -103,8 +103,8 @@
     lv2:index 9;
     lv2:symbol "osc1_coarse";
     lv2:name "coarse";
-    lv2:minimum -48.0;
-    lv2:maximum 48.0;
+    lv2:minimum -48;
+    lv2:maximum 48;
     lv2:default 0;
   ]
  , [
@@ -225,8 +225,8 @@
     lv2:index 23;
     lv2:symbol "osc2_coarse";
     lv2:name "coarse";
-    lv2:minimum -48.0;
-    lv2:maximum 48.0;
+    lv2:minimum -48;
+    lv2:maximum 48;
     lv2:default 0;
   ]
  , [
@@ -347,8 +347,8 @@
     lv2:index 37;
     lv2:symbol "osc3_coarse";
     lv2:name "coarse";
-    lv2:minimum -48.0;
-    lv2:maximum 48.0;
+    lv2:minimum -48;
+    lv2:maximum 48;
     lv2:default 0;
   ]
  , [
@@ -469,8 +469,8 @@
     lv2:index 51;
     lv2:symbol "osc4_coarse";
     lv2:name "coarse";
-    lv2:minimum -48.0;
-    lv2:maximum 48.0;
+    lv2:minimum -48;
+    lv2:maximum 48;
     lv2:default 0;
   ]
  , [

@@ -27,15 +27,7 @@ void ADSR::setADSR(float _a, float _d, float _s, float _r) {
     releaseSamples = _r;
 }
 
-double ADSR::lastOut() {
-    return last;
-}
-
-int ADSR::state() {
-    return state_;
-}
-
-double ADSR::tick() {
+float ADSR::tick() {
     if (state_ == A) { // attack
         last += attackRate;
         if (last >= attackTarget) {
@@ -54,6 +46,14 @@ double ADSR::tick() {
             last = 0.0;
             state_ = IDLE;
         }
+    }
+    return last;
+}
+
+float ADSR::tick(int samples) {
+    // TODO optimize
+    for (int i = 0; i < samples; i++) {
+        tick();
     }
     return last;
 }
