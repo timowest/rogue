@@ -24,5 +24,9 @@ install: $(BUNDLE)
 	rm -rf $(INSTALL_DIR)/$(BUNDLE)
 	cp -R $(BUNDLE) $(INSTALL_DIR)
 
+run_tests:
+	$(CXX) -std=c++11 -lm -Idsp -Itest -Isrc test/dsp_test.cpp -o dsp_test.out
+	./dsp_test.out
+
 clean:
-	rm -rf $(BUNDLE) rogue.so src/rogue.peg rogue.ttl	
+	rm -rf $(BUNDLE) rogue.so src/rogue.peg rogue.ttl *.out	

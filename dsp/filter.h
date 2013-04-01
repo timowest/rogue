@@ -14,7 +14,7 @@ namespace dsp {
  */
 class Filter {
   public:
-    virtual void clear();
+    virtual void clear() = 0;
     virtual void process(float* input, float* output, int samples) = 0;
 };
 

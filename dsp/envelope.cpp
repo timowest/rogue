@@ -4,6 +4,7 @@
  * Copyright (C) 2013 Timo Westkämper
  */
 
+#include <stdio.h>
 #include "envelope.h"
 
 namespace dsp {

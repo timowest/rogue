@@ -33,7 +33,7 @@ class ADSR {
     float tick();
 
   private:
-    float attackTarget = 1.0; // TODO : make modifiable
+    float attackTarget = 1.0;
     float attackRate, decayRate, releaseSamples, releaseRate = 0.0;
     float sustain = 0.5;
     float last = 0.0;

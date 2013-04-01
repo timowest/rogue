@@ -118,7 +118,7 @@ def main():
             ["attack"     , 0, 5.0, 0],
             ["decay"      , 0, 5.0, 0],
             ["humanize"   , 0, 1.0, 0],
-            ["key_to_f"   , 0, 1.0, 0]]
+            ["key_to_f"   , -1.0, 1.0, 0]]
   
     envs = [["on"         , 0, 1, 0], # toggled
             ["pre_delay"  , 0, 5.0, 0],
@@ -129,8 +129,8 @@ def main():
             ["release"    , 0, 5.0, 0],
             ["retrigger"  , 0, 1, 0], # toggled
             ["vel_to_vol" , 0, 1.0, 0],
-            ["key_to_speed" , 0, 1.0, 0],
-            ["vel_to_speed" , 0, 1.0, 0]]
+            ["key_to_speed" , -1.0, 1.0, 0],
+            ["vel_to_speed" , -1.0, 1.0, 0]]
 
     idx = 3
 

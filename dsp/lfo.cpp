@@ -4,6 +4,7 @@
  * Copyright (C) 2013 Timo Westkämper
  */
 
+#include <stdlib.h>
 #include <math.h>
 #include "lfo.h"
 
@@ -12,7 +13,7 @@ namespace dsp {
 // LFO
 
 void LFO::clear() {
-    type = reset_type = 0;
+    type = 0;
     attack = decay = 0.0;
     phase = 0.0;
 }
@@ -48,7 +49,7 @@ float LFO::getValue(float p) {
     case SQUARE:
         return p < symmetry ? -1.0 : 1.0;
     case SH:
-        return 0.0; // TODO
+        return (2.0 * rand() / (RAND_MAX + 1.0) - 1.0);
     default:
         return 0.0;
     }

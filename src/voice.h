@@ -19,10 +19,7 @@ namespace rogue {
 struct rogueOsc {
     dsp::PhaseShaping osc;
     float buffer[BUFFER_SIZE];
-
-    void reset() {
-        osc.reset();
-    }
+    void reset() { osc.reset(); }
 
     void setSamplerate(float r) {
         osc.setSamplerate(r);
@@ -43,27 +40,15 @@ struct rogueFilter {
 struct rogueLFO {
     dsp::LFO lfo;
     float current, last;
-
-    void on() {
-        lfo.on();
-    }
-
-    void off() {
-        lfo.off();
-    }
+    void on() { lfo.on(); }
+    void off() { lfo.off(); }
 };
 
 struct rogueEnv {
     dsp::ADSR adsr;
     float current, last;
-
-    void on() {
-        adsr.on();
-    }
-
-    void off() {
-        adsr.off();
-    }
+    void on() { adsr.on(); }
+    void off() { adsr.off(); }
 };
 
 class rogueVoice : public daps::Voice {
@@ -80,8 +65,7 @@ class rogueVoice : public daps::Voice {
 
     protected:
       float sample_rate;
-      float m_velocity;
-      unsigned char m_key;
+      unsigned char m_key, m_velocity;
 
     public:
       rogueVoice(double, SynthData*);

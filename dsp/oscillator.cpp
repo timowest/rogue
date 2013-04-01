@@ -67,7 +67,7 @@ float PhaseShaping::sinusoids(float in) {
 }
 
 float PhaseShaping::noise() {
-    return (double) (2.0 * rand() / (RAND_MAX + 1.0) - 1.0);
+    return (2.0 * rand() / (RAND_MAX + 1.0) - 1.0);
 }
 
 #define PHASE_SHAPING_LOOP(x) \

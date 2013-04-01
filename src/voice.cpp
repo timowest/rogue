@@ -4,18 +4,21 @@
  * Copyright (C) 2013 Timo Westkämper
  *
  * uses code from https://github.com/rekado/lv2-mdaPiano
+ *                https://github.com/smbolton/whysynth
  */
 
 #include "voice.h"
 
+#define SEMITONE 1.05946f
+
 namespace rogue {
 
-static float midi_to_f(unsigned char data) {
-    return 0.0078f * (float)(data);
+static float midi2f(unsigned char data) {
+    return 0.007874f * (float)(data);
 }
 
 static float midi2hz(float key) {
-    return 8.1758 * std::pow(1.0594, key);
+    return 8.177445f * std::pow(SEMITONE, key);
 }
 
 rogueVoice::rogueVoice(double rate, SynthData* data) : data(data) {
@@ -35,7 +38,7 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
     m_key = key;
 
     if (velocity > 0) {
-        m_velocity = midi_to_f(velocity);
+        m_velocity = velocity;
     } else {
         off(0);
     }
@@ -66,14 +69,17 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
     rogueLFO& lfo = lfos[i];
     float v = 0.0f;
     if (lfoData.on) {
-        float a = lfoData.attack * sample_rate;
-        float d = lfoData.decay * sample_rate;
+        float f = lfoData.freq;
+        // key to f
+        if (lfoData.key_to_f != 0.0f) {
+            f *= std::pow(SEMITONE, lfoData.key_to_f * float(m_key - 69));
+        }
         lfo.lfo.setType(lfoData.type);
-        lfo.lfo.setEnv(a, d);
+        lfo.lfo.setEnv(lfoData.attack, lfoData.decay);
         lfo.lfo.setFreq(lfoData.freq);
         lfo.lfo.setSymmetry(lfoData.symmetry);
-        lfo.lfo.setHumanize(lfoData.humanize);
-        lfo.lfo.setResetType(lfoData.reset_type);
+        // TODO humanize
+        // TODO reset type
         v = lfo.lfo.tick(to - from);
     }
     lfo.last = lfo.current;
@@ -85,16 +91,27 @@ void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
     rogueEnv& env = envs[i];
     float v = 0.0f;
     if (envData.on) {
-        float a = envData.attack * sample_rate;
-        float d = envData.decay * sample_rate;
-        float s = envData.sustain;
-        float r = envData.release * sample_rate;
+        float f = 1.0f;
+        // key to speed
+        if (envData.key_to_speed != 0.0f) {
+            f *= std::pow(SEMITONE, envData.key_to_speed * float(m_key - 69));
+        }
+        // vel to speed
+        if (envData.vel_to_speed != 0.0f) {
+            f *= std::pow(SEMITONE, envData.vel_to_speed * float(m_velocity - 64));
+        }
+        float a = envData.attack / f;
+        float d = envData.decay / f;
+        float s = envData.sustain / f;
+        float r = envData.release / f;
         // TODO pre-delay
         // TODO hold
         // TODO retrigger
-        // TODO modulation
         env.adsr.setADSR(a, d, s, r);
         v = env.adsr.tick(to - from);
+        if (envData.vel_to_vol > 0.0f) {
+            v *= 1.0 - envData.vel_to_vol + envData.vel_to_vol * midi2f(m_velocity);
+        }
     }
     env.last = env.current;
     env.current = v;
@@ -115,7 +132,10 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         osc.osc.process(osc.buffer + from, to - from);
         float v = oscData.volume; // TODO vel_to_vol
         if (oscData.inv) {
-            v = -1.0f * v;
+            v *= -1.0f;
+        }
+        if (oscData.vel_to_vol > 0.0f) {
+            v *= 1.0 - oscData.vel_to_vol + oscData.vel_to_vol * midi2f(m_velocity);
         }
         if (oscData.level_a > 0.0f) {
             float vv = v * oscData.level_a;
@@ -137,7 +157,15 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
     rogueFilter& filter = filters[i];
     if (filterData.on) {
         int type = filterData.type;
-        float f = filterData.freq; // TODO key_to_f, vel_to_f
+        float f = filterData.freq;
+        // key to speed
+        if (filterData.key_to_f != 0.0f) {
+            f *= std::pow(SEMITONE, filterData.key_to_f * float(m_key - 69));
+        }
+        // vel to speed
+        if (filterData.vel_to_f != 0.0f) {
+            f *= std::pow(SEMITONE, filterData.vel_to_f * float(m_velocity - 64));
+        }
         float* source;
         switch (filterData.source) {
         case 0:
@@ -176,8 +204,29 @@ void rogueVoice::render(uint32_t from, uint32_t to) {
     for (int i = 0; i < NDCF; i++) runFilter(i, from, to);
 
     // copy buses and filters to out
+    float f1_l = data->filters[0].level * (1.0 * data->filters[0].pan),
+          f1_r = data->filters[0].level * data->filters[0].pan,
+          f2_l = data->filters[1].level * (1.0 * data->filters[1].pan),
+          f2_r = data->filters[1].level * data->filters[1].pan,
+          ba_l = data->bus_a_level * (1.0 - data->bus_a_pan),
+          ba_r = data->bus_a_level * data->bus_a_pan,
+          bb_l = data->bus_b_level * (1.0 - data->bus_b_pan),
+          bb_r = data->bus_b_level * data->bus_b_pan;
+
+    float* left = p(p_left);
+    float* right = p(p_right);
     for (int i = from; i < to; i++) {
-        // TODO
+        left[i] += data->volume *
+                  (f1_l * filters[0].buffer[i] +
+                   f2_l * filters[1].buffer[i] +
+                   ba_l * bus_a[i] +
+                   bb_l * bus_b[i]);
+        right[i] += data->volume *
+                   (f1_r * filters[0].buffer[i] +
+                    f2_r * filters[1].buffer[i] +
+                    ba_r * bus_a[i] +
+                    bb_r * bus_b[i]);
+
     }
 
     env = envs[0].current;

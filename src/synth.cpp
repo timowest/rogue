@@ -65,6 +65,8 @@ void rogueSynth::update() {
     data.glide_time  = *p(p_glide_time);
     data.bend_range  = *p(p_bend_range);
 
+    const float rate = sample_rate;
+
     // oscs
     for (int i = 0; i < NOSC; i++) {
         int off = i * 9;
@@ -104,8 +106,8 @@ void rogueSynth::update() {
         data.lfos[i].reset_type  = *p(p_lfo1_reset_type + off);
         data.lfos[i].freq        = *p(p_lfo1_freq + off);
         data.lfos[i].symmetry    = *p(p_lfo1_symmetry + off);
-        data.lfos[i].attack      = *p(p_lfo1_attack + off);
-        data.lfos[i].decay       = *p(p_lfo1_decay + off);
+        data.lfos[i].attack      = *p(p_lfo1_attack + off) * rate;
+        data.lfos[i].decay       = *p(p_lfo1_decay + off) * rate;
         data.lfos[i].humanize    = *p(p_lfo1_humanize + off);
 
         data.lfos[i].key_to_f    = *p(p_lfo1_key_to_f + off);
@@ -115,12 +117,12 @@ void rogueSynth::update() {
     for (int i = 0; i < NENV; i++) {
         int off = i * 11;
         data.envs[i].on          = *p(p_env1_on + off);
-        data.envs[i].pre_delay   = *p(p_env1_pre_delay + off);
-        data.envs[i].attack      = *p(p_env1_attack + off);
-        data.envs[i].hold        = *p(p_env1_hold + off);
-        data.envs[i].decay       = *p(p_env1_decay + off);
+        data.envs[i].pre_delay   = *p(p_env1_pre_delay + off) * rate;
+        data.envs[i].attack      = *p(p_env1_attack + off) * rate;
+        data.envs[i].hold        = *p(p_env1_hold + off) * rate;
+        data.envs[i].decay       = *p(p_env1_decay + off) * rate;
         data.envs[i].sustain     = *p(p_env1_sustain + off);
-        data.envs[i].release     = *p(p_env1_release + off);
+        data.envs[i].release     = *p(p_env1_release + off) * rate;
         data.envs[i].retrigger   = *p(p_env1_retrigger + off);
 
         data.envs[i].vel_to_vol  = *p(p_env1_vel_to_vol + off);
@@ -190,7 +192,7 @@ void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
         case 0x78:
         //all notes off
         case 0x7b:
-            for(int v = 0; v < NVOICES; v++) {
+            for (int v = 0; v < NVOICES; v++) {
                 voices[v]->reset();
             }
             break;
