@@ -19,4 +19,25 @@
 #define NLFO    3
 #define NENV    5
 
+enum {
+  M_ON,
+  M_MOD,
+  M_PRESSURE,
+  M_KEY,
+  M_VEL,
+  M_LFO0_BI,
+  M_LFO0_UN,
+  M_LFO1_BI,
+  M_LFO1_UN,
+  M_LFO2_BI,
+  M_LFO2_UN,
+  M_LFO3_BI,
+  M_LFO3_UN,
+  M_EG1,
+  M_EG2,
+  M_EG3,
+  M_EG4,
+  M_EG5
+};
+
 #endif
