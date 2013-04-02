@@ -21,8 +21,10 @@ static float midi2hz(float key) {
     return 8.177445f * std::pow(SEMITONE, key);
 }
 
-rogueVoice::rogueVoice(double rate, SynthData* data) : data(data) {
+rogueVoice::rogueVoice(double rate, SynthData* d) {
+    data = d;
     sample_rate = rate;
+
     for (int i = 0; i < NOSC; i++) oscs[i] = rogueOsc();
     for (int i = 0; i < NDCF; i++) filters[i] = rogueFilter();
     for (int i = 0; i < NLFO; i++) lfos[i] = rogueLFO();
@@ -188,7 +190,7 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
 }
 
 void rogueVoice::render(uint32_t from, uint32_t to) {
-    if (m_key == daps::INVALID_KEY) {
+    if (m_key == lvtk::INVALID_KEY) {
         return;
     }
 
@@ -231,7 +233,7 @@ void rogueVoice::render(uint32_t from, uint32_t to) {
 
     env = envs[0].current;
     if (env < SILENCE) {
-        m_key = daps::INVALID_KEY;
+        m_key = lvtk::INVALID_KEY;
     }
 }
 
@@ -239,7 +241,7 @@ void rogueVoice::reset() {
     env = 0.0f;
     volume = 1.0f;
     sustain = 0;
-    m_key = daps::INVALID_KEY;
+    m_key = lvtk::INVALID_KEY;
 }
 
 

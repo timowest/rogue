@@ -7,6 +7,8 @@
 #ifndef ROGUE_CONFIG_H
 #define ROGUE_CONFIG_H
 
+#include "common.h"
+
 namespace rogue {
 
 struct OscData {

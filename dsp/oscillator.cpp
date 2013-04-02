@@ -100,7 +100,9 @@ void PhaseShaping::process(float* output, int samples) {
     case SINUSOIDS:
         PHASE_SHAPING_LOOP(sinusoids(phase));
     case NOISE:
-        PHASE_SHAPING_LOOP(noise());
+        for (int i = 0; i < samples; i++) {
+           output[i] = noise();
+        }
     }
 }
 

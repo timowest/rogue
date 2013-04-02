@@ -11,7 +11,7 @@
 namespace rogue {
 
 rogueSynth::rogueSynth(double rate)
-  : daps::Synth<rogueVoice, rogueSynth>(p_n_ports, p_control) {
+  : lvtk::Synth<rogueVoice, rogueSynth>(p_n_ports, p_control) {
 
     sample_rate = rate;
     sustain = 0;
@@ -38,7 +38,7 @@ unsigned rogueSynth::find_free_voice(unsigned char key, unsigned char velocity) 
     // ... notes are sustained but not this new one
     // ... notes are not sustained
     for (int i = 0; i < NVOICES; i++) {
-        if (voices[i]->get_key() == daps::INVALID_KEY) {
+        if (voices[i]->get_key() == lvtk::INVALID_KEY) {
             return i;
         }
     }
@@ -57,77 +57,77 @@ void rogueSynth::set_volume(float value) {
 
 //parameter change
 void rogueSynth::update() {
-    data.bus_a_level = *p(p_bus_a_level);
-    data.bus_a_pan   = *p(p_bus_a_pan);
-    data.bus_b_level = *p(p_bus_b_level);
-    data.bus_b_pan   = *p(p_bus_b_pan);
-    data.volume      = *p(p_volume);
-    data.glide_time  = *p(p_glide_time);
-    data.bend_range  = *p(p_bend_range);
+    data.bus_a_level = v(p_bus_a_level);
+    data.bus_a_pan   = v(p_bus_a_pan);
+    data.bus_b_level = v(p_bus_b_level);
+    data.bus_b_pan   = v(p_bus_b_pan);
+    data.volume      = v(p_volume);
+    data.glide_time  = v(p_glide_time);
+    data.bend_range  = v(p_bend_range);
 
     const float rate = sample_rate;
 
     // oscs
     for (int i = 0; i < NOSC; i++) {
-        int off = i * 9;
-        data.oscs[i].on          = *p(p_osc1_on + off);
-        data.oscs[i].type        = *p(p_osc1_type + off);
-        data.oscs[i].inv         = *p(p_osc1_inv + off);
-        data.oscs[i].free        = *p(p_osc1_free + off);
-        data.oscs[i].tracking    = *p(p_osc1_tracking + off);
-        data.oscs[i].ratio       = *p(p_osc1_ratio + off);
-        data.oscs[i].coarse      = *p(p_osc1_coarse + off);
-        data.oscs[i].fine        = *p(p_osc1_fine + off);
-        data.oscs[i].volume      = *p(p_osc1_volume + off);
+        int off = i * 14;
+        data.oscs[i].on          = v(p_osc1_on + off);
+        data.oscs[i].type        = v(p_osc1_type + off);
+        data.oscs[i].inv         = v(p_osc1_inv + off);
+        data.oscs[i].free        = v(p_osc1_free + off);
+        data.oscs[i].tracking    = v(p_osc1_tracking + off);
+        data.oscs[i].ratio       = v(p_osc1_ratio + off);
+        data.oscs[i].coarse      = v(p_osc1_coarse + off);
+        data.oscs[i].fine        = v(p_osc1_fine + off);
+        data.oscs[i].volume      = v(p_osc1_volume + off);
 
-        data.oscs[i].vel_to_vol  = *p(p_osc1_vel_to_vol + off);
+        data.oscs[i].vel_to_vol  = v(p_osc1_vel_to_vol + off);
     }
 
     // filters
     for (int i = 0; i < NDCF; i++) {
         int off = i * 10;
-        data.filters[i].on       = *p(p_filter1_on + off);
-        data.filters[i].type     = *p(p_filter1_type + off);
-        data.filters[i].freq     = *p(p_filter1_freq + off);
-        data.filters[i].q        = *p(p_filter1_q + off);
-        data.filters[i].distortion = *p(p_filter1_distortion + off);
-        data.filters[i].level    = *p(p_filter1_level + off);
-        data.filters[i].pan      = *p(p_filter1_pan + off);
+        data.filters[i].on       = v(p_filter1_on + off);
+        data.filters[i].type     = v(p_filter1_type + off);
+        data.filters[i].freq     = v(p_filter1_freq + off);
+        data.filters[i].q        = v(p_filter1_q + off);
+        data.filters[i].distortion = v(p_filter1_distortion + off);
+        data.filters[i].level    = v(p_filter1_level + off);
+        data.filters[i].pan      = v(p_filter1_pan + off);
 
-        data.filters[i].key_to_f = *p(p_filter1_key_to_f + off);
-        data.filters[i].vel_to_f = *p(p_filter1_vel_to_f + off);
+        data.filters[i].key_to_f = v(p_filter1_key_to_f + off);
+        data.filters[i].vel_to_f = v(p_filter1_vel_to_f + off);
     }
 
     // lfos
     for (int i = 0; i < NLFO; i++) {
-        int off = i * 10;
-        data.lfos[i].on          = *p(p_lfo1_on + off);
-        data.lfos[i].type        = *p(p_lfo1_type + off);
-        data.lfos[i].reset_type  = *p(p_lfo1_reset_type + off);
-        data.lfos[i].freq        = *p(p_lfo1_freq + off);
-        data.lfos[i].symmetry    = *p(p_lfo1_symmetry + off);
-        data.lfos[i].attack      = *p(p_lfo1_attack + off) * rate;
-        data.lfos[i].decay       = *p(p_lfo1_decay + off) * rate;
-        data.lfos[i].humanize    = *p(p_lfo1_humanize + off);
+        int off = i * 9;
+        data.lfos[i].on          = v(p_lfo1_on + off);
+        data.lfos[i].type        = v(p_lfo1_type + off);
+        data.lfos[i].reset_type  = v(p_lfo1_reset_type + off);
+        data.lfos[i].freq        = v(p_lfo1_freq + off);
+        data.lfos[i].symmetry    = v(p_lfo1_symmetry + off);
+        data.lfos[i].attack      = v(p_lfo1_attack + off) * rate;
+        data.lfos[i].decay       = v(p_lfo1_decay + off) * rate;
+        data.lfos[i].humanize    = v(p_lfo1_humanize + off);
 
-        data.lfos[i].key_to_f    = *p(p_lfo1_key_to_f + off);
+        data.lfos[i].key_to_f    = v(p_lfo1_key_to_f + off);
     }
 
     // envs
     for (int i = 0; i < NENV; i++) {
         int off = i * 11;
-        data.envs[i].on          = *p(p_env1_on + off);
-        data.envs[i].pre_delay   = *p(p_env1_pre_delay + off) * rate;
-        data.envs[i].attack      = *p(p_env1_attack + off) * rate;
-        data.envs[i].hold        = *p(p_env1_hold + off) * rate;
-        data.envs[i].decay       = *p(p_env1_decay + off) * rate;
-        data.envs[i].sustain     = *p(p_env1_sustain + off);
-        data.envs[i].release     = *p(p_env1_release + off) * rate;
-        data.envs[i].retrigger   = *p(p_env1_retrigger + off);
+        data.envs[i].on          = v(p_env1_on + off);
+        data.envs[i].pre_delay   = v(p_env1_pre_delay + off) * rate;
+        data.envs[i].attack      = v(p_env1_attack + off) * rate;
+        data.envs[i].hold        = v(p_env1_hold + off) * rate;
+        data.envs[i].decay       = v(p_env1_decay + off) * rate;
+        data.envs[i].sustain     = v(p_env1_sustain + off);
+        data.envs[i].release     = v(p_env1_release + off) * rate;
+        data.envs[i].retrigger   = v(p_env1_retrigger + off);
 
-        data.envs[i].vel_to_vol  = *p(p_env1_vel_to_vol + off);
-        data.envs[i].key_to_speed = *p(p_env1_key_to_speed + off);
-        data.envs[i].vel_to_speed = *p(p_env1_vel_to_speed + off);
+        data.envs[i].vel_to_vol  = v(p_env1_vel_to_vol + off);
+        data.envs[i].key_to_speed = v(p_env1_key_to_speed + off);
+        data.envs[i].vel_to_speed = v(p_env1_vel_to_speed + off);
     }
 }
 
@@ -147,10 +147,10 @@ void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
     //receive on all channels
     switch(data[0] & 0xf0) {
     case 0x80: //note off
-        for (unsigned i = 0; i < NVOICES; ++i) {
+        for (int i = 0; i < NVOICES; ++i) {
             if (voices[i]->get_key() == data[1]) {
                 voices[i]->off(data[2]);
-            break;
+                break;
            }
         }
         break;

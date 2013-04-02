@@ -13,12 +13,12 @@
 #include "voice.h"
 #include "rogue.peg"
 
-#include <daps/synth.hpp>
+#include <lvtk/synth.hpp>
 #include <stdio.h>
 
 namespace rogue {
 
-class rogueSynth : public daps::Synth<rogueVoice, rogueSynth> {
+class rogueSynth : public lvtk::Synth<rogueVoice, rogueSynth> {
 
   public:
     rogueSynth(double);
@@ -27,6 +27,16 @@ class rogueSynth : public daps::Synth<rogueVoice, rogueSynth> {
     void pre_process(uint32_t from, uint32_t to);
     void set_volume(float);
     void update();
+
+    template <typename T>
+    T v(uint32_t port) {
+        float* pv = p(port);
+        return (T)pv;
+    }
+
+    float v(uint32_t port) {
+        return *p(port);
+    }
 
   private:
     float sample_rate;

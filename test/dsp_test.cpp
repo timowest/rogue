@@ -37,11 +37,28 @@ int main() {
     }
 
     facts("lfo") {
+        LFO lfo;
+        lfo.setSamplerate(10.0);
 
+        fact("tri") {
+            // TODO
+        }
+
+        fact("saw up") {
+
+        }
+
+        fact("saw down") {
+
+        }
+
+        fact("square") {
+
+        }
     }
 
     facts("oscillator") {
-
+        // TODO
     }
 
 }

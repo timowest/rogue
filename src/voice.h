@@ -12,7 +12,7 @@
 #include "rogue.peg"
 #include "dsp.h"
 
-#include <daps/synth.hpp>
+#include <lvtk/synth.hpp>
 
 namespace rogue {
 
@@ -51,7 +51,7 @@ struct rogueEnv {
     void off() { adsr.off(); }
 };
 
-class rogueVoice : public daps::Voice {
+class rogueVoice : public lvtk::Voice {
     private:
       float env = 0.0, volume = 1.0f;
       short sustain = 0;
