@@ -33,11 +33,16 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
     // set sample rate
     for (int i = 0; i < NOSC; i++) oscs[i].setSamplerate(rate);
     for (int i = 0; i < NDCF; i++) filters[i].setSamplerate(rate);
+
+    mod[M_ON] = 0.0;
 }
 
 void rogueVoice::on(unsigned char key, unsigned char velocity) {
     // store key that turned this voice on (used in 'get_key')
     m_key = key;
+
+    mod[M_KEY] = midi2f(key);
+    mod[M_VEL] = midi2f(velocity);
 
     if (velocity > 0) {
         m_velocity = velocity;
@@ -84,6 +89,10 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
         // TODO reset type
         v = lfo.lfo.tick(to - from);
     }
+    // update mod values
+    mod[M_LFO1_BI + 2*i] = v;
+    mod[M_LFO1_UN + 2*i] = 0.5 * v + 0.5;
+
     lfo.last = lfo.current;
     lfo.current = 0.0f;
 }
@@ -115,6 +124,9 @@ void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
             v *= 1.0 - envData.vel_to_vol + envData.vel_to_vol * midi2f(m_velocity);
         }
     }
+    // update mod values
+    mod[M_EG1 + i] = v;
+
     env.last = env.current;
     env.current = v;
 }
@@ -195,9 +207,8 @@ void rogueVoice::render(uint32_t from, uint32_t to) {
     }
 
     // reset buses
-    for (int i = from; i < to; i++) {
-        bus_a[i] = bus_b[i] = 0.0f;
-    }
+    std::memset(bus_a, 0, sizeof(float) * BUFFER_SIZE);
+    std::memset(bus_b, 0, sizeof(float) * BUFFER_SIZE);
 
     // run elements
     for (int i = 0; i < NLFO; i++) runLFO(i, from, to);

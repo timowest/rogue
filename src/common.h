@@ -37,7 +37,8 @@ enum {
   M_EG2,
   M_EG3,
   M_EG4,
-  M_EG5
+  M_EG5,
+  M_SIZE
 };
 
 #endif

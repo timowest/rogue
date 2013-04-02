@@ -62,6 +62,7 @@ class rogueVoice : public lvtk::Voice {
       rogueEnv envs[NENV];
 
       float bus_a[BUFFER_SIZE], bus_b[BUFFER_SIZE];
+      float mod[M_SIZE];
 
     protected:
       float sample_rate;
