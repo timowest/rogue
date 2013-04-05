@@ -54,7 +54,7 @@ PREFIX = """@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
 
 def control(idx, symbol, name, min, max, default):
     if (min == 0 and max == 1 and isinstance(max, int) and default == 0):
-        print """ , [
+        return """ , [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index %s;
     lv2:symbol "%s";
@@ -63,7 +63,7 @@ def control(idx, symbol, name, min, max, default):
     lv2:portProperty lv2:toggled
   ]""" % (idx, symbol, name, min)
     else:
-        print """ , [
+        return """ , [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index %s;
     lv2:symbol "%s";
@@ -73,13 +73,12 @@ def control(idx, symbol, name, min, max, default):
     lv2:default %s;
   ]""" % (idx, symbol, name, min, max, default)
 
-    return idx + 1
-
-def controls(idx, type, count, controls):
+def controls(ttl, idx, type, count, controls):
     for i in range(count):
         prefix = type+str(i+1)+"_"
         for c in controls:
-            idx = control(idx, prefix+c[0], c[0], c[1], c[2], c[3])
+            ttl.append(control(idx, prefix+c[0], c[0], c[1], c[2], c[3]))
+            idx += 1
     return idx
 
 def main():
@@ -134,15 +133,16 @@ def main():
 
     idx = 3
 
-    print PREFIX
+    ttl = []
+    ttl.append(PREFIX)
     # oscs
-    idx = controls(idx, "osc", 4, oscs)
+    idx = controls(ttl, idx, "osc", 4, oscs)
     # dcfs
-    idx = controls(idx, "filter", 2, dcfs)
+    idx = controls(ttl, idx, "filter", 2, dcfs)
     # lfos
-    idx = controls(idx, "lfo", 3, lfos)
+    idx = controls(ttl, idx, "lfo", 3, lfos)
     # envs
-    idx = controls(idx, "env", 5, envs)
+    idx = controls(ttl, idx, "env", 5, envs)
 
     globals = [["bus_a_level", 0, 1.0, 0],
                ["bus_a_pan",   0, 1.0, 0.5],
@@ -154,9 +154,14 @@ def main():
                ["bend_range",  0, 12.0, 0]]
 
     for c in globals:
-        idx = control(idx, c[0], c[0], c[1], c[2], c[3])
+        ttl.append(control(idx, c[0], c[0], c[1], c[2], c[3]))
+        idx += 1
 
-    print "."
+    ttl.append(".")
+
+    cppFile = open("rogue.ttl", "w")
+    cppFile.write("\n".join(ttl))
+    cppFile.close()
     
 
 if __name__ == "__main__":
