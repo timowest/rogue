@@ -11,7 +11,7 @@
 #include "common.h"
 #include "config.h"
 #include "voice.h"
-#include "rogue.peg"
+#include "rogue.gen"
 
 #include <lvtk/synth.hpp>
 #include <stdio.h>

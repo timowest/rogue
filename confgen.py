@@ -52,7 +52,25 @@ PREFIX = """@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
     ];
   ]"""
 
-def control(idx, symbol, name, min, max, default):
+PREFIX_GUI = """#ifndef ANALOGUE_META
+#define ANALOGUE_META
+
+enum {KNOB, TOGGLE, SELECT};
+
+typedef struct {
+    const char* symbol;
+    float min;
+    float max;
+    float default_value;
+    int type;
+} port_meta_t;
+
+static const port_meta_t p_port_meta[] = {
+    {"control", 0, 0, 0, KNOB},
+    {"left", 0, 0, 0, KNOB},
+    {"right", 0, 0, 0, KNOB},"""
+
+def ttl_control(idx, symbol, name, min, max, default):
     if (min == 0 and max == 1 and isinstance(max, int) and default == 0):
         return """ , [
     a lv2:ControlPort, lv2:InputPort;
@@ -73,11 +91,20 @@ def control(idx, symbol, name, min, max, default):
     lv2:default %s;
   ]""" % (idx, symbol, name, min, max, default)
 
-def controls(ttl, idx, type, count, controls):
+def port_meta(symbol, min, max, default):
+    type = "KNOB"
+    if (min == 0 and max == 1 and isinstance(max, int) and default == 0):
+        type = "TOGGLE"
+    elif isinstance(max, int):
+        type = "SELECT"
+    return '    {"%s", %s, %s, %s, %s},' % (symbol, min, max, default, type)
+
+def controls(ttl, gui, idx, type, count, controls):
     for i in range(count):
         prefix = type+str(i+1)+"_"
-        for c in controls:
-            ttl.append(control(idx, prefix+c[0], c[0], c[1], c[2], c[3]))
+        for c in controls:            
+            ttl.append(ttl_control(idx, prefix+c[0], c[0], c[1], c[2], c[3]))
+            gui.append(port_meta(prefix+c[0], c[1], c[2], c[3]))
             idx += 1
     return idx
 
@@ -133,16 +160,19 @@ def main():
 
     idx = 3
 
+    gui = []
+    gui.append(PREFIX_GUI)
+
     ttl = []
     ttl.append(PREFIX)
     # oscs
-    idx = controls(ttl, idx, "osc", 4, oscs)
+    idx = controls(ttl, gui, idx, "osc", 4, oscs)
     # dcfs
-    idx = controls(ttl, idx, "filter", 2, dcfs)
+    idx = controls(ttl, gui, idx, "filter", 2, dcfs)
     # lfos
-    idx = controls(ttl, idx, "lfo", 3, lfos)
+    idx = controls(ttl, gui, idx, "lfo", 3, lfos)
     # envs
-    idx = controls(ttl, idx, "env", 5, envs)
+    idx = controls(ttl, gui, idx, "env", 5, envs)
 
     globals = [["bus_a_level", 0, 1.0, 0],
                ["bus_a_pan",   0, 1.0, 0.5],
@@ -154,14 +184,22 @@ def main():
                ["bend_range",  0, 12.0, 0]]
 
     for c in globals:
-        ttl.append(control(idx, c[0], c[0], c[1], c[2], c[3]))
+        ttl.append(ttl_control(idx, c[0], c[0], c[1], c[2], c[3]))
+        gui.append(port_meta(c[0], c[1], c[2], c[3]))
         idx += 1
 
     ttl.append(".")
 
+    gui.append("};")
+    gui.append("#endif")
+
     cppFile = open("rogue.ttl", "w")
     cppFile.write("\n".join(ttl))
     cppFile.close()
+
+    guiFile = open("src/gui/config.gen", "w")
+    guiFile.write("\n".join(gui))
+    guiFile.close()
     
 
 if __name__ == "__main__":

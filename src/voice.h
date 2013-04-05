@@ -9,7 +9,7 @@
 
 #include "common.h"
 #include "config.h"
-#include "rogue.peg"
+#include "rogue.gen"
 #include "dsp.h"
 
 #include <lvtk/synth.hpp>

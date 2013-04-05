@@ -11,14 +11,17 @@ $(BUNDLE): manifest.ttl rogue.ttl rogue.so presets
 	mkdir $(BUNDLE)
 	cp -r $^ $(BUNDLE)
 
-rogue.so: $(SOURCES) src/rogue.peg
+rogue.so: $(SOURCES) src/rogue.gen
 	$(CXX) $(FLAGS) -g -shared $(SOURCES) $(LVTK) -o $@
 
-src/rogue.peg: rogue.ttl
-	ttl2c $^ src/rogue.peg
+src/rogue.gen: rogue.ttl
+	ttl2c $^ src/rogue.gen
     
 rogue.ttl:
 	./confgen.py     
+	
+src/gui/config.gen:
+	./confgen.py
 
 install: $(BUNDLE)
 	mkdir -p $(INSTALL_DIR)
