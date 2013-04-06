@@ -20,19 +20,23 @@
 using namespace sigc;
 using namespace Gtk;
 
+namespace rogue {
+
 class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> > {
   public:
-    rogueGUI(const std::string& URI);
+    rogueGUI(const char* URI);
     Widget* createOSC(int i);
     Widget* createFilter(int i);
     Widget* createLFO(int i);
     Widget* createEnv(int i);
+    Widget* createMain();
     Widget* smallFrame(const char* label, Table* content);
     Widget* frame(const char* label, int toggle, Table* content);
     Alignment* align(Widget* widget);
     void control(Table* table, const char* label, int port_index, int left, int top);
     void port_event(uint32_t port, uint32_t buffer_size, uint32_t format, const void* buffer);
     void change_status_bar(uint32_t port, float value);
+    Widget& get_widget() { return container(); }
 
   protected:
     VBox mainBox;
@@ -43,27 +47,64 @@ class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> >
 
 // implementation
 
-rogueGUI::rogueGUI(const std::string& URI) {
-    std::cout << "starting GUI" <<std::endl;
+#define CHARS static const char*
 
-    //initialize sliders
+// checkbox content
+CHARS osc_types[] = {"Sin", "Hard sync", "Soft sync", "Pulse", "Slope", "Tri",
+        "Supersaw", "Slices", "Sinusoids", "Noise"};
+CHARS filter_types[] = {"LP 24dB", "LP 18dB", "LP 12dB", "LP 6dB", "HP 24dB",
+        "BP 12dB", "BP 18dB", "Notch",
+        "SVF LP", "SVF HP", "SVF BP", "SVF Notch"};
+CHARS filter1_sources[] = {"Bus A", "Bus B"};
+CHARS filter2_sources[] = {"Bus A", "Bus B", "Filter1"};
+CHARS lfo_types[] = {"Sin", "Tri", "Saw up", "Saw down", "Square", "S/H"};
+CHARS lfo_reset_types[] = {"Poly", "Free", "Mono"};
+
+// labels
+CHARS osc_labels[] = {"OSC 1", "OSC 2", "OSC 3", "OSC 4"};
+CHARS filter_labels[] = {"Filter 1", "Filter 2"};
+CHARS lfo_labels[] = {"LFO 1", "LFO 2", "LFO 3"};
+CHARS env_labels[] = {"Env 1", "Env 2", "Env 3", "Env 4", "Env 5"};
+
+rogueGUI::rogueGUI(const char* URI) {
+    std::cout << "starting GUI" << std::endl;
+
+    // initialize sliders
     for (int i = 3; i < p_n_ports; i++) {
-        switch (p_port_meta[i].type) {
-        case KNOB:
-            // TODO step
+        uint32_t type = p_port_meta[i].type;
+        if (type == KNOB) {
+            scales[i] = manage(new Knob(p_port_meta[i].min, p_port_meta[i].max));
+        } else if (type == KNOB_M) {
             Knob* knob = new Knob(p_port_meta[i].min, p_port_meta[i].max);
-            // TODO size
+            knob->set_radius(12.0);
             scales[i] = manage(knob);
-            break;
-        case TOGGLE:
+        } else if (type == KNOB_S) {
+            Knob* knob = new Knob(p_port_meta[i].min, p_port_meta[i].max);
+            knob->set_size(30);
+            knob->set_radius(10);
+            scales[i] = manage(knob);
+        } else if (type == TOGGLE) {
             scales[i] = manage(new Toggle());
-            break;
-        case SELECT:
-            // TODO
+        } else if (type != SELECT) {
+            std::cout << i << std::endl;
+        } else if (i == p_osc1_type || i == p_osc2_type || i == p_osc3_type || i == p_osc4_type) {
+            scales[i] = manage(new SelectComboBox(osc_types, 10));
+        } else if (i == p_filter1_type || i == p_filter2_type) {
+            scales[i] = manage(new SelectComboBox(filter_types, 12));
+        } else if (i == p_filter1_source) {
+            scales[i] = manage(new SelectComboBox(filter1_sources, 2));
+        } else if (i == p_filter2_source) {
+            scales[i] = manage(new SelectComboBox(filter2_sources, 3));
+        } else if (i == p_lfo1_type || i == p_lfo2_type || i == p_lfo3_type) {
+            scales[i] = manage(new SelectComboBox(lfo_types, 6));
+        } else if (i == p_lfo1_reset_type || i == p_lfo2_reset_type || i == p_lfo3_reset_type) {
+            scales[i] = manage(new SelectComboBox(lfo_reset_types, 3));
+        } else {
+            std::cout << i << std::endl;
         }
     }
 
-    //connect widgets to ports
+    // connect widgets to ports
     for (int i = 3; i < p_n_ports; i++) {
         slot<void> slot1 = compose(bind<0>(mem_fun(*this, &rogueGUI::write_control), i),
             mem_fun(*scales[i], &Changeable::get_value));
@@ -77,81 +118,140 @@ rogueGUI::rogueGUI(const std::string& URI) {
 
     HBox* oscs = manage(new HBox());
     for (int i = 0; i < NOSC; i++) {
-        oscs->pack_start(createOSC(i));
+        oscs->pack_start(*createOSC(i));
     }
     HBox* filters = manage(new HBox());
     for (int i = 0; i < NDCF; i++) {
-        filters.pack_start(createFilter(i));
+        filters->pack_start(*createFilter(i));
     }
 
-    // TODO tabs (presets, lfos, envelopes, modulation, effects)
-    // TODO main controls
+    HBox* presets = manage(new HBox());
+    // TODO
+    Notebook* lfos = manage(new Notebook());
+    for (int i = 0; i < NLFO; i++) {
+        lfos->append_page(*createLFO(i), lfo_labels[i]);
+    }
+    Notebook* envelopes = manage(new Notebook());
+    for (int i = 0; i < NENV; i++) {
+        envelopes->append_page(*createEnv(i), env_labels[i]);
+    }
+    HBox* modulation = manage(new HBox());
+    // TODO
+    HBox* effects = manage(new HBox());
+    // TODO
 
-    /*HBox* header = manage(new HBox());
-    header->pack_start(*manage(new Image("analogue.png")));
-    header->pack_end(*scales[p_amp_output - 3]->get_widget());
-    header->set_border_width(5);
-    mainBox.pack_start(*align(header));*/
+    Notebook* tabs = manage(new Notebook());
+    tabs->append_page(*align(presets), "Presets");
+    tabs->append_page(*align(lfos), "LFOs");
+    tabs->append_page(*align(envelopes), "Envelopes");
+    tabs->append_page(*align(modulation), "Modulation");
+    tabs->append_page(*align(effects), "Effects");
+
+    Widget* main = manage(createMain());
 
     mainBox.pack_start(*align(oscs));
     mainBox.pack_start(*align(filters));
+    mainBox.pack_start(*tabs);
+    mainBox.pack_start(*align(main));
     mainBox.pack_end(statusbar);
 
     add(*align(&mainBox));
 
-    std::cout << "GUI ready" <<std::endl;
+    std::cout << "GUI ready" << std::endl;
 }
 
-// FIXME
 Widget* rogueGUI::createOSC(int i) {
-    Table* table = manage(new Table(4,5));
+    int off = i * 14;
+    Table* table = manage(new Table(8,4));
     // row 1
-    control(table, "Type", p_osc1_type, 0, 1);
-    control(table, "Tune", p_osc1_tune, 1, 1);
-    control(table, "PW", p_osc1_width, 2, 1);
-    control(table, "Kbd", p_osc1_kbd, 3, 1);
-    //addControl(table, "Sync", p_osc1_type, 0, 1);
+    control(table, "Type", p_osc1_type + off, 0, 1);
+    control(table, "Inv", p_osc1_inv + off, 1, 1);
+    control(table, "Free", p_osc1_free + off, 2, 1);
+    control(table, "Track", p_osc1_tracking + off, 3, 1);
+
     // row 2
-    control(table, "Level", p_osc1_level, 0, 3);
-    control(table, "Finetune", p_osc1_finetune, 1, 3);
-    control(table, "LFO1", p_osc1_lfo_to_w, 2, 3);
-    control(table, "LFO1", p_osc1_lfo_to_p, 3, 3);
-    control(table, "F1 F2", p_osc1_f1_to_f2, 4, 3);
-    return frame("OSC1", p_osc1_power, table);
+    control(table, "Coarse", p_osc1_coarse + off, 0, 3);
+    control(table, "Fine", p_osc1_fine + off, 1, 3);
+    control(table, "Ratio", p_osc1_ratio + off, 2, 3);
+
+    // row 3
+    control(table, "Param 1", p_osc1_param1 + off, 0, 5);
+    control(table, "Param 2", p_osc1_param2 + off, 1, 5);
+    control(table, "Volume", p_osc1_volume + off, 2, 5);
+
+    // row 4
+    control(table, "Level A", p_osc1_level_a + off, 0, 7);
+    control(table, "Level B", p_osc1_level_b + off, 1, 7);
+    control(table, "Vel > vol", p_osc1_vel_to_vol + off, 2, 7);
+
+    return frame(osc_labels[i], p_osc1_on + off, table);
 }
 
-// FIXME
 Widget* rogueGUI::createFilter(int i) {
-    Table* table = manage(new Table(4,5));
+    int off = i * 10;
+    Table* table = manage(new Table(2,9));
     // row 1
-    control(table, "Type", p_filter1_type, 0, 1);
-    control(table, "Kbd", p_filter1_kbd, 1, 1);
-    control(table, "Cutoff", p_filter1_cutoff, 2, 1);
-    control(table, "Q", p_filter1_q, 3, 1);
-    control(table, "To F2", p_filter1_to_f2, 4, 1);
-    // row 2
-    // TODO : order
-    control(table, "LFO1", p_filter1_lfo_to_f, 1, 3);
-    control(table, "Env1", p_filter1_env_to_f, 2, 3);
-    control(table, "LFO1", p_filter1_lfo_to_q, 3, 3);
-    control(table, "Env1", p_filter1_env_to_q, 4, 3);
-    return frame("Filter 1", p_filter1_bypass, table);
+    control(table, "Type", p_filter1_type + off, 0, 1);
+    control(table, "Source", p_filter1_source + off, 1, 1);
+    control(table, "Freq", p_filter1_freq + off, 2, 1);
+    control(table, "Q", p_filter1_q + off, 3, 1);
+    control(table, "Distortion", p_filter1_distortion + off, 4, 1);
+    control(table, "Level", p_filter1_level + off, 5, 1);
+    control(table, "Pan", p_filter1_pan + off, 6, 1);
+    control(table, "Key > F", p_filter1_key_to_f + off, 7, 1);
+    control(table, "Vel > F", p_filter1_vel_to_f + off, 8, 1);
+
+    return frame(filter_labels[i], p_filter1_on + off, table);
 }
 
-// FIXME
 Widget* rogueGUI::createLFO(int i) {
-    Table* table = manage(new Table(2, 5));
-    control(table, "Type", p_lfo1_type, 0, 1);
-    control(table, "Freq", p_lfo1_freq, 1, 1);
-    control(table, "Delay", p_lfo1_delay, 2, 1);
-    control(table, "Fade In", p_lfo1_fade_in, 3, 1);
-    control(table, "Width", p_lfo1_width, 4, 1);
-    return frame("LFO1", p_lfo1_power, table);
+    int off = i * 9;
+    Table* table = manage(new Table(2,8));
+    // row 1
+    control(table, "Type", p_lfo1_type + off, 0, 1);
+    control(table, "Reset type", p_lfo1_reset_type + off, 1, 1);
+    control(table, "Freq", p_lfo1_freq + off, 2, 1);
+    control(table, "Symmetry", p_lfo1_symmetry + off, 3, 1);
+    control(table, "Attack", p_lfo1_attack + off, 4, 1);
+    control(table, "Decay", p_lfo1_decay + off, 5, 1);
+    control(table, "Humanize", p_lfo1_humanize + off, 6, 1);
+    control(table, "Key > F", p_lfo1_key_to_f + off, 7, 1);
+
+    return frame(lfo_labels[i], p_lfo1_on + off, table);
 }
 
-// FIXME
 Widget* rogueGUI::createEnv(int i) {
-    // TODO
+    int off = i * 11;
+    Table* table = manage(new Table(2,10));
+    // row 1
+    control(table, "Pre-delay", p_env1_pre_delay + off, 0, 1);
+    control(table, "Attack", p_env1_attack + off, 1, 1);
+    control(table, "Hold", p_env1_hold + off, 2, 1);
+    control(table, "Decay", p_env1_decay + off, 3, 1);
+    control(table, "Sustain", p_env1_sustain + off, 4, 1);
+    control(table, "Release", p_env1_release + off, 5, 1);
+    control(table, "Retrigger", p_env1_retrigger + off, 6, 1);
+    control(table, "Vel > Vol", p_env1_vel_to_vol + off, 7, 1);
+    control(table, "Key > Speed", p_env1_key_to_speed + off, 8, 1);
+    control(table, "Vel > Speed", p_env1_vel_to_speed + off, 9, 1);
+
+    return frame(env_labels[i], p_env1_on + off, table);
+}
+
+
+Widget* rogueGUI::createMain() {
+    Table* table = manage(new Table(2,7));
+    // row 1
+    control(table, "Volume", p_volume, 0, 1);
+    control(table, "Bus A level", p_bus_a_level, 1, 1);
+    control(table, "Bus A pan", p_bus_a_pan, 2, 1);
+    control(table, "Bus B level", p_bus_b_level, 3, 1);
+    control(table, "Bus B pan", p_bus_b_pan, 4, 1);
+    control(table, "Glide time", p_glide_time, 5, 1);
+    control(table, "Bend range", p_bend_range, 6, 1);
+
+    //return frame(env_labels[i], p_env1_on + off, table);
+    return table;
 }
 
 void rogueGUI::control(Table* table, const char* label, int port_index, int left, int top) {
@@ -200,14 +300,15 @@ void rogueGUI::port_event(uint32_t port, uint32_t buffer_size, uint32_t format, 
 }
 
 void rogueGUI::change_status_bar(uint32_t port, float value) {
-   if (p_port_meta[port-3].step >= 1.0f) {
+   //if (p_port_meta[port-3].step >= 1.0f) {
        sprintf(statusBarText, "%s = %3.0f", p_port_meta[port].symbol, value);
-   } else {
-       sprintf(statusBarText, "%s = %3.3f", p_port_meta[port].symbol, value);
-   }
+   //} else {
+   //    sprintf(statusBarText, "%s = %3.3f", p_port_meta[port].symbol, value);
+   //}
    statusbar.remove_all_messages();
    statusbar.push(statusBarText);
 }
 
 static int _ = rogueGUI::register_class("http://www.github.com/timowest/rogue/gui");
 
+}

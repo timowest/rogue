@@ -10,6 +10,8 @@
 #include <gtkmm.h>
 #include <iostream>
 
+namespace rogue {
+
 class Changeable {
   public:
     virtual float get_value() = 0;
@@ -17,5 +19,7 @@ class Changeable {
     virtual void connect(sigc::slot<void> slot) = 0;
     virtual Gtk::Widget* get_widget() = 0;
 };
+
+}
 
 #endif //CHANGEABLE_H

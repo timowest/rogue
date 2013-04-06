@@ -14,6 +14,8 @@
 
 #include "gui/changeable.h"
 
+namespace rogue {
+
 class SelectComboBox : public Gtk::EventBox, public Changeable {
   public:
     SelectComboBox(const char** labels, int count);
@@ -82,6 +84,8 @@ Gtk::Widget* SelectComboBox::get_widget() {
 
 void SelectComboBox::connect(sigc::slot<void> s) {
     value_changed.connect(s);
+}
+
 }
 
 #endif //COMBO_H

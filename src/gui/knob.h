@@ -20,6 +20,8 @@
 
 using namespace Cairo;
 
+namespace rogue {
+
 class Knob : public Gtk::DrawingArea, public Changeable {
 
   public:
@@ -60,10 +62,7 @@ Knob::Knob(float min, float max, float step) : value(0.0), min(min), max(max), s
     signal_button_press_event().connect(mem_fun(this, &Knob::on_button_press));
 }
 
-Knob::Knob(float min, float max) : Knob(min, max, (max-min) / 100.0) {
-
-}
-
+Knob::Knob(float min, float max) : Knob(min, max, (max-min) / 100.0) {}
 
 bool Knob::on_motion_notify(GdkEventMotion* event) {
     float offset = (origin_y - event->y) * range / sensitivity;
@@ -160,6 +159,8 @@ Gtk::Widget* Knob::get_widget() {
 
 void Knob::connect(sigc::slot<void> slot) {
     value_changed.connect( slot );
+}
+
 }
 
 #endif //KNOB_H

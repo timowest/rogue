@@ -85,6 +85,7 @@ class rogueVoice : public lvtk::Voice {
 
       // generates the sound for this voice
       void render(uint32_t, uint32_t);
+      void render(uint32_t, uint32_t, uint32_t off);
 };
 
 }

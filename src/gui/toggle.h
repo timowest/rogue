@@ -13,6 +13,8 @@
 
 #include "gui/changeable.h"
 
+namespace rogue {
+
 class Toggle : public Gtk::DrawingArea, public Changeable {
 
   public:
@@ -27,12 +29,13 @@ class Toggle : public Gtk::DrawingArea, public Changeable {
 
   private:
     bool invert;
+    float value;
     sigc::signal<void> value_changed;
 };
 
 // implementation
 
-Toggle::Toggle(bool invert = false) : invert(invert) {
+Toggle::Toggle(bool invert) : invert(invert) {
     set_size_request(15, 15);
     value = 1.0f;
 
@@ -89,6 +92,8 @@ void Toggle::refresh() {
         Gdk::Rectangle r(0, 0, get_allocation().get_width(), get_allocation().get_height());
         win->invalidate_rect(r, false);
     }
+}
+
 }
 
 #endif //TOGGLE_H

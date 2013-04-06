@@ -202,6 +202,14 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
 }
 
 void rogueVoice::render(uint32_t from, uint32_t to) {
+    uint32_t off = 0;
+    while (off < to) {
+        render(from - off, std::min(to - off, uint32_t(BUFFER_SIZE)), off);
+        off += BUFFER_SIZE;
+    }
+}
+
+void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     if (m_key == lvtk::INVALID_KEY) {
         return;
     }
@@ -229,12 +237,12 @@ void rogueVoice::render(uint32_t from, uint32_t to) {
     float* left = p(p_left);
     float* right = p(p_right);
     for (int i = from; i < to; i++) {
-        left[i] += data->volume *
+        left[off + i] += data->volume *
                   (f1_l * filters[0].buffer[i] +
                    f2_l * filters[1].buffer[i] +
                    ba_l * bus_a[i] +
                    bb_l * bus_b[i]);
-        right[i] += data->volume *
+        right[off + i] += data->volume *
                    (f1_r * filters[0].buffer[i] +
                     f2_r * filters[1].buffer[i] +
                     ba_r * bus_a[i] +

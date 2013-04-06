@@ -12,6 +12,8 @@
 
 using namespace Gtk;
 
+namespace rogue {
+
 class Panel : public Frame {
   public:
     Panel(const char* title, Widget* toggle, Widget* content) {
@@ -37,5 +39,7 @@ class Panel : public Frame {
   private:
     char bold_title[40];
 };
+
+}
 
 #endif //PANEL_H

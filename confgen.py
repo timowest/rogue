@@ -6,11 +6,17 @@ PREFIX = """@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix ll:   <http://ll-plugins.nongnu.org/lv2/namespace#>.
 @prefix lv2:  <http://lv2plug.in/ns/lv2core#>.
+@prefix pg:   <http://ll-plugins.nongnu.org/lv2/ext/portgroups#>.
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix pg:   <http://ll-plugins.nongnu.org/lv2/ext/portgroups#>.
+@prefix ui:    <http://lv2plug.in/ns/extensions/ui#>.
+@prefix urid:  <http://lv2plug.in/ns/ext/urid#>.
 
 <http://www.github.com/timowest/rogue/out> a pg:StereoGroup.
+
+<http://www.github.com/timowest/rogue/ui>
+  a ui:GtkUI ;
+  lv2:requiredFeature urid:map .
 
 <http://www.github.com/timowest/rogue>
   a lv2:Plugin, lv2:InstrumentPlugin;
@@ -23,6 +29,7 @@ PREFIX = """@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
   ];
   doap:license <http://usefulinc.com/doap/licenses/gpl>;
   ll:pegName "p";
+  ui:ui <http://www.github.com/timowest/rogue/ui> ;
 
   lv2:port [
     a lv2:InputPort, atom:AtomPort;
@@ -55,7 +62,7 @@ PREFIX = """@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
 PREFIX_GUI = """#ifndef ANALOGUE_META
 #define ANALOGUE_META
 
-enum {KNOB, TOGGLE, SELECT};
+enum {KNOB, KNOB_M, KNOB_S, TOGGLE, SELECT};
 
 typedef struct {
     const char* symbol;
@@ -106,8 +113,12 @@ def port_meta(symbol, min, max, default):
     type = "KNOB"
     if (min == 0 and max == 1 and isinstance(max, int) and default == 0):
         type = "TOGGLE"
-    elif isinstance(max, int):
+    elif (min == 0 and isinstance(max, int)):
         type = "SELECT"
+    #elif symbol.startswith("env"):
+    #    type = "KNOB_S"
+    elif ("_to_" in symbol or "level" in symbol or "pan" in symbol):
+        type = "KNOB_M"    
     return '    {"%s", %s, %s, %s, %s},' % (symbol, min, max, default, type)
 
 def controls(ttl, gui, idx, type, count, controls):
