@@ -7,12 +7,12 @@
 #ifndef ROGUE_VOICE_H
 #define ROGUE_VOICE_H
 
+#include <lvtk/synth.hpp>
+
 #include "common.h"
 #include "config.h"
 #include "rogue.gen"
 #include "dsp.h"
-
-#include <lvtk/synth.hpp>
 
 namespace rogue {
 

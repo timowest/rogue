@@ -133,6 +133,8 @@ def controls(ttl, gui, idx, type, count, controls):
 
 def main():
 
+    #        suffix        min max default 
+
     oscs = [["on"         , 0, 1, 0], # toggled
             ["type"       , 0, 9, 0],
             ["inv"        , 0, 1, 0], # toggled
