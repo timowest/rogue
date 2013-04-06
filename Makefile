@@ -17,7 +17,7 @@ rogue.so: $(SOURCES) src/rogue.gen
 	$(CXX) $(FLAGS) -g -shared $(SOURCES) $(LVTK) -Idsp -Isrc -o $@
 	
 rogue-gui.so: $(SOURCES_UI) src/rogue.gen src/gui/config.gen
-	$(CXX) $(FLAGS) -g -shared $(SOURCES_UI) $(GTKMM) $(LVTK) $(LVTK_GUI) $(CFLAGS) -Isrc -o $@	
+	$(CXX) $(FLAGS) -g -shared $(SOURCES_UI) $(GTKMM) $(LVTK) $(LVTK_UI) -Isrc -o $@	
 
 src/rogue.gen: rogue.ttl
 	ttl2c $^ src/rogue.gen
@@ -34,7 +34,7 @@ install: $(BUNDLE)
 	cp -R $(BUNDLE) $(INSTALL_DIR)
 
 run:
-	jalv.gtk −g http://www.github.com/timowest/rogue
+	jalv.gtk http://www.github.com/timowest/rogue
 
 clean:
 	rm -rf $(BUNDLE) rogue.so src/rogue.peg rogue.ttl *.out

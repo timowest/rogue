@@ -120,6 +120,7 @@ rogueGUI::rogueGUI(const char* URI) {
     for (int i = 0; i < NOSC; i++) {
         oscs->pack_start(*createOSC(i));
     }
+
     HBox* filters = manage(new HBox());
     for (int i = 0; i < NDCF; i++) {
         filters->pack_start(*createFilter(i));
@@ -127,18 +128,23 @@ rogueGUI::rogueGUI(const char* URI) {
 
     HBox* presets = manage(new HBox());
     // TODO
+
     Notebook* lfos = manage(new Notebook());
     for (int i = 0; i < NLFO; i++) {
         lfos->append_page(*createLFO(i), lfo_labels[i]);
     }
+
     Notebook* envelopes = manage(new Notebook());
     for (int i = 0; i < NENV; i++) {
         envelopes->append_page(*createEnv(i), env_labels[i]);
     }
     HBox* modulation = manage(new HBox());
     // TODO
+
     HBox* effects = manage(new HBox());
     // TODO
+
+    Widget* main = manage(createMain());
 
     Notebook* tabs = manage(new Notebook());
     tabs->append_page(*align(presets), "Presets");
@@ -146,8 +152,6 @@ rogueGUI::rogueGUI(const char* URI) {
     tabs->append_page(*align(envelopes), "Envelopes");
     tabs->append_page(*align(modulation), "Modulation");
     tabs->append_page(*align(effects), "Effects");
-
-    Widget* main = manage(createMain());
 
     mainBox.pack_start(*align(oscs));
     mainBox.pack_start(*align(filters));
@@ -301,14 +305,13 @@ void rogueGUI::port_event(uint32_t port, uint32_t buffer_size, uint32_t format, 
 
 void rogueGUI::change_status_bar(uint32_t port, float value) {
    //if (p_port_meta[port-3].step >= 1.0f) {
-       sprintf(statusBarText, "%s = %3.0f", p_port_meta[port].symbol, value);
+   //    sprintf(statusBarText, "%s = %3.0f", p_port_meta[port].symbol, value);
    //} else {
-   //    sprintf(statusBarText, "%s = %3.3f", p_port_meta[port].symbol, value);
+       sprintf(statusBarText, "%s = %3.3f", p_port_meta[port].symbol, value);
    //}
    statusbar.remove_all_messages();
    statusbar.push(statusBarText);
 }
 
-static int _ = rogueGUI::register_class("http://www.github.com/timowest/rogue/gui");
-
+static int _ = rogueGUI::register_class("http://www.github.com/timowest/rogue/ui");
 }

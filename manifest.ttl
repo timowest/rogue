@@ -5,6 +5,5 @@
 @prefix pre:  <http://www.github.com/timowest/rogue/presets#>.
 
 base:rogue
-  a            lv2:Plugin;
-  lv2:binary   <rogue.so>;
+  a            lv2:Plugin; 
   rdfs:seeAlso <rogue.ttl>.
