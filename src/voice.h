@@ -16,7 +16,7 @@
 
 namespace rogue {
 
-struct rogueOsc {
+struct Osc {
     dsp::PhaseShaping osc;
     float buffer[BUFFER_SIZE];
     void reset() { osc.reset(); }
@@ -26,7 +26,7 @@ struct rogueOsc {
     }
 };
 
-struct rogueFilter {
+struct Filter {
     dsp::MoogFilter moog;
     dsp::StateVariableFilter svf;
     float buffer[BUFFER_SIZE];
@@ -37,14 +37,14 @@ struct rogueFilter {
     }
 };
 
-struct rogueLFO {
+struct LFO {
     dsp::LFO lfo;
     float current, last;
     void on() { lfo.on(); }
     void off() { lfo.off(); }
 };
 
-struct rogueEnv {
+struct Env {
     dsp::ADSR adsr;
     float current, last;
     void on() { adsr.on(); }
@@ -56,10 +56,10 @@ class rogueVoice : public lvtk::Voice {
       float env = 0.0, volume = 1.0f;
       short sustain = 0;
       SynthData* data;
-      rogueOsc oscs[NOSC];
-      rogueFilter filters[NDCF];
-      rogueLFO lfos[NLFO];
-      rogueEnv envs[NENV];
+      Osc oscs[NOSC];
+      Filter filters[NDCF];
+      LFO lfos[NLFO];
+      Env envs[NENV];
 
       float bus_a[BUFFER_SIZE], bus_b[BUFFER_SIZE];
       float mod[M_SIZE];

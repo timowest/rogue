@@ -80,7 +80,7 @@ def ttl_control(idx, symbol, name, min, max, default):
     lv2:minimum %s;
     lv2:portProperty lv2:toggled
   ]""" % (idx, symbol, name, min)
-    else:
+    elif isinstance(max, int):
         return """ , [
     a lv2:ControlPort, lv2:InputPort;
     lv2:index %s;
@@ -89,6 +89,17 @@ def ttl_control(idx, symbol, name, min, max, default):
     lv2:minimum %s;
     lv2:maximum %s;
     lv2:default %s;
+    lv2:portProperty lv2:integer
+  ]""" % (idx, symbol, name, min, max, default)
+    else:
+        return """ , [
+    a lv2:ControlPort, lv2:InputPort;
+    lv2:index %s;
+    lv2:symbol "%s";
+    lv2:name "%s";
+    lv2:minimum %s;
+    lv2:maximum %s;
+    lv2:default %s
   ]""" % (idx, symbol, name, min, max, default)
 
 def port_meta(symbol, min, max, default):

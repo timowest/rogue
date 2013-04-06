@@ -35,4 +35,4 @@ clean:
 	rm -rf $(BUNDLE) rogue.so src/rogue.peg rogue.ttl *.out
 	
 knobtest:	
-	$(CXX) src/gui/knob-test.cpp $(GTKMM) -Isrc -o knobtest.out		
+	$(CXX) -std=c++11 src/gui/knob-test.cpp $(GTKMM) -Isrc -o knobtest.out		

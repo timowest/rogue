@@ -25,10 +25,10 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
     data = d;
     sample_rate = rate;
 
-    for (int i = 0; i < NOSC; i++) oscs[i] = rogueOsc();
-    for (int i = 0; i < NDCF; i++) filters[i] = rogueFilter();
-    for (int i = 0; i < NLFO; i++) lfos[i] = rogueLFO();
-    for (int i = 0; i < NENV; i++) envs[i] = rogueEnv();
+    for (int i = 0; i < NOSC; i++) oscs[i] = Osc();
+    for (int i = 0; i < NDCF; i++) filters[i] = Filter();
+    for (int i = 0; i < NLFO; i++) lfos[i] = LFO();
+    for (int i = 0; i < NENV; i++) envs[i] = Env();
 
     // set sample rate
     for (int i = 0; i < NOSC; i++) oscs[i].setSamplerate(rate);
@@ -73,7 +73,7 @@ void rogueVoice::off(unsigned char velocity) {
 
 void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
     LFOData& lfoData = data->lfos[i];
-    rogueLFO& lfo = lfos[i];
+    LFO& lfo = lfos[i];
     float v = 0.0f;
     if (lfoData.on) {
         float f = lfoData.freq;
@@ -99,7 +99,7 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
 
 void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
     EnvData& envData = data->envs[i];
-    rogueEnv& env = envs[i];
+    Env& env = envs[i];
     float v = 0.0f;
     if (envData.on) {
         float f = 1.0f;
@@ -133,7 +133,7 @@ void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
 
 void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
     OscData& oscData = data->oscs[i];
-    rogueOsc& osc = oscs[i];
+    Osc& osc = oscs[i];
     if (oscData.on) {
         float f = 440.0;
         if (oscData.tracking) {
@@ -168,7 +168,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
 
 void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
     FilterData& filterData = data->filters[i];
-    rogueFilter& filter = filters[i];
+    Filter& filter = filters[i];
     if (filterData.on) {
         int type = filterData.type;
         float f = filterData.freq;

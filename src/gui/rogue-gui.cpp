@@ -10,6 +10,7 @@
 #include <lvtk/gtkui.hpp>
 
 #include "common.h"
+#include "rogue.gen"
 #include "gui/config.gen"
 #include "gui/combo.h"
 #include "gui/knob.h"
@@ -45,49 +46,34 @@ class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> >
 rogueGUI::rogueGUI(const std::string& URI) {
     std::cout << "starting GUI" <<std::endl;
 
-    // TODO use table for the widget types
     //initialize sliders
-    for (int i = 0; i < control_ports; i++) {
-        if (isOSCType(i)) {
-            scales[i] = manage(new OSCTypeComboBox());
-        } else if (isFilterType(i)) {
-            scales[i] = manage(new FilterTypeComboBox());
-        } else if (isPower(i)) {
-            scales[i] = manage(new Toggle());
-        } else if (isBypass(i)) {
-            scales[i] = manage(new Toggle(true));
-        } else {
-            Knob* knob = new Knob(p_port_meta[i].min, p_port_meta[i].max, p_port_meta[i].step);
-            if (isEnvControl(i)) {
-                // small
-                knob->set_size(30);
-                knob->set_radius(10);
-            } else if (isModControl(i) || isEffect(i)) {
-               // medium
-               knob->set_radius(12.0);
-            }
+    for (int i = 3; i < p_n_ports; i++) {
+        switch (p_port_meta[i].type) {
+        case KNOB:
+            // TODO step
+            Knob* knob = new Knob(p_port_meta[i].min, p_port_meta[i].max);
+            // TODO size
             scales[i] = manage(knob);
+            break;
+        case TOGGLE:
+            scales[i] = manage(new Toggle());
+            break;
+        case SELECT:
+            // TODO
         }
     }
 
-    //connect widgets to control ports (change control values when sliders are moved)
-    for (int i = 0; i < control_ports; i++) {
-        slot<void> slot1 = compose(bind<0>(mem_fun(*this, &rogueGUI::write_control), i + 3),
-            mem_fun(*scales[i], &Changeable::get_value));
-        slot<void> slot2 = compose(bind<0>(mem_fun(*this, &rogueGUI::change_status_bar), i + 3),
+    //connect widgets to ports
+    for (int i = 3; i < p_n_ports; i++) {
+        slot<void> slot1 = compose(bind<0>(mem_fun(*this, &rogueGUI::write_control), i),
             mem_fun(*scales[i], &Changeable::get_value));
         scales[i]->connect(slot1);
-        if (!isOSCType(i) && !isFilterType(i) && !isToggle(i)) {
+        if (p_port_meta[i].type == KNOB) {
+            slot<void> slot2 = compose(bind<0>(mem_fun(*this, &rogueGUI::change_status_bar), i),
+                mem_fun(*scales[i], &Changeable::get_value));
             scales[i]->connect(slot2);
         }
     }
-
-    // VBox
-    //  HBox: OSC1, OSC2, OSC3, OSC4
-    //  HBox: Filter1, Filter2
-    //  HBox: Tabs
-    //  Hbox: Main controls
-    //  Statusbar
 
     HBox* oscs = manage(new HBox());
     for (int i = 0; i < NOSC; i++) {
@@ -97,6 +83,9 @@ rogueGUI::rogueGUI(const std::string& URI) {
     for (int i = 0; i < NDCF; i++) {
         filters.pack_start(createFilter(i));
     }
+
+    // TODO tabs (presets, lfos, envelopes, modulation, effects)
+    // TODO main controls
 
     /*HBox* header = manage(new HBox());
     header->pack_start(*manage(new Image("analogue.png")));
