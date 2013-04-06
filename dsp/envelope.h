@@ -40,6 +40,9 @@ class ADSR {
     int state_ = IDLE;
 };
 
+
+// TODO AHDSR
+
 }
 
 #endif
