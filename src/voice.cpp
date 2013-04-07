@@ -144,7 +144,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         osc.osc.setFreq(f);
         osc.osc.setParams(oscData.param1, oscData.param2);
         osc.osc.process(osc.buffer + from, to - from);
-        float v = oscData.volume; // TODO vel_to_vol
+        float v = oscData.volume;
         if (oscData.inv) {
             v *= -1.0f;
         }

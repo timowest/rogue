@@ -56,13 +56,13 @@ float LFO::getValue(float p) {
 }
 
 float LFO::tick() {
-    float inc = sample_rate / freq;
+    float inc = freq / sample_rate;
     phase = fmod(phase + inc, 1.0);
     return getValue(phase);
 }
 
 float LFO::tick(int samples) {
-    float inc = sample_rate / freq;
+    float inc = freq / sample_rate;
     phase = fmod(phase + float(samples) * inc, 1.0);
     return getValue(phase);
 }

@@ -2,6 +2,7 @@
 *.gch
 *.so
 *.out
+*.wav
 /gen
 log
 lv2-rogue.lv2

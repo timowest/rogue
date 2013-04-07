@@ -7,6 +7,7 @@ FLAGS = -fPIC -DPIC -std=c++11 -O
 LVTK = `pkg-config --cflags --libs lvtk-plugin-1`
 LVTK_UI = `pkg-config --cflags --libs lvtk-ui-1`
 GTKMM = `pkg-config --cflags --libs gtkmm-2.4`
+SNDFILE = -lsndfile
 
 $(BUNDLE): manifest.ttl rogue.ttl rogue.so rogue-gui.so presets
 	rm -rf $(BUNDLE)
@@ -44,3 +45,6 @@ knobtest:
 	
 guitest: src/rogue.gen src/gui/config.gen
 	$(CXX) -g -std=c++11 src/gui/rogue-gui-test.cpp $(GTKMM) $(LVTK_UI) -Isrc -o guitest.out	
+	
+tests:
+	$(CXX) -g -std=c++11 test/oscs_test.cpp $(SNDFILE) -Idsp -o oscs_test.out	

@@ -72,13 +72,13 @@ float PhaseShaping::noise() {
 
 #define PHASE_SHAPING_LOOP(x) \
     for (int i = 0; i < samples; i++) { \
-        phase = fmod(phase + inc, 1.0); \
         output[i] = x; \
+        phase = fmod(phase + inc, 1.0); \
     } \
     break
 
 void PhaseShaping::process(float* output, int samples) {
-    float inc = sample_rate / freq;
+    float inc = freq / sample_rate;
 
     switch(type) {
     case SIN:
