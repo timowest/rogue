@@ -1,6 +1,8 @@
 #include <sndfile.hh>
 #include "oscillator.cpp"
 #include "filter.cpp"
+#include "lfo.cpp"
+#include "envelope.cpp"
 
 #define SR 44100
 #define SIZE 44100
@@ -29,6 +31,10 @@ int main() {
     dsp::StateVariableFilter svf;
     svf.setSamplerate(SR);
     svf.setCoefficients(1000.0, 0.5);
+
+    dsp::LFO lfo;
+    lfo.setSamplerate(SR);
+    lfo.setFreq(10.0);
 
     // oscs
     for (int i = 0; i < 10; i++) {
@@ -68,7 +74,17 @@ int main() {
     }
 
     // lfos
-    // TODO
+    for (int i = 0; i < 6; i++) {
+        lfo.clear();
+        lfo.setType(i);
+        //lfo.process(buffer, SIZE);
+        for (int j = 0; j < SIZE; j++) {
+            buffer[j] = lfo.tick();
+        }
+
+        sprintf(filename, "lfo_%i.wav", i);
+        write_wav(filename, buffer);
+    }
 
     // envs
     // TODO
