@@ -40,8 +40,30 @@ class ADSR {
     int state_ = IDLE;
 };
 
+/**
+ * AHDSR envelope class
+ */
+class AHDSR {
 
-// TODO AHDSR
+    enum {A, H, D, S, R, IDLE };
+
+  public:
+    void on();
+    void off();
+    void setAHDSR(float _a, float _h, float _d, float _s, float _r);
+    float lastOut() { return last; }
+    int state() { return state_; }
+    float tick(int samples);
+    float tick();
+
+  private:
+    float attackTarget = 1.0;
+    float attackRate, holdSamples, decayRate, releaseSamples, releaseRate = 0.0;
+    float sustain = 0.5;
+    float last = 0.0;
+    int state_ = IDLE;
+    int counter;
+};
 
 }
 

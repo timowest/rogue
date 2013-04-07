@@ -26,6 +26,10 @@ int main() {
     moog.setSamplerate(SR);
     moog.setCoefficients(1000.0, 0.5);
 
+    dsp::StateVariableFilter svf;
+    svf.setSamplerate(SR);
+    svf.setCoefficients(1000.0, 0.5);
+
     // oscs
     for (int i = 0; i < 10; i++) {
         osc.reset();
@@ -54,7 +58,14 @@ int main() {
     }
 
     // svf
-    // TODO
+    for (int i = 0; i < 4; i++) {
+        svf.clear();
+        svf.setType(i);
+        svf.process(noise, buffer, SIZE);
+
+        sprintf(filename, "svf_%i.wav", i);
+        write_wav(filename, buffer);
+    }
 
     // lfos
     // TODO
