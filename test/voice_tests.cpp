@@ -4,6 +4,7 @@
 #include "lfo.cpp"
 #include "envelope.cpp"
 #include "voice.cpp"
+#include "tables.cpp"
 
 #define SR 44100.0
 #define SIZE 44100

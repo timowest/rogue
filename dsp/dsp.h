@@ -12,5 +12,6 @@
 #include "filter.h"
 #include "lfo.h"
 #include "oscillator.h"
+#include "tables.h"
 
 #endif

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "lfo.h"
+#include "tables.h"
 
 namespace dsp {
 
@@ -38,8 +39,7 @@ void LFO::off() {
 float LFO::getValue(float p) {
     switch (type) {
     case SIN:
-        // TODO use lookup table
-        return sin(2.0 * M_PI * p);
+        return sin_.fast(p);
     case TRI:
         return 2.0 * (p < 0.5 ? 2.0 * p : 2.0 - 2.0 * p) - 1.0;
     case SAW_UP:

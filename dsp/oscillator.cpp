@@ -6,6 +6,7 @@
 
 #include "oscillator.h"
 #include "phase.h"
+#include "tables.h"
 
 namespace dsp {
 
@@ -27,8 +28,7 @@ void PhaseShaping::setParams(float a1_, float a0_) {
 }
 
 float PhaseShaping::sin2(float in) {
-    // TODO use lookup table
-    return sin(2.0 * M_PI * in);
+    return sin_.linear(in);
 }
 
 float PhaseShaping::hardsync(float in) {
