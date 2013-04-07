@@ -23,8 +23,8 @@ enum {
   M_ON,
   M_MOD,
   M_PRESSURE,
-  M_KEY,
-  M_VEL,
+  M_KEY, // key / 127.0
+  M_VEL, // vel / 127.0
   M_LFO0_BI,
   M_LFO0_UN,
   M_LFO1_BI,

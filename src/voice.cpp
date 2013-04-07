@@ -34,7 +34,7 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
     for (int i = 0; i < NOSC; i++) oscs[i].setSamplerate(rate);
     for (int i = 0; i < NDCF; i++) filters[i].setSamplerate(rate);
 
-    mod[M_ON] = 0.0;
+    mod[M_ON] = 1.0;
 }
 
 void rogueVoice::on(unsigned char key, unsigned char velocity) {
