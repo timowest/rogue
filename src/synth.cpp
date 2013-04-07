@@ -57,6 +57,7 @@ void rogueSynth::set_volume(float value) {
 
 //parameter change
 void rogueSynth::update() {
+    // TODO scale dB parameters
     data.bus_a_level = v(p_bus_a_level); // scale
     data.bus_a_pan   = v(p_bus_a_pan);
     data.bus_b_level = v(p_bus_b_level); // scale

@@ -205,10 +205,9 @@ void rogueVoice::render(uint32_t from, uint32_t to) {
     uint32_t from_ = from % BUFFER_SIZE;
     uint32_t off = from - from_;
     while (off < to) {
-        render(off < 64 ? from_ : 0,
-               std::min(to - off, uint32_t(BUFFER_SIZE)),
-               off);
+        render(from_, std::min(to - off, uint32_t(BUFFER_SIZE)), off);
         off += BUFFER_SIZE;
+        from_ = 0;
     }
 }
 
@@ -237,20 +236,23 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
           bb_l = data->bus_b_level * (1.0 - data->bus_b_pan),
           bb_r = data->bus_b_level * data->bus_b_pan;
 
+    float e_from = envs[0].last;
+    float e_step = (envs[0].current - e_from) / float(to - from);
+
     float* left = p(p_left);
     float* right = p(p_right);
     for (int i = from; i < to; i++) {
-        left[off + i] += data->volume *
+        left[off + i] += data->volume * e_from *
                   (f1_l * filters[0].buffer[i] +
                    f2_l * filters[1].buffer[i] +
                    ba_l * bus_a[i] +
                    bb_l * bus_b[i]);
-        right[off + i] += data->volume *
+        right[off + i] += data->volume * e_from *
                    (f1_r * filters[0].buffer[i] +
                     f2_r * filters[1].buffer[i] +
                     ba_r * bus_a[i] +
                     bb_r * bus_b[i]);
-
+        e_from += e_step;
     }
 
     env = envs[0].current;
