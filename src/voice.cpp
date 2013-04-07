@@ -112,14 +112,14 @@ void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
             f *= std::pow(SEMITONE, envData.vel_to_speed * float(m_velocity - 64));
         }
         float a = envData.attack / f;
+        float h = envData.hold / f;
         float d = envData.decay / f;
-        float s = envData.sustain / f;
+        float s = envData.sustain;
         float r = envData.release / f;
         // TODO pre-delay
-        // TODO hold
         // TODO retrigger
-        env.adsr.setADSR(a, d, s, r);
-        v = env.adsr.tick(to - from);
+        env.env.setAHDSR(a, h, d, s, r);
+        v = env.env.tick(to - from);
         if (envData.vel_to_vol > 0.0f) {
             v *= 1.0 - envData.vel_to_vol + envData.vel_to_vol * midi2f(m_velocity);
         }

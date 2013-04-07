@@ -45,10 +45,10 @@ struct LFO {
 };
 
 struct Env {
-    dsp::ADSR adsr;
+    dsp::AHDSR env;
     float current, last;
-    void on() { adsr.on(); }
-    void off() { adsr.off(); }
+    void on() { env.on(); }
+    void off() { env.off(); }
 };
 
 class rogueVoice : public lvtk::Voice {
