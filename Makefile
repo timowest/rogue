@@ -47,4 +47,4 @@ guitest: src/rogue.gen src/gui/config.gen
 	$(CXX) -g -std=c++11 src/gui/rogue-gui-test.cpp $(GTKMM) $(LVTK_UI) -Isrc -o guitest.out	
 	
 tests:
-	$(CXX) -g -std=c++11 test/oscs_test.cpp $(SNDFILE) -Idsp -o oscs_test.out	
+	$(CXX) -g -std=c++11 test/tests.cpp $(SNDFILE) -Idsp -o tests.out	

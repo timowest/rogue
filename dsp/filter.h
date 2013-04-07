@@ -143,7 +143,7 @@ class BiQuad : Filter {
  */
 class MoogFilter : Filter {
 
-    enum {LP24, LP18, LP12, LP6, HP24, BP12, BP18, NOTCH };
+    enum {LP24, LP18, LP12, LP6, HP24, BP12, BP18, NOTCH};
 
   public:
     void clear();
