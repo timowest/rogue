@@ -57,11 +57,11 @@ void rogueSynth::set_volume(float value) {
 
 //parameter change
 void rogueSynth::update() {
-    data.bus_a_level = v(p_bus_a_level);
+    data.bus_a_level = v(p_bus_a_level); // scale
     data.bus_a_pan   = v(p_bus_a_pan);
-    data.bus_b_level = v(p_bus_b_level);
+    data.bus_b_level = v(p_bus_b_level); // scale
     data.bus_b_pan   = v(p_bus_b_pan);
-    data.volume      = v(p_volume);
+    data.volume      = v(p_volume); // scale
     data.glide_time  = v(p_glide_time);
     data.bend_range  = v(p_bend_range);
 
@@ -78,7 +78,11 @@ void rogueSynth::update() {
         data.oscs[i].ratio       = v(p_osc1_ratio + off);
         data.oscs[i].coarse      = v(p_osc1_coarse + off);
         data.oscs[i].fine        = v(p_osc1_fine + off);
-        data.oscs[i].volume      = v(p_osc1_volume + off);
+        data.oscs[i].param1      = v(p_osc1_param1 + off);
+        data.oscs[i].param2      = v(p_osc1_param2 + off);
+        data.oscs[i].level_a     = v(p_osc1_level_a + off); // scale
+        data.oscs[i].level_b     = v(p_osc1_level_b + off); // scale
+        data.oscs[i].volume      = v(p_osc1_volume + off); // scale
 
         data.oscs[i].vel_to_vol  = v(p_osc1_vel_to_vol + off);
     }
@@ -91,7 +95,7 @@ void rogueSynth::update() {
         data.filters[i].freq     = v(p_filter1_freq + off);
         data.filters[i].q        = v(p_filter1_q + off);
         data.filters[i].distortion = v(p_filter1_distortion + off);
-        data.filters[i].level    = v(p_filter1_level + off);
+        data.filters[i].level    = v(p_filter1_level + off); // scale
         data.filters[i].pan      = v(p_filter1_pan + off);
 
         data.filters[i].key_to_f = v(p_filter1_key_to_f + off);

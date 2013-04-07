@@ -202,11 +202,13 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
 }
 
 void rogueVoice::render(uint32_t from, uint32_t to) {
-    // FIXME
-    uint32_t off = 0;
+    uint32_t from_ = from % BUFFER_SIZE;
+    uint32_t off = from - from_;
     while (off < to) {
-        render(off == 0 ? from : 0, std::min(to - off, uint32_t(BUFFER_SIZE)), off);
-        off += uint32_t(BUFFER_SIZE);
+        render(off < 64 ? from_ : 0,
+               std::min(to - off, uint32_t(BUFFER_SIZE)),
+               off);
+        off += BUFFER_SIZE;
     }
 }
 

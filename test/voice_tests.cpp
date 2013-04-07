@@ -35,7 +35,8 @@ int main() {
     data.volume = 0.5;
     data.bus_a_level = 0.5;
     data.oscs[0].on = true;
-    data.oscs[0].type = 9;
+    data.oscs[0].type = 0;
+    data.oscs[0].ratio = 1.0;
     data.oscs[0].volume = 1.0;
     data.oscs[0].level_a = 1.0;
 
