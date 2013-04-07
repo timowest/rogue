@@ -40,11 +40,10 @@ run:
 clean:
 	rm -rf $(BUNDLE) rogue.so src/rogue.peg rogue.ttl *.out *.wav
 	
-knobtest:	
+guitests: src/rogue.gen src/gui/config.gen	
 	$(CXX) -g -std=c++11 src/gui/knob-test.cpp $(GTKMM) -Isrc -o knobtest.out		
-	
-guitest: src/rogue.gen src/gui/config.gen
 	$(CXX) -g -std=c++11 src/gui/rogue-gui-test.cpp $(GTKMM) $(LVTK_UI) -Isrc -o guitest.out	
 	
-tests:
-	$(CXX) -g -std=c++11 test/tests.cpp $(SNDFILE) -Idsp -o tests.out	
+tests: src/rogue.gen
+	$(CXX) -g -std=c++11 test/dsp_tests.cpp $(SNDFILE) -Idsp -o dsp_tests.out
+	$(CXX) -g -std=c++11 test/voice_tests.cpp $(SNDFILE) $(LVTK) -Idsp -Isrc -o voice_tests.out

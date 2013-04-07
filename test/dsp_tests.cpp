@@ -4,7 +4,7 @@
 #include "lfo.cpp"
 #include "envelope.cpp"
 
-#define SR 44100
+#define SR 44100.0
 #define SIZE 44100
 #define CHANNELS 1
 
@@ -75,7 +75,7 @@ int main() {
 
     // lfos
     for (int i = 0; i < 6; i++) {
-        lfo.clear();
+        lfo.reset();
         lfo.setType(i);
         //lfo.process(buffer, SIZE);
         for (int j = 0; j < SIZE; j++) {
