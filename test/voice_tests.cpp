@@ -46,12 +46,14 @@ int main() {
     data.envs[0].hold = 0.5 * SR;
     data.envs[0].decay = 0.4 * SR;
     data.envs[0].sustain = 0.8;
-    data.envs[0].release = 1.0;
+    data.envs[0].release = 0.5 * SR;
 
     rogue::rogueVoice voice(SR, &data);
     voice.set_port_buffers(ports);
     voice.on(69, 64);
-    voice.render(0, SIZE);
+    voice.render(0, SIZE / 2);
+    voice.off(0);
+    voice.render(SIZE / 2, SIZE);
 
     sprintf(filename, "voice_%i.wav", 0);
     write_wav(filename, buffer_l);

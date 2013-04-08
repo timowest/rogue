@@ -53,7 +53,7 @@ struct Env {
 
 class rogueVoice : public lvtk::Voice {
     private:
-      float env = 0.0, volume = 1.0f;
+      float volume = 1.0f;
       short sustain = 0;
       SynthData* data;
       Osc oscs[NOSC];

@@ -258,15 +258,13 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
         e_from += e_step;
     }
 
-    env = envs[0].current;
-    if (env < SILENCE) {
+    if (envs[0].current < SILENCE) {
         m_key = lvtk::INVALID_KEY;
         in_sustain = false;
     }
 }
 
 void rogueVoice::reset() {
-    env = 0.0f;
     volume = 1.0f;
     sustain = 0;
     m_key = lvtk::INVALID_KEY;
