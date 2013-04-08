@@ -10,6 +10,8 @@
 
 namespace dsp {
 
+// sintable
+
 sintable sin_;
 
 sintable::sintable() {

@@ -10,6 +10,26 @@
 
 namespace dsp {
 
+/**
+ * @param t phase from 0 to 1
+ * @param dt increment (freq / sample_rate)
+ *
+ * based on http://www.kvraudio.com/forum/viewtopic.php?p=5270781
+ */
+double poly_blep(double t, double dt) {
+    if (t < dt) { // 0 <= t < 1
+        t /= dt;
+        // 2 * (t - t^2/2 - 0.5)
+        return t+t - t*t - 1.;
+    } else if (t > 1.0 - dt) { // -1 < t < 0
+        t = (t - 1.0) / dt;
+        // 2 * (t^2/2 + t + 0.5)
+        return t*t + t+t + 1.;
+    } else { // 0 otherwise
+        return 0.0;
+    }
+}
+
 // PhaseShaping
 
 void PhaseShaping::clear() {
@@ -32,37 +52,45 @@ float PhaseShaping::sin2(float in) {
 }
 
 float PhaseShaping::hardsync(float in) {
+    // saw
     return gb(gramp(in, a1, a0));
 }
 
 float PhaseShaping::softsync(float in) {
+    // tri
     return gb(stri(gtri(in, a1, a0)));
 }
 
 float PhaseShaping::pulse(float in) {
+    // square
     return gb(gpulse(in, a1));
 }
 
 float PhaseShaping::slope(float in) {
+    // saw
     return gb(gvslope(in, a1));
 }
 
 float PhaseShaping::jp8000_tri(float in) {
+    // tri
     float p = gb(gtri(in, a1, a0));
     return 2.0 * (p - ceil(p - 0.5));
 }
 
 float PhaseShaping::jp8000_supersaw(float in) {
+    // saw
     float m1, m2; // TODO
     float p = gripple2(glin(in, a1), m1, m2);
     return sin2(p);
 }
 
 float PhaseShaping::waveslices(float in) {
+    // saw
     return sin2(glin(in, a1));
 }
 
 float PhaseShaping::sinusoids(float in) {
+    // saw
     return sin2(gvslope(in, a1));
 }
 

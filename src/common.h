@@ -10,7 +10,6 @@
 
 #define NOUTS    2       //number of outputs
 #define NVOICES 32       //max polyphony
-#define SUSTAIN 128
 #define SILENCE 0.0001f  //voice choking
 #define BUFFER_SIZE 64
 

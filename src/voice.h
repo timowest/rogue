@@ -63,6 +63,7 @@ class rogueVoice : public lvtk::Voice {
 
       float bus_a[BUFFER_SIZE], bus_b[BUFFER_SIZE];
       float mod[M_SIZE];
+      bool in_sustain = false;
 
     protected:
       float sample_rate;
@@ -75,7 +76,7 @@ class rogueVoice : public lvtk::Voice {
       void on(unsigned char key, unsigned char velocity);
       void off(unsigned char velocity);
       void reset(void);
-      bool is_sustained(void) { return (m_key == SUSTAIN); }
+      bool is_sustained(void) { return in_sustain; }
       unsigned char get_key(void) const { return m_key; }
 
       void runLFO(int i, uint32_t from, uint32_t to);

@@ -13,6 +13,7 @@
 
 namespace rogue {
 
+// TODO use table for this
 static float midi2f(unsigned char data) {
     return 0.007874f * (float)(data);
 }
@@ -57,6 +58,8 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
         if (!data->oscs[i].free)
             oscs[i].reset();
     }
+
+    in_sustain = false;
 }
 
 void rogueVoice::off(unsigned char velocity) {
@@ -68,7 +71,7 @@ void rogueVoice::off(unsigned char velocity) {
     //INVALID_KEY yet, because the release sound still needs to be
     //rendered.  m_key is finally set to INVALID_KEY by 'render' when
     //env < SILENCE
-    m_key = SUSTAIN;
+    in_sustain = true;
 }
 
 void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
@@ -258,6 +261,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     env = envs[0].current;
     if (env < SILENCE) {
         m_key = lvtk::INVALID_KEY;
+        in_sustain = false;
     }
 }
 
@@ -266,6 +270,7 @@ void rogueVoice::reset() {
     volume = 1.0f;
     sustain = 0;
     m_key = lvtk::INVALID_KEY;
+    in_sustain = false;
 }
 
 
