@@ -54,7 +54,6 @@ struct Env {
 class rogueVoice : public lvtk::Voice {
     private:
       float volume = 1.0f;
-      short sustain = 0;
       SynthData* data;
       Osc oscs[NOSC];
       Filter filters[NDCF];
@@ -71,7 +70,6 @@ class rogueVoice : public lvtk::Voice {
 
     public:
       rogueVoice(double, SynthData*);
-      void set_sustain(unsigned short v) { sustain = v; }
       void set_volume(float v) { volume = v; }
       void on(unsigned char key, unsigned char velocity);
       void off(unsigned char velocity);

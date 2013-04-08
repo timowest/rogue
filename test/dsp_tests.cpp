@@ -37,6 +37,8 @@ int main() {
     lfo.setSamplerate(SR);
     lfo.setFreq(10.0);
 
+    dsp::AHDSR env;
+
     // oscs
     for (int i = 0; i < 10; i++) {
         osc.reset();
@@ -88,7 +90,37 @@ int main() {
     }
 
     // envs
-    // TODO
+    env.setAHDSR(0.1 * SR, 0.2 * SR, 0.3 * SR, 0.9, 0.5 * SR);
+    env.on();
+    for (int j = 0; j < 0.5 * SIZE; j++) {
+        buffer[j] = env.tick();
+    }
+    env.off();
+    for (int j = 0.5* SIZE; j < SIZE; j++) {
+            buffer[j] = env.tick();
+    }
+    sprintf(filename, "env_%i.wav", 0);
+    write_wav(filename, buffer);
+
+    env.on();
+    for (int j = 0; j < 0.25 * SIZE; j++) {
+        buffer[j] = env.tick();
+    }
+    env.off();
+    for (int j = 0.25 * SIZE; j < 0.5 * SIZE; j++) {
+        buffer[j] = env.tick();
+    }
+    env.on();
+    for (int j = 0.5 * SIZE; j < 0.75 * SIZE; j++) {
+        buffer[j] = env.tick();
+    }
+    env.off();
+    for (int j = 0.75 * SIZE; j < SIZE; j++) {
+        buffer[j] = env.tick();
+    }
+    sprintf(filename, "env_%i.wav", 1);
+    write_wav(filename, buffer);
+
 
     return 0;
 }

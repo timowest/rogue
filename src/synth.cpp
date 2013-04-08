@@ -14,7 +14,6 @@ rogueSynth::rogueSynth(double rate)
   : lvtk::Synth<rogueVoice, rogueSynth>(p_n_ports, p_control) {
 
     sample_rate = rate;
-    sustain = 0;
 
     for(int i = 0; i < NVOICES; i++) {
         voices[i] = new rogueVoice(rate, &data);
@@ -25,12 +24,10 @@ rogueSynth::rogueSynth(double rate)
 }
 
 unsigned rogueSynth::find_free_voice(unsigned char key, unsigned char velocity) {
-    //is this a retriggered note during sustain?
-    if (sustain) {
-        for (int i = 0; i < NVOICES; i++) {
-            if ((voices[i]->get_key() == key) && (voices[i]->is_sustained())) {
-                return i;
-            }
+    //is this a retriggered note?
+    for (int i = 0; i < NVOICES; i++) {
+        if ((voices[i]->get_key() == key) && (voices[i]->is_sustained())) {
+            return i;
         }
     }
 
@@ -182,15 +179,7 @@ void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
 
         case 0x40:  //sustain pedal
         case 0x42:  //sostenuto pedal
-            sustain = data[2] & 0x40;
-
-            for (int i = 0; i < NVOICES; ++i) {
-                voices[i]->set_sustain(sustain);
-                //if pedal was released: dampen sustained notes
-                if((sustain == 0) && (voices[i]->is_sustained())) {
-                    voices[i]->off(0);
-                }
-            }
+            // TODO
             break;
 
         //all sound off

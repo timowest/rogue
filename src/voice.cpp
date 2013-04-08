@@ -7,6 +7,7 @@
  *                https://github.com/smbolton/whysynth
  */
 
+#include <stdio.h>
 #include "voice.h"
 
 #define SEMITONE 1.05946f
@@ -39,6 +40,7 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
 }
 
 void rogueVoice::on(unsigned char key, unsigned char velocity) {
+    std::cout << "on " << int(key) << " " << int(velocity) << std::endl;
     // store key that turned this voice on (used in 'get_key')
     m_key = key;
 
@@ -63,6 +65,7 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
 }
 
 void rogueVoice::off(unsigned char velocity) {
+    std::cout << "off " << int(m_key) << " " << int(velocity) << std::endl;
     // trigger off
     for (int i = 0; i < NLFO; i++) lfos[i].off();
     for (int i = 0; i < NENV; i++) envs[i].off();
@@ -266,7 +269,6 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
 
 void rogueVoice::reset() {
     volume = 1.0f;
-    sustain = 0;
     m_key = lvtk::INVALID_KEY;
     in_sustain = false;
 }
