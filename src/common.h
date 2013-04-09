@@ -18,6 +18,11 @@
 #define NLFO    3
 #define NENV    5
 
+#define OSC_OFF 20
+#define DCF_OFF 18
+#define LFO_OFF 13
+#define ENV_OFF 13
+
 enum {
   M_ON,
   M_MOD,

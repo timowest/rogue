@@ -57,8 +57,7 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
     for (int i = 0; i < NLFO; i++) lfos[i].on();
     for (int i = 0; i < NENV; i++) envs[i].on();
     for (int i = 0; i < NOSC; i++) {
-        if (!data->oscs[i].free)
-            oscs[i].reset();
+        if (!data->oscs[i].free) oscs[i].reset();
     }
 
     in_sustain = false;

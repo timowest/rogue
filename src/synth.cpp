@@ -69,7 +69,7 @@ void rogueSynth::update() {
 
     // oscs
     for (int i = 0; i < NOSC; i++) {
-        int off = i * 14;
+        int off = i * OSC_OFF;
         data.oscs[i].on          = v(p_osc1_on + off);
         data.oscs[i].type        = v(p_osc1_type + off);
         data.oscs[i].inv         = v(p_osc1_inv + off);
@@ -96,7 +96,7 @@ void rogueSynth::update() {
 
     // filters
     for (int i = 0; i < NDCF; i++) {
-        int off = i * 10;
+        int off = i * DCF_OFF;
         data.filters[i].on       = v(p_filter1_on + off);
         data.filters[i].type     = v(p_filter1_type + off);
         data.filters[i].freq     = v(p_filter1_freq + off);
@@ -114,7 +114,7 @@ void rogueSynth::update() {
 
     // lfos
     for (int i = 0; i < NLFO; i++) {
-        int off = i * 9;
+        int off = i * LFO_OFF;
         data.lfos[i].on          = v(p_lfo1_on + off);
         data.lfos[i].type        = v(p_lfo1_type + off);
         data.lfos[i].reset_type  = v(p_lfo1_reset_type + off);
@@ -132,7 +132,7 @@ void rogueSynth::update() {
 
     // envs
     for (int i = 0; i < NENV; i++) {
-        int off = i * 11;
+        int off = i * ENV_OFF;
         data.envs[i].on          = v(p_env1_on + off);
         data.envs[i].pre_delay   = v(p_env1_pre_delay + off) * rate;
         data.envs[i].attack      = v(p_env1_attack + off) * rate;
