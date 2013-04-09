@@ -147,7 +147,7 @@ def main():
             ["param2"     , 0, 1.0, 0],
             ["level_a"    , 0, 1.0, 0],
             ["level_b"    , 0, 1.0, 0],
-            ["volume"     , 0, 1.0, 0],
+            ["level"      , 0, 1.0, 0],
             ["vel_to_vol" , 0, 1.0, 0], 
             
             ["pitch_m_src", 0, 17, 0],
@@ -167,10 +167,15 @@ def main():
             ["pan"        , -1.0, 1.0, 0], # ?
             ["key_to_f"   , 0, 1.0, 0],
             ["vel_to_f"   , 0, 1.0, 0],
-            
-            # TODO maybe also modulate q
+                        
             ["freq_m_src" , 0, 17, 0],
-            ["freq_m_amt" , 0, 1.0, 0]]
+            ["freq_m_amt" , 0, 1.0, 0],
+            ["q_m_src"    , 0, 17, 0],
+            ["q_m_amt"    , 0, 1.0, 0],
+            ["pan_m_src"  , 0, 17, 0],
+            ["pan_m_amt"  , 0, 1.0, 0],
+            ["amp_m_src"  , 0, 17, 0],
+            ["amp_m_amt"  , 0, 1.0, 0]]
   
     lfos = [["on"         , 0, 1, 0], # toggled
             ["type"       , 0, 5.0, 0],
@@ -182,6 +187,8 @@ def main():
             ["humanize"   , 0, 1.0, 0],
             ["key_to_f"   , -1.0, 1.0, 0],
             
+            ["pitch_m_src", 0, 17, 0],
+            ["pitch_m_amt", 0, 1.0, 0],
             ["amp_m_src"  , 0, 17, 0],
             ["amp_m_amt"  , 0, 1.0, 0]]
   
@@ -221,6 +228,11 @@ def main():
                ["bus_b_level", 0, 1.0, 0],
                ["bus_b_pan",   0, 1.0, 0.5],
                ["volume",      0, 1.0, 0.5],
+
+               ["bus_a_pan_m_src", 0, 17, 0],
+               ["bus_a_pan_m_amt", 0, 1.0, 0],
+               ["bus_b_pan_m_src", 0, 17, 0],
+               ["bus_b_pan_m_amt", 0, 1.0, 0],
 
                ["glide_time",  0, 5.0, 0],
                ["bend_range",  0, 12.0, 0]]

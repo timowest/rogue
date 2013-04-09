@@ -181,7 +181,7 @@ Widget* rogueGUI::createOSC(int i) {
     // row 3
     control(table, "Param 1", p_osc1_param1 + off, 0, 5);
     control(table, "Param 2", p_osc1_param2 + off, 1, 5);
-    control(table, "Volume", p_osc1_volume + off, 2, 5);
+    control(table, "Level", p_osc1_level + off, 2, 5);
 
     // row 4
     control(table, "Level A", p_osc1_level_a + off, 0, 7);

@@ -24,7 +24,7 @@ struct OscData {
     float param2;
     float level_a;
     float level_b;
-    float volume;
+    float level;
 
     // modulation
     float vel_to_vol;
@@ -45,8 +45,8 @@ struct FilterData {
     // modulation
     float key_to_f;
     float vel_to_f;
-    int freq_m_src;
-    float freq_m_amt;
+    int freq_m_src, q_m_src, pan_m_src, amp_m_src;
+    float freq_m_amt, q_m_amt, pan_m_amt, amp_m_amt;
 };
 
 struct LFOData {
@@ -61,8 +61,8 @@ struct LFOData {
 
     // modulation
     float key_to_f;
-    int amp_m_src;
-    float amp_m_amt;
+    int pitch_m_src, amp_m_src;
+    float pitch_m_amt, amp_m_amt;
 };
 
 struct EnvData {

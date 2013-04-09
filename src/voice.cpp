@@ -87,6 +87,9 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
         if (lfoData.key_to_f != 0.0f) {
             f *= std::pow(SEMITONE, lfoData.key_to_f * float(m_key - 69));
         }
+
+        // TODO pitch modulation
+
         lfo.lfo.setType(lfoData.type);
         lfo.lfo.setEnv(lfoData.attack, lfoData.decay);
         lfo.lfo.setFreq(lfoData.freq);
@@ -94,6 +97,8 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
         // TODO humanize
         // TODO reset type
         v = lfo.lfo.tick(to - from);
+
+        // TODO amp modulation
     }
     // update mod values
     mod[M_LFO1_BI + 2*i] = v;
@@ -129,6 +134,8 @@ void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
         if (envData.vel_to_vol > 0.0f) {
             v *= 1.0 - envData.vel_to_vol + envData.vel_to_vol * midi2f(m_velocity);
         }
+
+        // TODO amp modulation
     }
     // update mod values
     mod[M_EG1 + i] = v;
@@ -146,11 +153,16 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
             f = midi2hz(float(m_key) + oscData.coarse + oscData.fine);
         }
         f *= oscData.ratio;
+
+        // TODO pitch modulation
+        // TODO mod modulation
+        // TODO amp modulation
+
         osc.osc.setType(oscData.type);
         osc.osc.setFreq(f);
         osc.osc.setParams(oscData.param1, oscData.param2);
         osc.osc.process(osc.buffer + from, to - from);
-        float v = oscData.volume;
+        float v = oscData.level;
         if (oscData.inv) {
             v *= -1.0f;
         }
@@ -178,22 +190,25 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
     if (filterData.on) {
         int type = filterData.type;
         float f = filterData.freq;
-        // key to speed
+        // key to f
         if (filterData.key_to_f != 0.0f) {
             f *= std::pow(SEMITONE, filterData.key_to_f * float(m_key - 69));
         }
-        // vel to speed
+        // vel to f
         if (filterData.vel_to_f != 0.0f) {
             f *= std::pow(SEMITONE, filterData.vel_to_f * float(m_velocity - 64));
         }
+
+        // TODO freq modulation
+        // TODO q modulation
+        // TODO pan modulation
+        // TODO amp modulation
+
         float* source;
         switch (filterData.source) {
-        case 0:
-            source = bus_a; break;
-        case 1:
-            source = bus_b; break;
-        case 2:
-            source = filters[0].buffer;
+        case 0: source = bus_a; break;
+        case 1: source = bus_b; break;
+        case 2: source = filters[0].buffer;
         }
         if (type < 8) {
             filter.moog.setType(type);
