@@ -28,6 +28,8 @@ struct OscData {
 
     // modulation
     float vel_to_vol;
+    int   pitch_m_src, mod_m_src, amp_m_src;
+    float pitch_m_amt, mod_m_amt, amp_m_amt;
 };
 
 struct FilterData {
@@ -43,6 +45,8 @@ struct FilterData {
     // modulation
     float key_to_f;
     float vel_to_f;
+    int freq_m_src;
+    float freq_m_amt;
 };
 
 struct LFOData {
@@ -57,6 +61,8 @@ struct LFOData {
 
     // modulation
     float key_to_f;
+    int amp_m_src;
+    float amp_m_amt;
 };
 
 struct EnvData {
@@ -73,6 +79,8 @@ struct EnvData {
     // modulation
     float key_to_speed;
     float vel_to_speed;
+    int amp_m_src;
+    float amp_m_amt;
 };
 
 struct DelaylineData {

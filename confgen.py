@@ -148,7 +148,14 @@ def main():
             ["level_a"    , 0, 1.0, 0],
             ["level_b"    , 0, 1.0, 0],
             ["volume"     , 0, 1.0, 0],
-            ["vel_to_vol" , 0, 1.0, 0 ]]
+            ["vel_to_vol" , 0, 1.0, 0], 
+            
+            ["pitch_m_src", 0, 17, 0],
+            ["pitch_m_amt", 0, 1.0, 0],
+            ["mod_m_src"  , 0, 17, 0],
+            ["mod_m_amt"  , 0, 1.0, 0],
+            ["amp_m_src"  , 0, 17, 0],
+            ["amp_m_amt"  , 0, 1.0, 0]] 
     
     dcfs = [["on"         , 0, 1, 0], # toggled
             ["type"       , 0, 11, 0],
@@ -159,7 +166,11 @@ def main():
             ["level"      , 0, 1.0, 0],
             ["pan"        , -1.0, 1.0, 0], # ?
             ["key_to_f"   , 0, 1.0, 0],
-            ["vel_to_f"   , 0, 1.0, 0]]
+            ["vel_to_f"   , 0, 1.0, 0],
+            
+            # TODO maybe also modulate q
+            ["freq_m_src" , 0, 17, 0],
+            ["freq_m_amt" , 0, 1.0, 0]]
   
     lfos = [["on"         , 0, 1, 0], # toggled
             ["type"       , 0, 5.0, 0],
@@ -169,7 +180,10 @@ def main():
             ["attack"     , 0, 5.0, 0],
             ["decay"      , 0, 5.0, 0],
             ["humanize"   , 0, 1.0, 0],
-            ["key_to_f"   , -1.0, 1.0, 0]]
+            ["key_to_f"   , -1.0, 1.0, 0],
+            
+            ["amp_m_src"  , 0, 17, 0],
+            ["amp_m_amt"  , 0, 1.0, 0]]
   
     envs = [["on"         , 0, 1, 0], # toggled
             ["pre_delay"  , 0, 5.0, 0],
@@ -181,7 +195,10 @@ def main():
             ["retrigger"  , 0, 1, 0], # toggled
             ["vel_to_vol" , 0, 1.0, 0],
             ["key_to_speed" , -1.0, 1.0, 0],
-            ["vel_to_speed" , -1.0, 1.0, 0]]
+            ["vel_to_speed" , -1.0, 1.0, 0],
+            
+            ["amp_m_src"  , 0, 17, 0],
+            ["amp_m_amt"  , 0, 1.0, 0]]
 
     idx = 3
 
