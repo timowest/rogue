@@ -87,7 +87,7 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
             f *= std::pow(SEMITONE, lfoData.key_to_f * float(m_key - 69));
         }
 
-        // TODO pitch modulation
+        // TODO freq modulation
 
         lfo.lfo.setType(lfoData.type);
         lfo.lfo.setEnv(lfoData.attack, lfoData.decay);
