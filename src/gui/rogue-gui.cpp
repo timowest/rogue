@@ -52,19 +52,33 @@ class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> >
 // checkbox content
 CHARS osc_types[] = {"Sin", "Hard sync", "Soft sync", "Pulse", "Slope", "Tri",
         "Supersaw", "Slices", "Sinusoids", "Noise"};
+
 CHARS filter_types[] = {"LP 24dB", "LP 18dB", "LP 12dB", "LP 6dB", "HP 24dB",
         "BP 12dB", "BP 18dB", "Notch",
         "SVF LP", "SVF HP", "SVF BP", "SVF Notch"};
+
 CHARS filter1_sources[] = {"Bus A", "Bus B"};
+
 CHARS filter2_sources[] = {"Bus A", "Bus B", "Filter1"};
+
 CHARS lfo_types[] = {"Sin", "Tri", "Saw up", "Saw down", "Square", "S/H"};
+
 CHARS lfo_reset_types[] = {"Poly", "Free", "Mono"};
 
 // labels
+
 CHARS osc_labels[] = {"OSC 1", "OSC 2", "OSC 3", "OSC 4"};
+
 CHARS filter_labels[] = {"Filter 1", "Filter 2"};
+
 CHARS lfo_labels[] = {"LFO 1", "LFO 2", "LFO 3"};
+
 CHARS env_labels[] = {"Env 1", "Env 2", "Env 3", "Env 4", "Env 5"};
+
+CHARS mod_labels[] = {"On", "Mod", "Pressure", "Key", "Velocity",
+        "LFO 0", "LFO 0+", "LFO 1", "LFO 1+", "LFO 2", "LFO 2+", "LFO 3", "LFO 3+",
+        "Env 1", "Env 2", "Env 3", "Env 4", "Env 5"};
+
 
 rogueGUI::rogueGUI(const char* URI) {
     std::cout << "starting GUI" << std::endl;

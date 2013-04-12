@@ -23,6 +23,14 @@ static float midi2hz(float key) {
     return 8.177445f * std::pow(SEMITONE, key);
 }
 
+static float modulate(float amt, float val) {
+    if (amt > 0) {
+        return 1.0f - amt + amt * val;
+    } else {
+        return 1.0f + amt * val;
+    }
+}
+
 rogueVoice::rogueVoice(double rate, SynthData* d) {
     data = d;
     sample_rate = rate;
@@ -87,7 +95,7 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
             f *= std::pow(SEMITONE, lfoData.key_to_f * float(m_key - 69));
         }
 
-        // TODO freq modulation
+        f *= modulate(lfoData.speed_m_amt, mod[lfoData.speed_m_src]);
 
         lfo.lfo.setType(lfoData.type);
         lfo.lfo.setEnv(lfoData.attack, lfoData.decay);
@@ -97,7 +105,8 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
         // TODO reset type
         v = lfo.lfo.tick(to - from);
 
-        // TODO amp modulation
+        // amp modulation
+        v *= modulate(lfoData.amp_m_amt, mod[lfoData.amp_m_src]);
     }
     // update mod values
     mod[M_LFO1_BI + 2*i] = v;
@@ -134,7 +143,8 @@ void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
             v *= 1.0 - envData.vel_to_vol + envData.vel_to_vol * midi2f(m_velocity);
         }
 
-        // TODO amp modulation
+        // amp modulation
+        v *= modulate(envData.amp_m_amt, mod[envData.amp_m_src]);
     }
     // update mod values
     mod[M_EG1 + i] = v;
@@ -148,14 +158,15 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
     Osc& osc = oscs[i];
     if (oscData.on) {
         float f = 440.0;
+        float pmod = 12.0f * oscData.pitch_m_amt * mod[oscData.pitch_m_src];
         if (oscData.tracking) {
-            f = midi2hz(float(m_key) + oscData.coarse + oscData.fine);
+            f = midi2hz(float(m_key) + oscData.coarse + oscData.fine + pmod);
+        } else if (pmod > 0.0f) {
+            f = midi2hz(69.0f + pmod);
         }
         f *= oscData.ratio;
 
-        // TODO pitch modulation
         // TODO mod modulation
-        // TODO amp modulation
 
         osc.osc.setType(oscData.type);
         osc.osc.setFreq(f);
@@ -168,17 +179,18 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         if (oscData.vel_to_vol > 0.0f) {
             v *= 1.0 - oscData.vel_to_vol + oscData.vel_to_vol * midi2f(m_velocity);
         }
-        if (oscData.level_a > 0.0f) {
-            float vv = v * oscData.level_a;
-            for (int i = from; i < to; i++) {
-                bus_a[i] += vv * osc.buffer[i];
-            }
+
+        // amp modulation
+        // TODO linear interpolation
+        v *= modulate(oscData.amp_m_amt, mod[oscData.amp_m_src]);
+        for (int i = from; i < to; i++) {
+            osc.buffer[i] *= v;
         }
-        if (oscData.level_b > 0.0f) {
-            float vv = v * oscData.level_b;
-            for (int i = from; i < to; i++) {
-                bus_b[i] += vv * osc.buffer[i];
-            }
+
+        // copy to buffers
+        for (int i = from; i < to; i++) {
+            bus_a[i] += oscData.level_a * osc.buffer[i];
+            bus_b[i] += oscData.level_b * osc.buffer[i];
         }
     }
 }
@@ -198,10 +210,12 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
             f *= std::pow(SEMITONE, filterData.vel_to_f * float(m_velocity - 64));
         }
 
-        // TODO freq modulation
-        // TODO q modulation
-        // TODO pan modulation
-        // TODO amp modulation
+        // freq modulation
+        f *= modulate(filterData.freq_m_amt, mod[filterData.freq_m_src]);
+
+        // res modulation
+        float q = filterData.q;
+        q *= modulate(filterData.q_m_amt, mod[filterData.q_m_src]);
 
         float* source;
         switch (filterData.source) {
@@ -217,6 +231,13 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
             filter.svf.setType(type - 8);
             filter.svf.setCoefficients(f, filterData.q);
             filter.svf.process(source + from, filter.buffer + from, to - from);
+        }
+
+        // amp modulation
+        // TODO linear interpolation
+        float amp = modulate(filterData.amp_m_amt, mod[filterData.amp_m_src]);
+        for (int i = from; i < to; i++) {
+            filter.buffer[i] *= amp;
         }
     }
 }
@@ -245,6 +266,16 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     for (int i = 0; i < NENV; i++) runEnv(i, from, to);
     for (int i = 0; i < NOSC; i++) runOsc(i, from, to);
     for (int i = 0; i < NDCF; i++) runFilter(i, from, to);
+
+    // TODO filter1 amp modulation
+    // TODO filter2 amp modulation
+    // TODO bus a amp modulation
+    // TODO bus b amp modulation
+
+    // TODO filter1 pan modulation
+    // TODO filter2 pan modulation
+    // TODO bus a pan modulation
+    // TODO bus b pan modulation
 
     // copy buses and filters to out
     float f1_l = data->filters[0].level * (1.0 * data->filters[0].pan),

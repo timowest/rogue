@@ -61,8 +61,8 @@ struct LFOData {
 
     // modulation
     float key_to_f;
-    int pitch_m_src, amp_m_src;
-    float pitch_m_amt, amp_m_amt;
+    int speed_m_src, amp_m_src;
+    float speed_m_amt, amp_m_amt;
 };
 
 struct EnvData {

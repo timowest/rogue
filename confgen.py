@@ -151,11 +151,11 @@ def main():
             ["vel_to_vol" , 0, 1.0, 0], 
             
             ["pitch_m_src", 0, 17, 0],
-            ["pitch_m_amt", 0, 1.0, 0], # pitch ?!?
+            ["pitch_m_amt", -1.0, 1.0, 0], # pitch ?!?
             ["mod_m_src"  , 0, 17, 0],
-            ["mod_m_amt"  , 0, 1.0, 0], # linear
+            ["mod_m_amt"  , -1.0, 1.0, 0], # linear
             ["amp_m_src"  , 0, 17, 0], 
-            ["amp_m_amt"  , 0, 1.0, 0]] # linear 
+            ["amp_m_amt"  , -1.0, 1.0, 0]] # linear 
     
     dcfs = [["on"         , 0, 1, 0], # toggled
             ["type"       , 0, 11, 0],
@@ -169,13 +169,13 @@ def main():
             ["vel_to_f"   , 0, 1.0, 0],
                         
             ["freq_m_src" , 0, 17, 0],
-            ["freq_m_amt" , 0, 1.0, 0], # pitch ?!?
+            ["freq_m_amt" , -1.0, 1.0, 0], # pitch ?!?
             ["q_m_src"    , 0, 17, 0],
-            ["q_m_amt"    , 0, 1.0, 0], # linear
+            ["q_m_amt"    , -1.0, 1.0, 0], # linear
             ["pan_m_src"  , 0, 17, 0],
-            ["pan_m_amt"  , 0, 1.0, 0], # linear
+            ["pan_m_amt"  , -1.0, 1.0, 0], # linear
             ["amp_m_src"  , 0, 17, 0],
-            ["amp_m_amt"  , 0, 1.0, 0]] # linear
+            ["amp_m_amt"  , -1.0, 1.0, 0]] # linear
   
     lfos = [["on"         , 0, 1, 0], # toggled
             ["type"       , 0, 5.0, 0],
@@ -188,9 +188,9 @@ def main():
             ["key_to_f"   , -1.0, 1.0, 0],
             
             ["speed_m_src", 0, 17, 0],
-            ["speed_m_amt", 0, 1.0, 0], # linear ?!?
+            ["speed_m_amt", -1.0, 1.0, 0], # linear ?!?
             ["amp_m_src"  , 0, 17, 0],
-            ["amp_m_amt"  , 0, 1.0, 0]] #linear
+            ["amp_m_amt"  , -1.0, 1.0, 0]] #linear
   
     envs = [["on"         , 0, 1, 0], # toggled
             ["pre_delay"  , 0, 5.0, 0],
@@ -205,7 +205,7 @@ def main():
             ["vel_to_speed" , -1.0, 1.0, 0],
             
             ["amp_m_src"  , 0, 17, 0], 
-            ["amp_m_amt"  , 0, 1.0, 0]] # linear
+            ["amp_m_amt"  , -1.0, 1.0, 0]] # linear
 
     idx = 3
 
