@@ -66,6 +66,10 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
     for (int i = 0; i < NENV; i++) envs[i].on();
     for (int i = 0; i < NOSC; i++) {
         if (!data->oscs[i].free) oscs[i].reset();
+        data->oscs[i].prev_level = 0.0f;
+    }
+    for (int i = 0; i < NDCF; i++) {
+        data->filters[i].prev_level = 0.0f;
     }
 
     in_sustain = false;
@@ -157,6 +161,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
     OscData& oscData = data->oscs[i];
     Osc& osc = oscs[i];
     if (oscData.on) {
+        // pitch modulation
         float f = 440.0;
         float pmod = 12.0f * oscData.pitch_m_amt * mod[oscData.pitch_m_src];
         if (oscData.tracking) {
@@ -168,10 +173,13 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
 
         // TODO mod modulation
 
+        // process
         osc.osc.setType(oscData.type);
         osc.osc.setFreq(f);
         osc.osc.setParams(oscData.param1, oscData.param2);
         osc.osc.process(osc.buffer + from, to - from);
+
+        // amp modulation
         float v = oscData.level;
         if (oscData.inv) {
             v *= -1.0f;
@@ -180,12 +188,14 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
             v *= 1.0 - oscData.vel_to_vol + oscData.vel_to_vol * midi2f(m_velocity);
         }
 
-        // amp modulation
-        // TODO linear interpolation
         v *= modulate(oscData.amp_m_amt, mod[oscData.amp_m_src]);
+        float step = (v - oscData.prev_level) / (to - from);
+        float l = oscData.prev_level;
         for (int i = from; i < to; i++) {
-            osc.buffer[i] *= v;
+            osc.buffer[i] *= l;
+            l += step;
         }
+        oscData.prev_level = v;
 
         // copy to buffers
         for (int i = from; i < to; i++) {
@@ -217,12 +227,15 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
         float q = filterData.q;
         q *= modulate(filterData.q_m_amt, mod[filterData.q_m_src]);
 
+        // process
+        // TODO put sources into float** variable ?!?
         float* source;
         switch (filterData.source) {
         case 0: source = bus_a; break;
         case 1: source = bus_b; break;
         case 2: source = filters[0].buffer;
         }
+
         if (type < 8) {
             filter.moog.setType(type);
             filter.moog.setCoefficients(f, filterData.q);
@@ -234,11 +247,15 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
         }
 
         // amp modulation
-        // TODO linear interpolation
-        float amp = modulate(filterData.amp_m_amt, mod[filterData.amp_m_src]);
+        float v = filterData.level;
+        v *= modulate(filterData.amp_m_amt, mod[filterData.amp_m_src]);
+        float step = (v - filterData.prev_level) / (to - from);
+        float l = filterData.prev_level;
         for (int i = from; i < to; i++) {
-            filter.buffer[i] *= amp;
+            filter.buffer[i] *= l;
+            l += step;
         }
+        filterData.prev_level = v;
     }
 }
 
@@ -267,26 +284,22 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     for (int i = 0; i < NOSC; i++) runOsc(i, from, to);
     for (int i = 0; i < NDCF; i++) runFilter(i, from, to);
 
-    // TODO filter1 amp modulation
-    // TODO filter2 amp modulation
-    // TODO bus a amp modulation
-    // TODO bus b amp modulation
-
     // TODO filter1 pan modulation
     // TODO filter2 pan modulation
     // TODO bus a pan modulation
     // TODO bus b pan modulation
 
     // copy buses and filters to out
-    float f1_l = data->filters[0].level * (1.0 * data->filters[0].pan),
-          f1_r = data->filters[0].level * data->filters[0].pan,
-          f2_l = data->filters[1].level * (1.0 * data->filters[1].pan),
-          f2_r = data->filters[1].level * data->filters[1].pan,
+    float f1_l = 1.0 * data->filters[0].pan,
+          f1_r = data->filters[0].pan,
+          f2_l = 1.0 * data->filters[1].pan,
+          f2_r = data->filters[1].pan,
           ba_l = data->bus_a_level * (1.0 - data->bus_a_pan),
           ba_r = data->bus_a_level * data->bus_a_pan,
           bb_l = data->bus_b_level * (1.0 - data->bus_b_pan),
           bb_r = data->bus_b_level * data->bus_b_pan;
 
+    // amp modulation
     float e_from = envs[0].last;
     float e_step = (envs[0].current - e_from) / float(to - from);
 

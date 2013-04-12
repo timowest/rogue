@@ -24,7 +24,7 @@ struct OscData {
     float param2;
     float level_a;
     float level_b;
-    float level;
+    float level, prev_level;
 
     // modulation
     float vel_to_vol;
@@ -39,7 +39,7 @@ struct FilterData {
     float freq;
     float q;
     float distortion;
-    float level;
+    float level, prev_level;
     float pan;
 
     // modulation
