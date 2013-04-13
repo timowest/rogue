@@ -170,9 +170,7 @@ def main():
             ["symmetry"   , 0, 1.0, 0.5],
             ["attack"     , 0, 5.0, 0],
             ["decay"      , 0, 5.0, 0],
-            ["humanize"   , 0, 1.0, 0],
-            
-            ["key_to_f"   , -1.0, 1.0, 0]]
+            ["humanize"   , 0, 1.0, 0]]
   
     envs = [["on"         , 0, 1, 0], # toggled
             ["pre_delay"  , 0, 5.0, 0],
@@ -181,14 +179,10 @@ def main():
             ["decay"      , 0, 5.0, 0],
             ["sustain"    , 0, 1.0, 1.0],
             ["release"    , 0, 5.0, 0],
-            ["retrigger"  , 0, 1, 0], # toggled
-            
-            ["vel_to_vol" , 0, 1.0, 0],      # TODO via matrix
-            ["key_to_speed" , -1.0, 1.0, 0], # TODO via matrix
-            ["vel_to_speed" , -1.0, 1.0, 0]] # TODO via matrix
-            
+            ["retrigger"  , 0, 1, 0]] # toggled
+                        
     mods = [["src"        , 0, 17, 0],
-            ["target"     , 0, 33, 0],
+            ["target"     , 0, 39, 0],
             ["amount"     , -1.0, 1.0, 0]]        
 
     idx = 3

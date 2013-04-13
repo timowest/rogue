@@ -42,21 +42,13 @@ struct LFOData {
     float freq;
     float symmetry, attack, decay;
     float humanize;
-
-    // modulation
-    float key_to_f;
 };
 
 struct EnvData {
     bool on;
     float pre_delay;
     float attack, hold, decay, sustain, release;
-    bool  retrigger;
-
-    // modulation
-    float vel_to_vol;
-    float key_to_speed;
-    float vel_to_speed;
+    bool retrigger;
 };
 
 struct DelaylineData {

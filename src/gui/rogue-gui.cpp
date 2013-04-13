@@ -179,7 +179,7 @@ rogueGUI::rogueGUI(const char* URI) {
 }
 
 Widget* rogueGUI::createOSC(int i) {
-    int off = i * 14;
+    int off = i * OSC_OFF;
     Table* table = manage(new Table(8,4));
     // row 1
     control(table, "Type", p_osc1_type + off, 0, 1);
@@ -206,7 +206,7 @@ Widget* rogueGUI::createOSC(int i) {
 }
 
 Widget* rogueGUI::createFilter(int i) {
-    int off = i * 10;
+    int off = i * DCF_OFF;
     Table* table = manage(new Table(2,9));
     // row 1
     control(table, "Type", p_filter1_type + off, 0, 1);
@@ -223,8 +223,8 @@ Widget* rogueGUI::createFilter(int i) {
 }
 
 Widget* rogueGUI::createLFO(int i) {
-    int off = i * 9;
-    Table* table = manage(new Table(2,8));
+    int off = i * LFO_OFF;
+    Table* table = manage(new Table(2,7));
     // row 1
     control(table, "Type", p_lfo1_type + off, 0, 1);
     control(table, "Reset type", p_lfo1_reset_type + off, 1, 1);
@@ -233,14 +233,13 @@ Widget* rogueGUI::createLFO(int i) {
     control(table, "Attack", p_lfo1_attack + off, 4, 1);
     control(table, "Decay", p_lfo1_decay + off, 5, 1);
     control(table, "Humanize", p_lfo1_humanize + off, 6, 1);
-    control(table, "Key > F", p_lfo1_key_to_f + off, 7, 1);
 
     return frame(lfo_labels[i], p_lfo1_on + off, table);
 }
 
 Widget* rogueGUI::createEnv(int i) {
-    int off = i * 11;
-    Table* table = manage(new Table(2,10));
+    int off = i * ENV_OFF;
+    Table* table = manage(new Table(2,7));
     // row 1
     control(table, "Pre-delay", p_env1_pre_delay + off, 0, 1);
     control(table, "Attack", p_env1_attack + off, 1, 1);
@@ -249,9 +248,6 @@ Widget* rogueGUI::createEnv(int i) {
     control(table, "Sustain", p_env1_sustain + off, 4, 1);
     control(table, "Release", p_env1_release + off, 5, 1);
     control(table, "Retrigger", p_env1_retrigger + off, 6, 1);
-    control(table, "Vel > Vol", p_env1_vel_to_vol + off, 7, 1);
-    control(table, "Key > Speed", p_env1_key_to_speed + off, 8, 1);
-    control(table, "Vel > Speed", p_env1_vel_to_speed + off, 9, 1);
 
     return frame(env_labels[i], p_env1_on + off, table);
 }

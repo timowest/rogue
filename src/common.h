@@ -16,13 +16,13 @@
 #define NOSC    4
 #define NDCF    2
 #define NLFO    3
-#define NENV    5
+#define NENV    8
 #define NMOD    20
 
 #define OSC_OFF 14
 #define DCF_OFF 10
-#define LFO_OFF 9
-#define ENV_OFF 11
+#define LFO_OFF 8
+#define ENV_OFF 8
 #define MOD_OFF 3
 
 enum {
@@ -64,7 +64,11 @@ enum {
   M_LFO2_S, M_LFO2_AMP,
   M_LFO3_S, M_LFO3_AMP,
   // env
-  M_ENV1_AMP, M_ENV2_AMP, M_ENV3_AMP, M_ENV4_AMP, M_ENV5_AMP,
+  M_ENV1_S, M_ENV1_AMP,
+  M_ENV2_S, M_ENV2_AMP,
+  M_ENV3_S, M_ENV3_AMP,
+  M_ENV4_S, M_ENV4_AMP,
+  M_ENV5_S, M_ENV5_AMP,
   // bus
   M_BUSA_PAN, M_BUSB_PAN
 };

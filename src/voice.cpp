@@ -117,11 +117,6 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
     if (lfoData.on) {
         float f = lfoData.freq;
         // key to f
-        if (lfoData.key_to_f != 0.0f) {
-            f *= std::pow(SEMITONE, lfoData.key_to_f * float(m_key - 69));
-        }
-
-        //f *= modulate(lfoData.speed_m_amt, mod[lfoData.speed_m_src]);
         f *= modulate(M_LFO1_S + 2 * i);
 
         lfo.lfo.setType(lfoData.type);
@@ -133,7 +128,6 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
         v = lfo.lfo.tick(to - from);
 
         // amp modulation
-        //v *= modulate(lfoData.amp_m_amt, mod[lfoData.amp_m_src]);
         v *= modulate(M_LFO1_AMP + 2 * i);
     }
     // update mod values
@@ -149,15 +143,8 @@ void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
     Env& env = envs[i];
     float v = 0.0f;
     if (envData.on) {
-        float f = 1.0f;
-        // key to speed
-        if (envData.key_to_speed != 0.0f) {
-            f *= std::pow(SEMITONE, envData.key_to_speed * float(m_key - 69));
-        }
-        // vel to speed
-        if (envData.vel_to_speed != 0.0f) {
-            f *= std::pow(SEMITONE, envData.vel_to_speed * float(m_velocity - 64));
-        }
+        // TODO maybe modulate these parameters only once per note?
+        float f = 1.0f / modulate(M_ENV1_S + 2 * i);
         float a = envData.attack / f;
         float h = envData.hold / f;
         float d = envData.decay / f;
@@ -167,13 +154,9 @@ void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
         // TODO retrigger
         env.env.setAHDSR(a, h, d, s, r);
         v = env.env.tick(to - from);
-        if (envData.vel_to_vol > 0.0f) {
-            v *= 1.0 - envData.vel_to_vol + envData.vel_to_vol * midi2f(m_velocity);
-        }
 
         // amp modulation
-        //v *= modulate(envData.amp_m_amt, mod[envData.amp_m_src]);
-        v *= modulate(M_ENV1_AMP + i);
+        v *= modulate(M_ENV1_AMP + 2 * i);
     }
     // update mod values
     mod[M_ENV1 + i] = v;
@@ -213,7 +196,6 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
             v *= 1.0 - oscData.vel_to_vol + oscData.vel_to_vol * midi2f(m_velocity);
         }
 
-        //v *= modulate(oscData.amp_m_amt, mod[oscData.amp_m_src]);
         v *= modulate(M_OSC1_AMP + 3 * i);
         float step = (v - oscData.prev_level) / (to - from);
         float l = oscData.prev_level;
@@ -247,12 +229,10 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
         }
 
         // freq modulation
-        //f *= modulate(filterData.freq_m_amt, mod[filterData.freq_m_src]);
         f *= modulate(M_DCF1_F + 4 * i);
 
         // res modulation
         float q = filterData.q;
-        //q *= modulate(filterData.q_m_amt, mod[filterData.q_m_src]);
         q *= modulate(M_DCF1_Q + 4 * i);
 
         // process
@@ -276,7 +256,6 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
 
         // amp modulation
         float v = filterData.level;
-        //v *= modulate(filterData.amp_m_amt, mod[filterData.amp_m_src]);
         v *= modulate(M_DCF1_AMP + 4 * i);
         float step = (v - filterData.prev_level) / (to - from);
         float l = filterData.prev_level;

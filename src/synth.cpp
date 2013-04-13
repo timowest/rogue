@@ -113,8 +113,6 @@ void rogueSynth::update() {
         data.lfos[i].attack      = v(p_lfo1_attack + off) * rate;
         data.lfos[i].decay       = v(p_lfo1_decay + off) * rate;
         data.lfos[i].humanize    = v(p_lfo1_humanize + off);
-
-        data.lfos[i].key_to_f    = v(p_lfo1_key_to_f + off);
     }
 
     // envs
@@ -128,10 +126,6 @@ void rogueSynth::update() {
         data.envs[i].sustain     = v(p_env1_sustain + off);
         data.envs[i].release     = v(p_env1_release + off) * rate;
         data.envs[i].retrigger   = v(p_env1_retrigger + off);
-
-        data.envs[i].vel_to_vol  = v(p_env1_vel_to_vol + off);
-        data.envs[i].key_to_speed = v(p_env1_key_to_speed + off);
-        data.envs[i].vel_to_speed = v(p_env1_vel_to_speed + off);
     }
 
     // mods
