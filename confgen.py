@@ -148,14 +148,8 @@ def main():
             ["level_a"    , 0, 1.0, 0],
             ["level_b"    , 0, 1.0, 0],
             ["level"      , 0, 1.0, 0],
-            ["vel_to_vol" , 0, 1.0, 0], 
             
-            ["pitch_m_src", 0, 17, 0],
-            ["pitch_m_amt", -1.0, 1.0, 0], # pitch ?!?
-            ["mod_m_src"  , 0, 17, 0],
-            ["mod_m_amt"  , -1.0, 1.0, 0], # linear
-            ["amp_m_src"  , 0, 17, 0], 
-            ["amp_m_amt"  , -1.0, 1.0, 0]] # linear 
+            ["vel_to_vol" , 0, 1.0, 0]] # TODO via matrix           
     
     dcfs = [["on"         , 0, 1, 0], # toggled
             ["type"       , 0, 11, 0],
@@ -165,17 +159,9 @@ def main():
             ["distortion" , 0, 1.0, 0], 
             ["level"      , 0, 1.0, 0],
             ["pan"        , -1.0, 1.0, 0], # ?
+            
             ["key_to_f"   , 0, 1.0, 0],
-            ["vel_to_f"   , 0, 1.0, 0],
-                        
-            ["freq_m_src" , 0, 17, 0],
-            ["freq_m_amt" , -1.0, 1.0, 0], # pitch ?!?
-            ["q_m_src"    , 0, 17, 0],
-            ["q_m_amt"    , -1.0, 1.0, 0], # linear
-            ["pan_m_src"  , 0, 17, 0],
-            ["pan_m_amt"  , -1.0, 1.0, 0], # linear
-            ["amp_m_src"  , 0, 17, 0],
-            ["amp_m_amt"  , -1.0, 1.0, 0]] # linear
+            ["vel_to_f"   , 0, 1.0, 0]]
   
     lfos = [["on"         , 0, 1, 0], # toggled
             ["type"       , 0, 5.0, 0],
@@ -185,12 +171,8 @@ def main():
             ["attack"     , 0, 5.0, 0],
             ["decay"      , 0, 5.0, 0],
             ["humanize"   , 0, 1.0, 0],
-            ["key_to_f"   , -1.0, 1.0, 0],
             
-            ["speed_m_src", 0, 17, 0],
-            ["speed_m_amt", -1.0, 1.0, 0], # linear ?!?
-            ["amp_m_src"  , 0, 17, 0],
-            ["amp_m_amt"  , -1.0, 1.0, 0]] #linear
+            ["key_to_f"   , -1.0, 1.0, 0]]
   
     envs = [["on"         , 0, 1, 0], # toggled
             ["pre_delay"  , 0, 5.0, 0],
@@ -200,12 +182,14 @@ def main():
             ["sustain"    , 0, 1.0, 1.0],
             ["release"    , 0, 5.0, 0],
             ["retrigger"  , 0, 1, 0], # toggled
-            ["vel_to_vol" , 0, 1.0, 0],
-            ["key_to_speed" , -1.0, 1.0, 0],
-            ["vel_to_speed" , -1.0, 1.0, 0],
             
-            ["amp_m_src"  , 0, 17, 0], 
-            ["amp_m_amt"  , -1.0, 1.0, 0]] # linear
+            ["vel_to_vol" , 0, 1.0, 0],      # TODO via matrix
+            ["key_to_speed" , -1.0, 1.0, 0], # TODO via matrix
+            ["vel_to_speed" , -1.0, 1.0, 0]] # TODO via matrix
+            
+    mods = [["src"        , 0, 17, 0],
+            ["target"     , 0, 33, 0],
+            ["amount"     , -1.0, 1.0, 0]]        
 
     idx = 3
 
@@ -222,17 +206,14 @@ def main():
     idx = controls(ttl, gui, idx, "lfo", 3, lfos)
     # envs
     idx = controls(ttl, gui, idx, "env", 5, envs)
+    # mods
+    idx = controls(ttl, gui, idx, "mod", 20, mods)
 
     globals = [["bus_a_level", 0, 1.0, 0],
                ["bus_a_pan",   0, 1.0, 0.5],
                ["bus_b_level", 0, 1.0, 0],
                ["bus_b_pan",   0, 1.0, 0.5],
                ["volume",      0, 1.0, 0.5],
-
-               ["bus_a_pan_m_src", 0, 17, 0],
-               ["bus_a_pan_m_amt", 0, 1.0, 0],
-               ["bus_b_pan_m_src", 0, 17, 0],
-               ["bus_b_pan_m_amt", 0, 1.0, 0],
 
                ["glide_time",  0, 5.0, 0],
                ["bend_range",  0, 12.0, 0]]

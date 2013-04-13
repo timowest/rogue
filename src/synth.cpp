@@ -85,13 +85,6 @@ void rogueSynth::update() {
         data.oscs[i].level       = v(p_osc1_level + off); // scale
 
         data.oscs[i].vel_to_vol  = v(p_osc1_vel_to_vol + off);
-
-        data.oscs[i].pitch_m_src = v(p_osc1_pitch_m_src + off);
-        data.oscs[i].pitch_m_amt = v(p_osc1_pitch_m_amt + off);
-        data.oscs[i].mod_m_src   = v(p_osc1_mod_m_src + off);
-        data.oscs[i].mod_m_amt   = v(p_osc1_mod_m_amt + off);
-        data.oscs[i].amp_m_src   = v(p_osc1_amp_m_src + off);
-        data.oscs[i].amp_m_amt   = v(p_osc1_amp_m_amt + off);
     }
 
     // filters
@@ -107,15 +100,6 @@ void rogueSynth::update() {
 
         data.filters[i].key_to_f = v(p_filter1_key_to_f + off);
         data.filters[i].vel_to_f = v(p_filter1_vel_to_f + off);
-
-        data.filters[i].freq_m_src = v(p_filter1_freq_m_src + off);
-        data.filters[i].freq_m_amt = v(p_filter1_freq_m_amt + off);
-        data.filters[i].q_m_src  = v(p_filter1_q_m_src + off);
-        data.filters[i].q_m_amt  = v(p_filter1_q_m_amt + off);
-        data.filters[i].pan_m_src = v(p_filter1_pan_m_src + off);
-        data.filters[i].pan_m_amt = v(p_filter1_pan_m_amt + off);
-        data.filters[i].amp_m_src = v(p_filter1_amp_m_src + off);
-        data.filters[i].amp_m_amt = v(p_filter1_amp_m_amt + off);
     }
 
     // lfos
@@ -131,11 +115,6 @@ void rogueSynth::update() {
         data.lfos[i].humanize    = v(p_lfo1_humanize + off);
 
         data.lfos[i].key_to_f    = v(p_lfo1_key_to_f + off);
-
-        data.lfos[i].speed_m_src = v(p_lfo1_speed_m_src + off);
-        data.lfos[i].speed_m_amt = v(p_lfo1_speed_m_amt + off);
-        data.lfos[i].amp_m_src   = v(p_lfo1_amp_m_src + off);
-        data.lfos[i].amp_m_amt   = v(p_lfo1_amp_m_amt + off);
     }
 
     // envs
@@ -153,9 +132,14 @@ void rogueSynth::update() {
         data.envs[i].vel_to_vol  = v(p_env1_vel_to_vol + off);
         data.envs[i].key_to_speed = v(p_env1_key_to_speed + off);
         data.envs[i].vel_to_speed = v(p_env1_vel_to_speed + off);
+    }
 
-        data.envs[i].amp_m_src   = v(p_env1_amp_m_src + off);
-        data.envs[i].amp_m_amt   = v(p_env1_amp_m_amt + off);
+    // mods
+    for (int i = 0; i < NMOD; i++) {
+        int off = i * MOD_OFF;
+        data.mods[i].src         = v(p_mod1_src + off);
+        data.mods[i].target      = v(p_mod1_target + off);
+        data.mods[i].amount      = v(p_mod1_amount + off);
     }
 }
 

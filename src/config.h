@@ -14,77 +14,58 @@ namespace rogue {
 struct OscData {
     bool on;
     int type;
-    bool inv; // output inversion
-    bool free; // phase reset
-    bool tracking; // pitch tracking
-    float ratio;
-    float coarse; //  tune
-    float fine; // tune
-    float param1;
-    float param2;
-    float level_a;
-    float level_b;
+    bool inv, free, tracking;
+    float ratio, coarse, fine;
+    float param1, param2;
+    float level_a, level_b;
     float level, prev_level;
 
     // modulation
     float vel_to_vol;
-    int   pitch_m_src, mod_m_src, amp_m_src;
-    float pitch_m_amt, mod_m_amt, amp_m_amt;
 };
 
 struct FilterData {
     bool on;
-    int type;
-    int source;
-    float freq;
-    float q;
-    float distortion;
+    int type, source;
+    float freq, q, distortion;
     float level, prev_level;
     float pan;
 
     // modulation
     float key_to_f;
     float vel_to_f;
-    int freq_m_src, q_m_src, pan_m_src, amp_m_src;
-    float freq_m_amt, q_m_amt, pan_m_amt, amp_m_amt;
 };
 
 struct LFOData {
     bool on;
-    int type;
-    int reset_type;
+    int type, reset_type;
     float freq;
-    float symmetry;
-    float attack;
-    float decay;
+    float symmetry, attack, decay;
     float humanize;
 
     // modulation
     float key_to_f;
-    int speed_m_src, amp_m_src;
-    float speed_m_amt, amp_m_amt;
 };
 
 struct EnvData {
     bool on;
     float pre_delay;
-    float attack;
-    float hold;
-    float decay;
-    float sustain;
-    float release;
+    float attack, hold, decay, sustain, release;
     bool  retrigger;
-    float vel_to_vol;
 
     // modulation
+    float vel_to_vol;
     float key_to_speed;
     float vel_to_speed;
-    int amp_m_src;
-    float amp_m_amt;
 };
 
 struct DelaylineData {
     // TODO
+};
+
+struct ModulationData {
+    unsigned int src, target;
+    float amount;
 };
 
 struct SynthData {
@@ -92,6 +73,7 @@ struct SynthData {
     FilterData filters[NDCF];
     LFOData lfos[NLFO];
     EnvData envs[NENV];
+    ModulationData mods[NMOD];
 
     float bus_a_level, bus_a_pan;
     float bus_b_level, bus_b_pan;

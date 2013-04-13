@@ -76,6 +76,8 @@ class rogueVoice : public lvtk::Voice {
       void reset(void);
       bool is_sustained(void) { return in_sustain; }
       unsigned char get_key(void) const { return m_key; }
+      float pitch_modulate(int target);
+      float modulate(int target);
 
       void runLFO(int i, uint32_t from, uint32_t to);
       void runEnv(int i, uint32_t from, uint32_t to);

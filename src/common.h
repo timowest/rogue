@@ -17,11 +17,13 @@
 #define NDCF    2
 #define NLFO    3
 #define NENV    5
+#define NMOD    20
 
-#define OSC_OFF 20
-#define DCF_OFF 18
-#define LFO_OFF 13
-#define ENV_OFF 13
+#define OSC_OFF 14
+#define DCF_OFF 10
+#define LFO_OFF 9
+#define ENV_OFF 11
+#define MOD_OFF 3
 
 enum {
   M_ON,
@@ -29,6 +31,7 @@ enum {
   M_PRESSURE,
   M_KEY, // key / 127.0
   M_VEL, // vel / 127.0
+  // lfo
   M_LFO0_BI,
   M_LFO0_UN,
   M_LFO1_BI,
@@ -37,12 +40,33 @@ enum {
   M_LFO2_UN,
   M_LFO3_BI,
   M_LFO3_UN,
-  M_EG1,
-  M_EG2,
-  M_EG3,
-  M_EG4,
-  M_EG5,
+  // env
+  M_ENV1,
+  M_ENV2,
+  M_ENV3,
+  M_ENV4,
+  M_ENV5,
   M_SIZE
+};
+
+enum {
+  M_NO_TARGET,
+  // osc
+  M_OSC1_P, M_OSC1_MOD, M_OSC1_AMP,
+  M_OSC2_P, M_OSC2_MOD, M_OSC2_AMP,
+  M_OSC3_P, M_OSC3_MOD, M_OSC3_AMP,
+  M_OSC4_P, M_OSC4_MOD, M_OSC4_AMP,
+  // dcf
+  M_DCF1_F, M_DCF1_Q, M_DCF1_PAN, M_DCF1_AMP,
+  M_DCF2_F, M_DCF2_Q, M_DCF2_PAN, M_DCF2_AMP,
+  // lfo
+  M_LFO1_S, M_LFO1_AMP,
+  M_LFO2_S, M_LFO2_AMP,
+  M_LFO3_S, M_LFO3_AMP,
+  // env
+  M_ENV1_AMP, M_ENV2_AMP, M_ENV3_AMP, M_ENV4_AMP, M_ENV5_AMP,
+  // bus
+  M_BUSA_PAN, M_BUSB_PAN
 };
 
 #endif
