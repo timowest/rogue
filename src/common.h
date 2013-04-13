@@ -21,7 +21,7 @@
 
 #define OSC_OFF 14
 #define DCF_OFF 10
-#define LFO_OFF 8
+#define LFO_OFF 9
 #define ENV_OFF 8
 #define MOD_OFF 3
 

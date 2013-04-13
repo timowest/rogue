@@ -107,6 +107,7 @@ void rogueSynth::update() {
         int off = i * LFO_OFF;
         data.lfos[i].on          = v(p_lfo1_on + off);
         data.lfos[i].type        = v(p_lfo1_type + off);
+        data.lfos[i].inv         = v(p_lfo1_inv + off);
         data.lfos[i].reset_type  = v(p_lfo1_reset_type + off);
         data.lfos[i].freq        = v(p_lfo1_freq + off);
         data.lfos[i].symmetry    = v(p_lfo1_symmetry + off);

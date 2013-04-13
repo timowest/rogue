@@ -39,6 +39,7 @@ struct FilterData {
 struct LFOData {
     bool on;
     int type, reset_type;
+    bool inv;
     float freq;
     float symmetry, attack, decay;
     float humanize;

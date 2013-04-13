@@ -61,7 +61,7 @@ CHARS filter1_sources[] = {"Bus A", "Bus B"};
 
 CHARS filter2_sources[] = {"Bus A", "Bus B", "Filter1"};
 
-CHARS lfo_types[] = {"Sin", "Tri", "Saw up", "Saw down", "Square", "S/H"};
+CHARS lfo_types[] = {"Sin", "Tri", "Saw", "Square", "S/H"};
 
 CHARS lfo_reset_types[] = {"Poly", "Free", "Mono"};
 

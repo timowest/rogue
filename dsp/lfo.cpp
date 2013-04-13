@@ -42,10 +42,8 @@ float LFO::getValue(float p) {
         return sin_.fast(p);
     case TRI:
         return 2.0 * (p < 0.5 ? 2.0 * p : 2.0 - 2.0 * p) - 1.0;
-    case SAW_UP:
+    case SAW:
         return 2.0 * p - 1.0;
-    case SAW_DOWN:
-        return 1.0 - 2.0 * p;
     case SQUARE:
         return p < symmetry ? -1.0 : 1.0;
     case SH:

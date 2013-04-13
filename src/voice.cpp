@@ -126,6 +126,9 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
         // TODO humanize
         // TODO reset type
         v = lfo.lfo.tick(to - from);
+        if (lfoData.inv) {
+            v *= -1.0f;
+        }
 
         // amp modulation
         v *= modulate(M_LFO1_AMP + 2 * i);

@@ -164,7 +164,8 @@ def main():
             ["vel_to_f"   , 0, 1.0, 0]]
   
     lfos = [["on"         , 0, 1, 0], # toggled
-            ["type"       , 0, 5.0, 0],
+            ["type"       , 0, 4, 0],
+            ["inv"        , 0, 1, 0], # toggled
             ["reset_type" , 0, 2, 0],
             ["freq"       , 0, 10.0, 1000.0],
             ["symmetry"   , 0, 1.0, 0.5],
