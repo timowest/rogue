@@ -78,12 +78,13 @@ CHARS lfo_labels[] = {"LFO 1", "LFO 2", "LFO 3"};
 CHARS env_labels[] = {"Env 1", "Env 2", "Env 3", "Env 4", "Env 5"};
 
 CHARS mod_src_labels[] = {
-        "--", "Mod", "Pressure", "Key", "Velocity",
+        "--   ",
+        "Mod", "Pressure", "Key", "Velocity",
         "LFO 0", "LFO 0+", "LFO 1", "LFO 1+", "LFO 2", "LFO 2+", "LFO 3", "LFO 3+",
         "Env 1", "Env 2", "Env 3", "Env 4", "Env 5"};
 
 CHARS mod_target_labels[]  = {
-        "--",
+        "--   ",
         // osc
         "OSC 1 Pitch", "OSC 1 Mod", "OSC 1 Amp",
         "OSC 2 Pitch", "OSC 2 Mod", "OSC 2 Amp",
@@ -285,6 +286,7 @@ Widget* rogueGUI::createEnv(int i) {
 
 Widget* rogueGUI::createMain() {
     Table* table = manage(new Table(2,7));
+    table->set_spacings(5);
     // row 1
     control(table, "Volume", p_volume, 0, 1);
     control(table, "Bus A level", p_bus_a_level, 1, 1);
@@ -300,21 +302,30 @@ Widget* rogueGUI::createMain() {
 
 
 Widget* rogueGUI::createModulation() {
-    CHARS labels[] = {"Source", "Amount", "Target", "Source", "Amount", "Target"};
-    Table* table = manage(new Table(11,6));
-    for (int i = 0; i < 6; i++) {
-        table->attach(*manage(new Label(labels[i])), i, i + 1, 1, 2);
+    CHARS labels[] = {"Source", "Amount", "Target"};
+    Table* table = manage(new Table(6, 12));
+    table->set_spacings(5);
+    for (int i = 0; i < 12; i++) {
+        table->attach(*manage(new Label(labels[i % 3])), i, i + 1, 1, 2);
     }
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 5; i++) {
         int off = i * 3;
         // col 1
-        table->attach(*scales[p_mod1_src + off]->get_widget(), 1, 2, i + 1, i + 2);
-        table->attach(*scales[p_mod1_amount + off]->get_widget(), 2, 3, i + 1, i + 2);
-        table->attach(*scales[p_mod1_target + off]->get_widget(), 3, 4, i + 1, i + 2);
+        table->attach(*scales[p_mod1_src + off]->get_widget(), 0, 1, i + 2, i + 3);
+        table->attach(*scales[p_mod1_amount + off]->get_widget(), 1, 2, i + 2, i + 3);
+        table->attach(*scales[p_mod1_target + off]->get_widget(), 2, 3, i + 2, i + 3);
         // col 2
-        table->attach(*scales[p_mod11_src + off]->get_widget(), 4, 5, i + 1, i + 2);
-        table->attach(*scales[p_mod11_amount + off]->get_widget(), 5, 6, i + 1, i + 2);
-        table->attach(*scales[p_mod11_target + off]->get_widget(), 6, 7, i + 1, i + 2);
+        table->attach(*scales[p_mod6_src + off]->get_widget(), 3, 4, i + 2, i + 3);
+        table->attach(*scales[p_mod6_amount + off]->get_widget(), 4, 5, i + 2, i + 3);
+        table->attach(*scales[p_mod6_target + off]->get_widget(), 5, 6, i + 2, i + 3);
+        // col 3
+        table->attach(*scales[p_mod11_src + off]->get_widget(), 6, 7, i + 2, i + 3);
+        table->attach(*scales[p_mod11_amount + off]->get_widget(), 7, 8, i + 2, i + 3);
+        table->attach(*scales[p_mod11_target + off]->get_widget(), 8, 9, i + 2, i + 3);
+        // col 4
+        table->attach(*scales[p_mod16_src + off]->get_widget(), 9, 10, i + 2, i + 3);
+        table->attach(*scales[p_mod16_amount + off]->get_widget(), 10, 11, i + 2, i + 3);
+        table->attach(*scales[p_mod16_target + off]->get_widget(), 11, 12, i + 2, i + 3);
     }
     return table;
 }

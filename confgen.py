@@ -117,7 +117,9 @@ def port_meta(symbol, min, max, default):
     elif (min == 0 and isinstance(max, int)):
         type = "SELECT"
     #elif symbol.startswith("env"):
-    #    type = "KNOB_S"
+    #   type = "KNOB_S"
+    elif "_amount" in symbol:
+        type = "KNOB_M"
     elif ("_to_" in symbol or "level" in symbol or "pan" in symbol):
         type = "KNOB_M"    
     return '    {"%s", %s, %s, %s, %s},' % (symbol, min, max, default, type)

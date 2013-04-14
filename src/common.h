@@ -16,7 +16,7 @@
 #define NOSC    4
 #define NDCF    2
 #define NLFO    3
-#define NENV    8
+#define NENV    5
 #define NMOD    20
 
 #define OSC_OFF 14
