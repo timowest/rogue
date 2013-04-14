@@ -35,8 +35,6 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
     // set sample rate
     for (int i = 0; i < NOSC; i++) oscs[i].setSamplerate(rate);
     for (int i = 0; i < NDCF; i++) filters[i].setSamplerate(rate);
-
-    mod[M_ON] = 1.0;
 }
 
 void rogueVoice::on(unsigned char key, unsigned char velocity) {
@@ -147,7 +145,7 @@ void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
     float v = 0.0f;
     if (envData.on) {
         // TODO maybe modulate these parameters only once per note?
-        float f = 1.0f / modulate(M_ENV1_S + 2 * i);
+        float f = 1.0f / modulate(M_ENV1_S + 2 * i); // TODO use different modulation algorithm
         float a = envData.attack / f;
         float h = envData.hold / f;
         float d = envData.decay / f;
@@ -174,7 +172,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
     if (oscData.on) {
         // pitch modulation
         float f = 440.0;
-        float pmod = pitch_modulate(M_OSC1_P + 3 * i);
+        float pmod = pitch_modulate(M_OSC1_P + 3 * i); // TODO use different modulation algorithm
         if (oscData.tracking) {
             f = midi2hz(float(m_key) + oscData.coarse + oscData.fine + pmod);
         } else if (pmod > 0.0f) {
@@ -331,8 +329,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     }
 
     if (envs[0].current < SILENCE) {
-        m_key = lvtk::INVALID_KEY;
-        in_sustain = false;
+        reset();
     }
 }
 
@@ -340,6 +337,7 @@ void rogueVoice::reset() {
     volume = 1.0f;
     m_key = lvtk::INVALID_KEY;
     in_sustain = false;
+    std::memset(mod, 0, sizeof(float) * NMOD);
 }
 
 

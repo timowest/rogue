@@ -26,7 +26,7 @@
 #define MOD_OFF 3
 
 enum {
-  M_ON,
+  M_NO_SOURCE,
   M_MOD,
   M_PRESSURE,
   M_KEY, // key / 127.0
@@ -70,7 +70,8 @@ enum {
   M_ENV4_S, M_ENV4_AMP,
   M_ENV5_S, M_ENV5_AMP,
   // bus
-  M_BUSA_PAN, M_BUSB_PAN
+  M_BUSA_PAN, M_BUSB_PAN,
+  M_TARGET_SIZE
 };
 
 #endif

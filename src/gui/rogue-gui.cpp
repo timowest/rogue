@@ -30,6 +30,7 @@ class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> >
     Widget* createLFO(int i);
     Widget* createEnv(int i);
     Widget* createMain();
+    Widget* createModulation();
     Widget* smallFrame(const char* label, Table* content);
     Widget* frame(const char* label, int toggle, Table* content);
     Alignment* align(Widget* widget);
@@ -47,6 +48,7 @@ class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> >
 
 // implementation
 
+// TODO replace with vectors
 #define CHARS static const char*
 
 // checkbox content
@@ -75,9 +77,33 @@ CHARS lfo_labels[] = {"LFO 1", "LFO 2", "LFO 3"};
 
 CHARS env_labels[] = {"Env 1", "Env 2", "Env 3", "Env 4", "Env 5"};
 
-CHARS mod_labels[] = {"On", "Mod", "Pressure", "Key", "Velocity",
+CHARS mod_src_labels[] = {
+        "--", "Mod", "Pressure", "Key", "Velocity",
         "LFO 0", "LFO 0+", "LFO 1", "LFO 1+", "LFO 2", "LFO 2+", "LFO 3", "LFO 3+",
         "Env 1", "Env 2", "Env 3", "Env 4", "Env 5"};
+
+CHARS mod_target_labels[]  = {
+        "--",
+        // osc
+        "OSC 1 Pitch", "OSC 1 Mod", "OSC 1 Amp",
+        "OSC 2 Pitch", "OSC 2 Mod", "OSC 2 Amp",
+        "OSC 3 Pitch", "OSC 3 Mod", "OSC 3 Amp",
+        "OSC 4 Pitch", "OSC 4 Mod", "OSC 4 Amp",
+        // dcf
+        "Filter 1 Freq", "Filter 1 Q", "Filter 1 Pan", "Filter 1 Amp",
+        "Filter 2 Freq", "Filter 2 Q", "Filter 2 Pan", "Filter 2 Amp",
+        // lfo
+        "LFO 1 Speed", "LFO 1 Amp",
+        "LFO 2 Speed", "LFO 2 Amp",
+        "LFO 3 Speed", "LFO 3 Amp",
+        // env
+        "Env 1 Speed", "Env 1 Amp",
+        "Env 2 Speed", "Env 2 Amp",
+        "Env 3 Speed", "Env 3 Amp",
+        "Env 4 Speed", "Env 4 Amp",
+        "Env 5 Speed", "Env 5 Amp",
+        // bus
+        "Bus A Pan", "Bus B Pan"};
 
 
 rogueGUI::rogueGUI(const char* URI) {
@@ -113,6 +139,12 @@ rogueGUI::rogueGUI(const char* URI) {
             scales[i] = manage(new SelectComboBox(lfo_types, 6));
         } else if (i == p_lfo1_reset_type || i == p_lfo2_reset_type || i == p_lfo3_reset_type) {
             scales[i] = manage(new SelectComboBox(lfo_reset_types, 3));
+        } else if (i >= p_mod1_src || i <= p_mod20_amount) {
+            if ((i - p_mod1_src) % 3 == 0) {
+                scales[i] = manage(new SelectComboBox(mod_src_labels, M_SIZE));
+            } else {
+                scales[i] = manage(new SelectComboBox(mod_target_labels, M_TARGET_SIZE));
+            }
         } else {
             std::cout << i << std::endl;
         }
@@ -152,8 +184,7 @@ rogueGUI::rogueGUI(const char* URI) {
     for (int i = 0; i < NENV; i++) {
         envelopes->append_page(*createEnv(i), env_labels[i]);
     }
-    HBox* modulation = manage(new HBox());
-    // TODO
+    Widget* modulation = createModulation();
 
     HBox* effects = manage(new HBox());
     // TODO
@@ -252,7 +283,6 @@ Widget* rogueGUI::createEnv(int i) {
     return frame(env_labels[i], p_env1_on + off, table);
 }
 
-
 Widget* rogueGUI::createMain() {
     Table* table = manage(new Table(2,7));
     // row 1
@@ -267,6 +297,28 @@ Widget* rogueGUI::createMain() {
     //return frame(env_labels[i], p_env1_on + off, table);
     return table;
 }
+
+
+Widget* rogueGUI::createModulation() {
+    CHARS labels[] = {"Source", "Amount", "Target", "Source", "Amount", "Target"};
+    Table* table = manage(new Table(11,6));
+    for (int i = 0; i < 6; i++) {
+        table->attach(*manage(new Label(labels[i])), i, i + 1, 1, 2);
+    }
+    for (int i = 0; i < 10; i++) {
+        int off = i * 3;
+        // col 1
+        table->attach(*scales[p_mod1_src + off]->get_widget(), 1, 2, i + 1, i + 2);
+        table->attach(*scales[p_mod1_amount + off]->get_widget(), 2, 3, i + 1, i + 2);
+        table->attach(*scales[p_mod1_target + off]->get_widget(), 3, 4, i + 1, i + 2);
+        // col 2
+        table->attach(*scales[p_mod11_src + off]->get_widget(), 4, 5, i + 1, i + 2);
+        table->attach(*scales[p_mod11_amount + off]->get_widget(), 5, 6, i + 1, i + 2);
+        table->attach(*scales[p_mod11_target + off]->get_widget(), 6, 7, i + 1, i + 2);
+    }
+    return table;
+}
+
 
 void rogueGUI::control(Table* table, const char* label, int port_index, int left, int top) {
     table->attach(*scales[port_index]->get_widget(), left, left + 1, top, top + 1);
