@@ -10,7 +10,7 @@
 int main(int argc, char* argv[]) {
     Gtk::Main kit(argc, argv);
 
-    Knob knob(0.0, 1.0, 0.01);
+    rogue::Knob knob(0.0, 1.0, 0.01);
     Gtk::Alignment alignment(0.0, 0.0, 0.0, 0.0);
     alignment.add(knob);
 
