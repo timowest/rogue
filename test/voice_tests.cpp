@@ -38,7 +38,7 @@ int main() {
     data.oscs[0].on = true;
     data.oscs[0].type = 0;
     data.oscs[0].ratio = 1.0;
-    data.oscs[0].volume = 1.0;
+    data.oscs[0].level = 1.0;
     data.oscs[0].level_a = 1.0;
 
     data.envs[0].on = true;
