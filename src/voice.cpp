@@ -27,6 +27,9 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
     data = d;
     sample_rate = rate;
 
+    left = p(p_left);
+    right = p(p_right);
+
     // init elements
     for (int i = 0; i < NOSC; i++) oscs[i] = Osc();
     for (int i = 0; i < NDCF; i++) filters[i] = Filter();
@@ -42,41 +45,42 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
     buffers[1] = bus_b;
     buffers[2] = filters[0].buffer;
     buffers[3] = filters[1].buffer;
-
 }
 
 void rogueVoice::on(unsigned char key, unsigned char velocity) {
     std::cout << "on " << int(key) << " " << int(velocity) << std::endl;
+
+    if (velocity == 0) {
+        off(0);
+        return;
+    }
+
     // store key that turned this voice on (used in 'get_key')
     m_key = key;
 
     mod[M_KEY] = midi2f(key);
     mod[M_VEL] = midi2f(velocity);
 
-    if (velocity > 0) {
-        m_velocity = velocity;
+    m_velocity = velocity;
 
-        // config
-        for (int i = 0; i < NLFO; i++) configLFO(i);
-        for (int i = 0; i < NENV; i++) configEnv(i);
-        for (int i = 0; i < NOSC; i++) configOsc(i);
-        for (int i = 0; i < NDCF; i++) configFilter(i);
+    // config
+    for (int i = 0; i < NLFO; i++) configLFO(i);
+    for (int i = 0; i < NENV; i++) configEnv(i);
+    for (int i = 0; i < NOSC; i++) configOsc(i);
+    for (int i = 0; i < NDCF; i++) configFilter(i);
 
-        // trigger on
-        for (int i = 0; i < NLFO; i++) lfos[i].on();
-        for (int i = 0; i < NENV; i++) envs[i].on();
-        for (int i = 0; i < NOSC; i++) {
-            if (!data->oscs[i].free) oscs[i].reset();
-            oscs[i].prev_level = 0.0f;
-        }
-        for (int i = 0; i < NDCF; i++) {
-            filters[i].prev_level = 0.0f;
-        }
-
-        in_sustain = false;
-    } else {
-        off(0);
+    // trigger on
+    for (int i = 0; i < NLFO; i++) lfos[i].on();
+    for (int i = 0; i < NENV; i++) envs[i].on();
+    for (int i = 0; i < NOSC; i++) {
+        if (!data->oscs[i].free) oscs[i].reset();
+        oscs[i].prev_level = 0.0f;
     }
+    for (int i = 0; i < NDCF; i++) {
+        filters[i].prev_level = 0.0f;
+    }
+
+    in_sustain = false;
 }
 
 void rogueVoice::off(unsigned char velocity) {
@@ -326,41 +330,36 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     for (int i = 0; i < NOSC; i++) runOsc(i, from, to);
     for (int i = 0; i < NDCF; i++) runFilter(i, from, to);
 
+    // pan config (not interpolated)
+    float left_p[] = {1.0f * data->filters[0].pan,
+                      1.0f * data->filters[1].pan,
+                      data->bus_a_level * (1.0f - data->bus_a_pan),
+                      data->bus_b_level * (1.0f - data->bus_b_pan)};
+    float right_p[] = {data->filters[0].pan,
+                       data->filters[1].pan,
+                       data->bus_a_level * data->bus_a_pan,
+                       data->bus_b_level * data->bus_b_pan};
+
     // TODO filter1 pan modulation
     // TODO filter2 pan modulation
     // TODO bus a pan modulation
     // TODO bus b pan modulation
 
-    // copy buses and filters to out
-    float f1_l = 1.0 * data->filters[0].pan,
-          f1_r = data->filters[0].pan,
-          f2_l = 1.0 * data->filters[1].pan,
-          f2_r = data->filters[1].pan,
-          ba_l = data->bus_a_level * (1.0 - data->bus_a_pan),
-          ba_r = data->bus_a_level * data->bus_a_pan,
-          bb_l = data->bus_b_level * (1.0 - data->bus_b_pan),
-          bb_r = data->bus_b_level * data->bus_b_pan;
-
     // amp modulation
     float e_from = envs[0].last;
     float e_step = (envs[0].current - e_from) / float(to - from);
 
-    float* left = p(p_left);
-    float* right = p(p_right);
+    // copy buffers
     for (int i = from; i < to; i++) {
-        left[off + i] += data->volume * e_from *
-                  (f1_l * filters[0].buffer[i] +
-                   f2_l * filters[1].buffer[i] +
-                   ba_l * bus_a[i] +
-                   bb_l * bus_b[i]);
-        right[off + i] += data->volume * e_from *
-                   (f1_r * filters[0].buffer[i] +
-                    f2_r * filters[1].buffer[i] +
-                    ba_r * bus_a[i] +
-                    bb_r * bus_b[i]);
+        for (int j = 0; j < 4; j++) {
+            float sample = buffers[j][i];
+            left[off + i]  += left_p[j] * sample;
+            right[off + i] += right_p[j] * sample;
+        }
         e_from += e_step;
     }
 
+    // close voice, if too silent
     if (envs[0].current < SILENCE) {
         reset();
     }
