@@ -27,6 +27,7 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
     data = d;
     sample_rate = rate;
 
+    // init elements
     for (int i = 0; i < NOSC; i++) oscs[i] = Osc();
     for (int i = 0; i < NDCF; i++) filters[i] = Filter();
     for (int i = 0; i < NLFO; i++) lfos[i] = LFO();
@@ -35,6 +36,13 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
     // set sample rate
     for (int i = 0; i < NOSC; i++) oscs[i].setSamplerate(rate);
     for (int i = 0; i < NDCF; i++) filters[i].setSamplerate(rate);
+
+    // set buffers
+    buffers[0] = bus_a;
+    buffers[1] = bus_b;
+    buffers[2] = filters[0].buffer;
+    buffers[3] = filters[1].buffer;
+
 }
 
 void rogueVoice::on(unsigned char key, unsigned char velocity) {
@@ -47,22 +55,28 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
 
     if (velocity > 0) {
         m_velocity = velocity;
+
+        // config
+        for (int i = 0; i < NLFO; i++) configLFO(i);
+        for (int i = 0; i < NENV; i++) configEnv(i);
+        for (int i = 0; i < NOSC; i++) configOsc(i);
+        for (int i = 0; i < NDCF; i++) configFilter(i);
+
+        // trigger on
+        for (int i = 0; i < NLFO; i++) lfos[i].on();
+        for (int i = 0; i < NENV; i++) envs[i].on();
+        for (int i = 0; i < NOSC; i++) {
+            if (!data->oscs[i].free) oscs[i].reset();
+            oscs[i].prev_level = 0.0f;
+        }
+        for (int i = 0; i < NDCF; i++) {
+            filters[i].prev_level = 0.0f;
+        }
+
+        in_sustain = false;
     } else {
         off(0);
     }
-
-    // trigger on
-    for (int i = 0; i < NLFO; i++) lfos[i].on();
-    for (int i = 0; i < NENV; i++) envs[i].on();
-    for (int i = 0; i < NOSC; i++) {
-        if (!data->oscs[i].free) oscs[i].reset();
-        data->oscs[i].prev_level = 0.0f;
-    }
-    for (int i = 0; i < NDCF; i++) {
-        data->filters[i].prev_level = 0.0f;
-    }
-
-    in_sustain = false;
 }
 
 void rogueVoice::off(unsigned char velocity) {
@@ -108,21 +122,28 @@ float rogueVoice::pitch_modulate(int target) {
     return v;
 }
 
+void rogueVoice::configLFO(int i) {
+    LFOData& lfoData = data->lfos[i];
+    LFO& lfo = lfos[i];
+
+    float f = lfoData.freq;
+    // key to f
+    f *= modulate(M_LFO1_S + 2 * i);
+
+    // NOTE: lfos can't modulate each other
+    lfo.lfo.setType(lfoData.type);
+    lfo.lfo.setEnv(lfoData.attack, lfoData.decay);
+    lfo.lfo.setFreq(f);
+    lfo.lfo.setSymmetry(lfoData.symmetry);
+    // TODO humanize
+    // TODO reset type
+}
+
 void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
     LFOData& lfoData = data->lfos[i];
     LFO& lfo = lfos[i];
     float v = 0.0f;
     if (lfoData.on) {
-        float f = lfoData.freq;
-        // key to f
-        f *= modulate(M_LFO1_S + 2 * i);
-
-        lfo.lfo.setType(lfoData.type);
-        lfo.lfo.setEnv(lfoData.attack, lfoData.decay);
-        lfo.lfo.setFreq(lfoData.freq);
-        lfo.lfo.setSymmetry(lfoData.symmetry);
-        // TODO humanize
-        // TODO reset type
         v = lfo.lfo.tick(to - from);
         if (lfoData.inv) {
             v *= -1.0f;
@@ -139,23 +160,28 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
     lfo.current = 0.0f;
 }
 
+void rogueVoice::configEnv(int i) {
+    EnvData& envData = data->envs[i];
+    Env& env = envs[i];
+
+    // NOTE: envelopes can't modulate each other
+    float f = 1.0f / modulate(M_ENV1_S + 2 * i); // TODO use different modulation algorithm
+    float a = envData.attack / f;
+    float h = envData.hold / f;
+    float d = envData.decay / f;
+    float s = envData.sustain;
+    float r = envData.release / f;
+    // TODO pre-delay
+    // TODO retrigger
+    env.env.setAHDSR(a, h, d, s, r);
+}
+
 void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
     EnvData& envData = data->envs[i];
     Env& env = envs[i];
     float v = 0.0f;
     if (envData.on) {
-        // TODO maybe modulate these parameters only once per note?
-        float f = 1.0f / modulate(M_ENV1_S + 2 * i); // TODO use different modulation algorithm
-        float a = envData.attack / f;
-        float h = envData.hold / f;
-        float d = envData.decay / f;
-        float s = envData.sustain;
-        float r = envData.release / f;
-        // TODO pre-delay
-        // TODO retrigger
-        env.env.setAHDSR(a, h, d, s, r);
         v = env.env.tick(to - from);
-
         // amp modulation
         v *= modulate(M_ENV1_AMP + 2 * i);
     }
@@ -166,13 +192,19 @@ void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
     env.current = v;
 }
 
+void rogueVoice::configOsc(int i) {
+    OscData& oscData = data->oscs[i];
+    Osc& osc = oscs[i];
+    // TODO
+}
+
 void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
     OscData& oscData = data->oscs[i];
     Osc& osc = oscs[i];
     if (oscData.on) {
         // pitch modulation
         float f = 440.0;
-        float pmod = pitch_modulate(M_OSC1_P + 3 * i); // TODO use different modulation algorithm
+        float pmod = pitch_modulate(M_OSC1_P + 3 * i);
         if (oscData.tracking) {
             f = midi2hz(float(m_key) + oscData.coarse + oscData.fine + pmod);
         } else if (pmod > 0.0f) {
@@ -198,13 +230,13 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         }
 
         v *= modulate(M_OSC1_AMP + 3 * i);
-        float step = (v - oscData.prev_level) / (to - from);
-        float l = oscData.prev_level;
+        float step = (v - osc.prev_level) / (to - from);
+        float l = osc.prev_level;
         for (int i = from; i < to; i++) {
             osc.buffer[i] *= l;
             l += step;
         }
-        oscData.prev_level = v;
+        osc.prev_level = v;
 
         // copy to buffers
         for (int i = from; i < to; i++) {
@@ -214,57 +246,58 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
     }
 }
 
+void rogueVoice::configFilter(int i) {
+    FilterData& filterData = data->filters[i];
+    Filter& filter = filters[i];
+
+    float f = 1.0;
+    // key to f
+    if (filterData.key_to_f != 0.0f) {
+        f *= std::pow(SEMITONE, filterData.key_to_f * float(m_key - 69));
+    }
+    // vel to f
+    if (filterData.vel_to_f != 0.0f) {
+        f *= std::pow(SEMITONE, filterData.vel_to_f * float(m_velocity - 64));
+    }
+    filter.key_vel_to_f = f;
+}
+
 void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
     FilterData& filterData = data->filters[i];
     Filter& filter = filters[i];
     if (filterData.on) {
         int type = filterData.type;
-        float f = filterData.freq;
-        // key to f
-        if (filterData.key_to_f != 0.0f) {
-            f *= std::pow(SEMITONE, filterData.key_to_f * float(m_key - 69));
-        }
-        // vel to f
-        if (filterData.vel_to_f != 0.0f) {
-            f *= std::pow(SEMITONE, filterData.vel_to_f * float(m_velocity - 64));
-        }
+        float f = filterData.freq * filter.key_vel_to_f;
 
         // freq modulation
-        f *= modulate(M_DCF1_F + 4 * i);
+        f *= modulate(M_DCF1_F + 4 * i); // TODO use different modulation algorithm here
 
         // res modulation
         float q = filterData.q;
         q *= modulate(M_DCF1_Q + 4 * i);
 
         // process
-        // TODO put sources into float** variable ?!?
-        float* source;
-        switch (filterData.source) {
-        case 0: source = bus_a; break;
-        case 1: source = bus_b; break;
-        case 2: source = filters[0].buffer;
-        }
-
+        float* source = buffers[filterData.source];
         if (type < 8) {
             filter.moog.setType(type);
-            filter.moog.setCoefficients(f, filterData.q);
+            filter.moog.setCoefficients(f, q);
             filter.moog.process(source + from, filter.buffer + from, to - from);
         } else {
             filter.svf.setType(type - 8);
-            filter.svf.setCoefficients(f, filterData.q);
+            filter.svf.setCoefficients(f, q);
             filter.svf.process(source + from, filter.buffer + from, to - from);
         }
 
         // amp modulation
         float v = filterData.level;
         v *= modulate(M_DCF1_AMP + 4 * i);
-        float step = (v - filterData.prev_level) / (to - from);
-        float l = filterData.prev_level;
+        float step = (v - filter.prev_level) / (to - from);
+        float l = filter.prev_level;
         for (int i = from; i < to; i++) {
             filter.buffer[i] *= l;
             l += step;
         }
-        filterData.prev_level = v;
+        filter.prev_level = v;
     }
 }
 

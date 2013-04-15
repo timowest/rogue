@@ -13,18 +13,21 @@
 #define SILENCE 0.0001f  //voice choking
 #define BUFFER_SIZE 64
 
+// number of elements
 #define NOSC    4
 #define NDCF    2
 #define NLFO    3
 #define NENV    5
 #define NMOD    20
 
+// offsets for port access
 #define OSC_OFF 14
 #define DCF_OFF 10
 #define LFO_OFF 9
 #define ENV_OFF 8
 #define MOD_OFF 3
 
+// modulation sources
 enum {
   M_NO_SOURCE,
   M_MOD,
@@ -49,6 +52,7 @@ enum {
   M_SIZE
 };
 
+// modulation target
 enum {
   M_NO_TARGET,
   // osc

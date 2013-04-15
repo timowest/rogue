@@ -1,6 +1,8 @@
 /*
  * rogue - multimode synth
  *
+ * contains shared configuration for synth elements
+ *
  * Copyright (C) 2013 Timo Westkämper
  */
 
@@ -18,7 +20,7 @@ struct OscData {
     float ratio, coarse, fine;
     float param1, param2;
     float level_a, level_b;
-    float level, prev_level;
+    float level;
 
     // modulation
     float vel_to_vol;
@@ -28,8 +30,7 @@ struct FilterData {
     bool on;
     int type, source;
     float freq, q, distortion;
-    float level, prev_level;
-    float pan;
+    float level, pan;
 
     // modulation
     float key_to_f;

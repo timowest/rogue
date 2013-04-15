@@ -1,6 +1,8 @@
 /*
  * rogue - multimode synth
  *
+ * contains main class for synth
+ *
  * Copyright (C) 2013 Timo Westkämper
  */
 
