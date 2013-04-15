@@ -104,6 +104,7 @@ static float amp_modulate(float amt, float val) {
     }
 }
 
+// TODO optimize
 float rogueVoice::modulate(int target) {
     float v = 1.0f;
     for (int i = 0; i < NMOD; i++) {
@@ -115,6 +116,7 @@ float rogueVoice::modulate(int target) {
     return v;
 }
 
+// TODO optimize
 float rogueVoice::pitch_modulate(int target) {
     float v = 0.0f;
     for (int i = 0; i < NMOD; i++) {
