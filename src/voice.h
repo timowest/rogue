@@ -45,8 +45,8 @@ struct Filter {
 struct LFO {
     dsp::LFO lfo;
     float current, last;
-    void on() { lfo.on(); }
-    void off() { lfo.off(); }
+    void on() {}
+    void off() {}
 };
 
 struct Env {

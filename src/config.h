@@ -42,7 +42,7 @@ struct LFOData {
     int type, reset_type;
     bool inv;
     float freq;
-    float symmetry, attack, decay;
+    float symmetry;
     float humanize;
 };
 

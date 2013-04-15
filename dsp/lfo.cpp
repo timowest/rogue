@@ -15,25 +15,11 @@ namespace dsp {
 
 void LFO::clear() {
     type = 0;
-    attack = decay = 0.0;
     phase = 0.0;
 }
 
 void LFO::reset() {
     phase = 0.0;
-}
-
-void LFO::setEnv(float a, float d) {
-    attack = a;
-    decay = d;
-}
-
-void LFO::on() {
-    // TODO
-}
-
-void LFO::off() {
-    // TODO
 }
 
 float LFO::getValue(float p) {

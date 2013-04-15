@@ -171,9 +171,8 @@ def main():
             ["reset_type" , 0, 2, 0],
             ["freq"       , 0, 10.0, 1000.0],
             ["symmetry"   , 0, 1.0, 0.5],
-            ["attack"     , 0, 5.0, 0],
-            ["decay"      , 0, 5.0, 0],
             ["humanize"   , 0, 1.0, 0]]
+            # TODO phase spread
   
     envs = [["on"         , 0, 1, 0], # toggled
             ["pre_delay"  , 0, 5.0, 0],
@@ -214,6 +213,7 @@ def main():
 
                ["glide_time",  0, 5.0, 0],
                ["bend_range",  0, 12.0, 0]]
+               # TODO poly and mono modes
 
     for c in globals:
         ttl.append(ttl_control(idx, c[0], c[0], c[1], c[2], c[3]))

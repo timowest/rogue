@@ -111,8 +111,6 @@ void rogueSynth::update() {
         data.lfos[i].reset_type  = v(p_lfo1_reset_type + off);
         data.lfos[i].freq        = v(p_lfo1_freq + off);
         data.lfos[i].symmetry    = v(p_lfo1_symmetry + off);
-        data.lfos[i].attack      = v(p_lfo1_attack + off) * rate;
-        data.lfos[i].decay       = v(p_lfo1_decay + off) * rate;
         data.lfos[i].humanize    = v(p_lfo1_humanize + off);
     }
 

@@ -57,11 +57,9 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
 
     // store key that turned this voice on (used in 'get_key')
     m_key = key;
-
+    m_velocity = velocity;
     mod[M_KEY] = midi2f(key);
     mod[M_VEL] = midi2f(velocity);
-
-    m_velocity = velocity;
 
     // config
     for (int i = 0; i < NLFO; i++) configLFO(i);
@@ -138,7 +136,6 @@ void rogueVoice::configLFO(int i) {
 
     // NOTE: lfos can't modulate each other
     lfo.lfo.setType(lfoData.type);
-    lfo.lfo.setEnv(lfoData.attack, lfoData.decay);
     lfo.lfo.setFreq(f);
     lfo.lfo.setSymmetry(lfoData.symmetry);
     // TODO humanize

@@ -8,9 +8,9 @@
 #ifndef ROGUE_COMMON_H
 #define ROGUE_COMMON_H
 
-#define NOUTS    2       //number of outputs
-#define NVOICES 32       //max polyphony
-#define SILENCE 0.0001f  //voice choking
+#define NOUTS    2       // number of outputs
+#define NVOICES 32       // max polyphony
+#define SILENCE 0.0001f  // voice choking
 #define BUFFER_SIZE 64
 
 // number of elements
@@ -23,7 +23,7 @@
 // offsets for port access
 #define OSC_OFF 14
 #define DCF_OFF 10
-#define LFO_OFF 9
+#define LFO_OFF 7
 #define ENV_OFF 8
 #define MOD_OFF 3
 

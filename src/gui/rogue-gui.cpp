@@ -256,15 +256,13 @@ Widget* rogueGUI::createFilter(int i) {
 
 Widget* rogueGUI::createLFO(int i) {
     int off = i * LFO_OFF;
-    Table* table = manage(new Table(2,7));
+    Table* table = manage(new Table(2,5));
     // row 1
     control(table, "Type", p_lfo1_type + off, 0, 1);
     control(table, "Reset type", p_lfo1_reset_type + off, 1, 1);
     control(table, "Freq", p_lfo1_freq + off, 2, 1);
     control(table, "Symmetry", p_lfo1_symmetry + off, 3, 1);
-    control(table, "Attack", p_lfo1_attack + off, 4, 1);
-    control(table, "Decay", p_lfo1_decay + off, 5, 1);
-    control(table, "Humanize", p_lfo1_humanize + off, 6, 1);
+    control(table, "Humanize", p_lfo1_humanize + off, 4, 1);
 
     return frame(lfo_labels[i], p_lfo1_on + off, table);
 }
