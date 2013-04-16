@@ -27,9 +27,6 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
     data = d;
     sample_rate = rate;
 
-    left = p(p_left);
-    right = p(p_right);
-
     // init elements
     for (int i = 0; i < NOSC; i++) oscs[i] = Osc();
     for (int i = 0; i < NDCF; i++) filters[i] = Filter();
@@ -54,6 +51,9 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
         off(0);
         return;
     }
+
+    left = p(p_left);
+    right = p(p_right);
 
     // store key that turned this voice on (used in 'get_key')
     m_key = key;

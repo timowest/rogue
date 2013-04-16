@@ -77,7 +77,7 @@ int main() {
     }
 
     // lfos
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 5; i++) {
         lfo.reset();
         lfo.setType(i);
         //lfo.process(buffer, SIZE);
