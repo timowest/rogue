@@ -16,10 +16,14 @@ namespace dsp {
 void LFO::clear() {
     type = 0;
     phase = 0.0;
+    prev_phase = 0.0;
+    value = 0.0;
 }
 
 void LFO::reset() {
     phase = 0.0;
+    prev_phase = 0.0;
+    value = 0.0;
 }
 
 float LFO::getValue(float p) {
@@ -33,7 +37,11 @@ float LFO::getValue(float p) {
     case SQUARE:
         return p < symmetry ? -1.0 : 1.0;
     case SH:
-        return (2.0 * rand() / (RAND_MAX + 1.0) - 1.0);
+        if (prev_phase > p) { // update value once per cycle
+            value = (2.0 * rand() / (RAND_MAX + 1.0) - 1.0);
+        }
+        prev_phase = p;
+        return value;
     default:
         return 0.0;
     }

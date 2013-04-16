@@ -27,6 +27,7 @@ class LFO {
   private:
     int type = 0;
     float phase = 0.0, freq, symmetry = 0.5;
+    float prev_phase, value;
     float sample_rate;
 };
 
