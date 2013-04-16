@@ -134,7 +134,7 @@ void rogueVoice::configLFO(int i) {
     // key to f
     f *= modulate(M_LFO1_S + 2 * i);
 
-    // NOTE: lfos can't modulate each other
+    // NOTE: lfos can't modulate each other's freq
     lfo.lfo.setType(lfoData.type);
     lfo.lfo.setFreq(f);
     lfo.lfo.setSymmetry(lfoData.symmetry);
@@ -167,7 +167,7 @@ void rogueVoice::configEnv(int i) {
     EnvData& envData = data->envs[i];
     Env& env = envs[i];
 
-    // NOTE: envelopes can't modulate each other
+    // NOTE: envelopes can't modulate each other's speed
     float f = 1.0f / modulate(M_ENV1_S + 2 * i); // TODO use different modulation algorithm
     float a = envData.attack / f;
     float h = envData.hold / f;
