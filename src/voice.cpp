@@ -154,10 +154,10 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
     }
     // update mod values
     mod[M_LFO1_BI + 2*i] = v;
-    mod[M_LFO1_UN + 2*i] = 0.5 * v + 0.5;
+    mod[M_LFO1_UN + 2*i] = 0.5f * v + 0.5f;
 
     lfo.last = lfo.current;
-    lfo.current = 0.0f;
+    lfo.current = v;
 }
 
 void rogueVoice::configEnv(int i) {
