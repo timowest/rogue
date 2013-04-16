@@ -156,7 +156,9 @@ rogueGUI::rogueGUI(const char* URI) {
         slot<void> slot1 = compose(bind<0>(mem_fun(*this, &rogueGUI::write_control), i),
             mem_fun(*scales[i], &Changeable::get_value));
         scales[i]->connect(slot1);
-        if (p_port_meta[i].type == KNOB) {
+        int type = p_port_meta[i].type;
+        // connect knobs to statusbar
+        if (type == KNOB || type == KNOB_M || type == KNOB_S) {
             slot<void> slot2 = compose(bind<0>(mem_fun(*this, &rogueGUI::change_status_bar), i),
                 mem_fun(*scales[i], &Changeable::get_value));
             scales[i]->connect(slot2);

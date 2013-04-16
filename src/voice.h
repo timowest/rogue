@@ -65,8 +65,6 @@ class rogueVoice : public lvtk::Voice {
       LFO lfos[NLFO];
       Env envs[NENV];
 
-      float* left;
-      float* right;
       float* buffers[4];
       float bus_a[BUFFER_SIZE], bus_b[BUFFER_SIZE];
       float mod[M_SIZE];

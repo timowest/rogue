@@ -52,9 +52,6 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
         return;
     }
 
-    left = p(p_left);
-    right = p(p_right);
-
     // store key that turned this voice on (used in 'get_key')
     m_key = key;
     m_velocity = velocity;
@@ -330,19 +327,23 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     for (int i = 0; i < NDCF; i++) runFilter(i, from, to);
 
     // pan config (not interpolated)
-    float left_p[] = {1.0f * data->filters[0].pan,
-                      1.0f * data->filters[1].pan,
-                      data->bus_a_level * (1.0f - data->bus_a_pan),
-                      data->bus_b_level * (1.0f - data->bus_b_pan)};
-    float right_p[] = {data->filters[0].pan,
-                       data->filters[1].pan,
-                       data->bus_a_level * data->bus_a_pan,
-                       data->bus_b_level * data->bus_b_pan};
+    // bus a, bus b, filter 1, filter 2
+    float left_p[] = {data->bus_a_level * (1.0f - data->bus_a_pan),
+                      data->bus_b_level * (1.0f - data->bus_b_pan),
+                      1.0f - data->filters[0].pan,
+                      1.0f - data->filters[1].pan};
+    float right_p[] = {data->bus_a_level * data->bus_a_pan,
+                       data->bus_b_level * data->bus_b_pan,
+                       data->filters[0].pan,
+                       data->filters[1].pan};
 
-    // TODO filter1 pan modulation
-    // TODO filter2 pan modulation
     // TODO bus a pan modulation
     // TODO bus b pan modulation
+    // TODO filter1 pan modulation
+    // TODO filter2 pan modulation
+
+    float* left = p(p_left);
+    float* right = p(p_right);
 
     // amp modulation
     float e_from = envs[0].last;
@@ -351,7 +352,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     // copy buffers
     for (int i = from; i < to; i++) {
         for (int j = 0; j < 4; j++) {
-            float sample = buffers[j][i];
+            float sample = data->volume * e_from * buffers[j][i];
             left[off + i]  += left_p[j] * sample;
             right[off + i] += right_p[j] * sample;
         }
@@ -365,6 +366,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
 }
 
 void rogueVoice::reset() {
+    std::cout << "reset " << int(m_key) << std::endl;
     volume = 1.0f;
     m_key = lvtk::INVALID_KEY;
     in_sustain = false;
