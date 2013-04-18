@@ -59,4 +59,24 @@ int main() {
     write_wav(filename, buffer_l);
 
 
+    // LFO based amp modulation
+    data.lfos[0].on = true;
+    data.lfos[0].type = 0;
+    data.lfos[0].inv = false;
+    data.lfos[0].freq = 10.0f;
+    data.lfos[0].symmetry = 0.5;
+    data.lfos[0].humanize = 0.0;
+
+    data.mods[0].src = M_LFO1_UN;
+    data.mods[0].target = M_OSC1_AMP;
+    data.mods[0].amount = 0.5;
+
+    voice.on(69, 64);
+    voice.render(0, SIZE / 2);
+    voice.off(0);
+    voice.render(SIZE / 2, SIZE);
+
+    sprintf(filename, "voice_%i.wav", 1);
+    write_wav(filename, buffer_l);
+
 }

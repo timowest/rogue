@@ -47,6 +47,10 @@ struct LFO {
     float current, last;
     void on() {}
     void off() {}
+
+    void setSamplerate(float r) {
+        lfo.setSamplerate(r);
+    }
 };
 
 struct Env {

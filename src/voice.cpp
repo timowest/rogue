@@ -36,6 +36,7 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
     // set sample rate
     for (int i = 0; i < NOSC; i++) oscs[i].setSamplerate(rate);
     for (int i = 0; i < NDCF; i++) filters[i].setSamplerate(rate);
+    for (int i = 0; i < NLFO; i++) lfos[0].setSamplerate(rate);
 
     // set buffers
     buffers[0] = bus_a;
