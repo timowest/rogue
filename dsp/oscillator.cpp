@@ -33,13 +33,20 @@ double poly_blep(double t, double dt) {
 // PhaseShaping
 
 void PhaseShaping::clear() {
-    phase = 0.0;
-    freq = 440.0;
+    phase = 0.0f;
+    freq = 440.0f;
     type = SIN;
+    width = 0.5f;
+    a1 = 1.0f;
+    a0 = 0.0f;
 }
 
 void PhaseShaping::reset() {
     phase = 0.0;
+}
+
+void PhaseShaping::setWidth(float w) {
+    width = w;
 }
 
 void PhaseShaping::setParams(float a1_, float a0_) {
@@ -63,12 +70,12 @@ float PhaseShaping::softsync(float in) {
 
 float PhaseShaping::pulse(float in) {
     // square
-    return gb(gpulse(in, a1));
+    return gb(gpulse(in, width));
 }
 
 float PhaseShaping::slope(float in) {
     // saw
-    return gb(gvslope(in, a1));
+    return gb(gvslope(in, width));
 }
 
 float PhaseShaping::jp8000_tri(float in) {
@@ -79,9 +86,11 @@ float PhaseShaping::jp8000_tri(float in) {
 
 float PhaseShaping::jp8000_supersaw(float in) {
     // saw
-    float m1, m2; // TODO
+    // TODO
+    /*float m1, m2;
     float p = gripple2(glin(in, a1), m1, m2);
-    return sin2(p);
+    return sin2(p);*/
+    return 0.0f;
 }
 
 float PhaseShaping::waveslices(float in) {
@@ -91,7 +100,7 @@ float PhaseShaping::waveslices(float in) {
 
 float PhaseShaping::sinusoids(float in) {
     // saw
-    return sin2(gvslope(in, a1));
+    return sin2(gvslope(in, width));
 }
 
 float PhaseShaping::noise() {

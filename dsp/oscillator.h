@@ -26,6 +26,7 @@ class PhaseShaping {
     void clear ();
     void reset ();
     void setFreq(float f) { freq = f; }
+    void setWidth(float w);
     void setParams(float a1, float a0);
     void setType(int t) { type = t; }
     void setSamplerate(float r) { sample_rate = r; }
@@ -44,7 +45,8 @@ class PhaseShaping {
     float noise ();
 
   private:
-    float phase, freq, a1, a0;
+    float phase, freq;
+    float width = 0.5f, a1 = 1.0f, a0 = 0.0f;
     float sample_rate;
     int type;
 };

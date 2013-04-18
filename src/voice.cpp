@@ -218,6 +218,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         // process
         osc.osc.setType(oscData.type);
         osc.osc.setFreq(f);
+        osc.osc.setWidth(oscData.width);
         osc.osc.setParams(oscData.param1, oscData.param2);
         osc.osc.process(osc.buffer + from, to - from);
 

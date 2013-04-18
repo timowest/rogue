@@ -78,6 +78,7 @@ void rogueSynth::update() {
         data.oscs[i].ratio       = v(p_osc1_ratio + off);
         data.oscs[i].coarse      = v(p_osc1_coarse + off);
         data.oscs[i].fine        = v(p_osc1_fine + off);
+        data.oscs[i].width       = v(p_osc1_width + off);
         data.oscs[i].param1      = v(p_osc1_param1 + off);
         data.oscs[i].param2      = v(p_osc1_param2 + off);
         data.oscs[i].level_a     = v(p_osc1_level_a + off); // scale

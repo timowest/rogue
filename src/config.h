@@ -18,7 +18,7 @@ struct OscData {
     int type;
     bool inv, free, tracking;
     float ratio, coarse, fine;
-    float param1, param2;
+    float width, param1, param2;
     float level_a, level_b;
     float level;
 

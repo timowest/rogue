@@ -23,7 +23,8 @@ int main() {
     dsp::PhaseShaping osc;
     osc.setSamplerate(SR);
     osc.setFreq(440.0f);
-    osc.setParams(0.5, 0.5);
+    osc.setWidth(0.5f);
+    osc.setParams(1.0f, 0.0f);
 
     dsp::MoogFilter moog;
     moog.setSamplerate(SR);
