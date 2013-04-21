@@ -141,7 +141,7 @@ float PhaseShaping::waveslices(float inc, float p) {
     } else if (p2 > (a1 - inc2)) {  // end
         mod = a1 * polyblep( (p2 - a1) / inc2);
     }
-    return sin2(fmod(p2 + mod, 1.0f));
+    return sin2(fmod(p2 - mod, 1.0f));
 }
 
 float PhaseShaping::sinusoids(float inc, float p) {
@@ -160,7 +160,7 @@ float PhaseShaping::sinusoids(float inc, float p) {
     } else if (p > width && p2 < inc2) {
         mod = width * polyblep(p2 / inc2);
     }
-    return sin2(fmod(p2 + mod, 1.0f));
+    return sin2(fmod(p2 - mod, 1.0f));
 }
 
 float PhaseShaping::noise() {
