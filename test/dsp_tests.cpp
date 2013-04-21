@@ -9,6 +9,8 @@
 #define SIZE 44100
 #define CHANNELS 1
 
+float osc_params[] = {0.25f, 0.5f, 0.75f, 1.0f, 1.25f, 1.5f};
+
 void write_wav(char* filename, float* buffer) {
     static const int FORMAT = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
     SndfileHandle outfile(filename, SFM_WRITE, FORMAT, CHANNELS, SR);
@@ -41,18 +43,18 @@ int main() {
     dsp::AHDSR env;
 
     // oscs
-    static float scales[] = {0.5f, 1.0f, 1.5f};
-    static float widths[] = {0.25f, 0.5f, 0.75f};
     for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 3; j++) {
+        for (int j = 0; j < 6; j++) {
             osc.reset();
             osc.setType(i);
-            osc.setParams(scales[j], 0.0f);
-            osc.setWidth(widths[j]);
+            osc.setParams(osc_params[j], 0.0f);
+            osc.setWidth(osc_params[j]);
             osc.process(buffer, SIZE);
 
             sprintf(filename, "osc_%i%i.wav", i, j);
             write_wav(filename, buffer);
+
+            // TODO test for clicks
         }
     }
 

@@ -129,17 +129,27 @@ float PhaseShaping::jp8000_supersaw(float p) {
     return sin2(fmod(p2, 1.0f));
 }
 
+float phase_target(float p) {
+    if (p >= 0.75f) {
+        return 1.0f;
+    } else if (p >= 0.25f) {
+        return 0.5f;
+    } else {
+        return 0.0f;
+    }
+}
+
 float PhaseShaping::waveslices(float inc, float p) {
-    // TODO fix polyblep usage
     // bandlimited ramp -> sin
+    float a1_p = a1 > 1.0f ? fmod(a1, 1.0f) : a1;
     float inc2 = a1 * inc;
     float p2 = glin(p, a1);
+    float diff = phase_target(a1_p) - a1_p;
     float mod = 0.0f;
-    // XXX same correction as in hardsync
-    if (p2 < inc2) {                // start
-        mod = a1 * polyblep(p2 / inc2);
-    } else if (p2 > (a1 - inc2)) {  // end
-        mod = a1 * polyblep( (p2 - a1) / inc2);
+    if (p < inc) {                // start
+        mod = diff * polyblep(p2 / inc2);
+    } else if (p > (1.0f - inc)) { // end
+        mod = diff * polyblep( (p2 - a1_p) / inc2);
     }
     return sin2(fmod(p2 - mod, 1.0f));
 }
