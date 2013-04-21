@@ -19,6 +19,19 @@ class Filter {
 };
 
 /**
+ * DC offset correction filter
+ */
+class DCBlocker : Filter {
+  public:
+    void setSamplerate(float r);
+    void clear();
+    void process(float* input, float* output, int samples);
+
+  private:
+    float R, x1 = 0.0f, y1 = 0.0f;
+};
+
+/**
  * one-pole filter class.
  *
  * This class implements a one-pole digital filter. A method is

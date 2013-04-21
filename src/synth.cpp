@@ -11,9 +11,11 @@
 namespace rogue {
 
 rogueSynth::rogueSynth(double rate)
-  : lvtk::Synth<rogueVoice, rogueSynth>(p_n_ports, p_control), ldcBlocker(rate), rdcBlocker(rate) {
+  : lvtk::Synth<rogueVoice, rogueSynth>(p_n_ports, p_control) {
 
     sample_rate = rate;
+    ldcBlocker.setSamplerate(sample_rate);
+    rdcBlocker.setSamplerate(sample_rate);
 
     for(int i = 0; i < NVOICES; i++) {
         voices[i] = new rogueVoice(rate, &data);
@@ -142,14 +144,12 @@ void rogueSynth::pre_process(uint32_t from, uint32_t to) {
 }
 
 void rogueSynth::post_process(uint32_t from, uint32_t to) {
-    float* left = p(p_left);
-    float* right = p(p_right);
+    float* left = p(p_left) + from;
+    float* right = p(p_right) + from;
 
     // DC blocking
-    for (int i = from; i < to; i++) {
-        left[i] = ldcBlocker.tick(left[i]);
-        right[i] = rdcBlocker.tick(right[i]);
-    }
+    ldcBlocker.process(left, left, to - from);
+    rdcBlocker.process(right, right, to - from);
 
     // TODO effects
 }

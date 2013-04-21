@@ -11,6 +11,25 @@
 
 namespace dsp {
 
+// DCBlocker
+
+void DCBlocker::clear() {
+    x1 = y1 = 0.0f;
+}
+
+void DCBlocker::setSamplerate(float r) {
+    R = 1.0f - (M_PI * 2.0f * 20.0f / r);
+}
+
+void DCBlocker::process(float* input, float* output, int samples) {
+    for (int i = 0; i < samples; i++) {
+        float y = input[i] - x1 + R * y1;
+        x1 = input[i];
+        y1 = y;
+        output[i] = y;
+    }
+}
+
 // OnePole
 
 void OnePole::clear(){

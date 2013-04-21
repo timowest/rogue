@@ -32,6 +32,9 @@ int main() {
     moog.setSamplerate(SR);
     moog.setCoefficients(1000.0, 0.5);
 
+    dsp::DCBlocker dcBlocker;
+    dcBlocker.setSamplerate(SR);
+
     dsp::StateVariableFilter svf;
     svf.setSamplerate(SR);
     svf.setCoefficients(1000.0, 0.5);
@@ -50,6 +53,9 @@ int main() {
             osc.setParams(osc_params[j], 0.0f);
             osc.setWidth(osc_params[j]);
             osc.process(buffer, SIZE);
+
+            dcBlocker.clear();
+            dcBlocker.process(buffer, buffer, SIZE);
 
             sprintf(filename, "osc_%i%i.wav", i, j);
             write_wav(filename, buffer);
