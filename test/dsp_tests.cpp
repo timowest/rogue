@@ -41,13 +41,19 @@ int main() {
     dsp::AHDSR env;
 
     // oscs
+    static float scales[] = {0.5f, 1.0f, 1.5f};
+    static float widths[] = {0.25f, 0.5f, 0.75f};
     for (int i = 0; i < 10; i++) {
-        osc.reset();
-        osc.setType(i);
-        osc.process(buffer, SIZE);
+        for (int j = 0; j < 3; j++) {
+            osc.reset();
+            osc.setType(i);
+            osc.setParams(scales[j], 0.0f);
+            osc.setWidth(widths[j]);
+            osc.process(buffer, SIZE);
 
-        sprintf(filename, "osc_%i.wav", i);
-        write_wav(filename, buffer);
+            sprintf(filename, "osc_%i%i.wav", i, j);
+            write_wav(filename, buffer);
+        }
     }
 
     // noise input

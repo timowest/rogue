@@ -13,11 +13,11 @@
 namespace dsp {
 
 float gb(float x) {
-    return 2.0 * x - 1.0;
+    return 2.0f * x - 1.0f;
 }
 
 float gu(float x) {
-    return 0.5 * x + 0.5;
+    return 0.5f * x + 0.5f;
 }
 
 float glin(float x, float a1) {
@@ -29,7 +29,7 @@ float glin(float x, float a1, float a0) {
 }
 
 float mod1(float x) {
-    return fmod(x, 1.0);
+    return fmod(x, 1.0f);
 }
 
 float modm(float x, float m) {
@@ -45,27 +45,23 @@ float gtri(float x) {
 }
 
 float gtri(float x, float a1, float a0) {
-    return mod1(glin(fabs(gb(x)),a1,a0));
+    return mod1(glin(fabs(gb(x)), a1, a0));
 }
 
 float stri(float x) {
-    if (x < 0.5) {
-        return 2.0 * x;
+    if (x < 0.5f) {
+        return 2.0f * x;
     } else {
-        return 2.0 - 2.0 * x;
+        return 2.0f - 2.0f * x;
     }
 }
 
 float gpulse(float x, float w) {
-    return x < w ? 0.0 : 1.0;
+    return x < w ? 0.0f : 1.0f;
 }
 
 float gvslope(float x, float w) {
-    if (x < w) {
-        return x;
-    } else {
-        return 2.0 * x - 1.0;
-    }
+    return x < w ? x : (x - w) / (1.0f - w);
 }
 
 float svtri(float x, float w) {

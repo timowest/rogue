@@ -33,15 +33,15 @@ class PhaseShaping {
     void process(float* output, int samples);
 
   protected:
-    float sin2 (float in);
-    float hardsync (float in);
-    float softsync (float in);
-    float pulse (float in);
-    float slope (float in);
-    float jp8000_tri (float in);
-    float jp8000_supersaw (float in);
-    float waveslices (float in);
-    float sinusoids (float in);
+    float sin2(float p);
+    float hardsync(float inc, float p);
+    float softsync(float p);
+    float pulse(float inc, float p);
+    float slope(float inc, float p);
+    float jp8000_tri(float p);
+    float jp8000_supersaw(float p);
+    float waveslices(float inc, float p);
+    float sinusoids(float inc, float p);
     float noise ();
 
   private:
