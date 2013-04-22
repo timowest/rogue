@@ -10,11 +10,29 @@
 
 namespace dsp {
 
-float polyblep(float t) {
+static float polyblep(float t) {
     if (t > 0.0f) {
         return t - (t*t)/2.0f - 0.5f;
     } else {
         return (t*t)/2.0f + t + 0.5f;
+    }
+}
+
+static float phase_target(float p) {
+    if (p >= 0.75f) {
+        return 1.0f;
+    } else if (p >= 0.25f) {
+        return 0.5f;
+    } else {
+        return 0.0f;
+    }
+}
+
+static float limit(float x, float max) {
+    if (x > max) {
+        return fmod(x, max);
+    } else {
+        return x;
     }
 }
 
@@ -74,7 +92,7 @@ float PhaseShaping::hardsync(float inc, float p) {
     return gb(p2 - mod);
 }
 
-
+// TODO
 float PhaseShaping::softsync(float p) {
     // tri
     // TODO bandlimiting
@@ -114,6 +132,7 @@ float PhaseShaping::slope(float inc, float p) {
     return gb(p2 - mod);
 }
 
+// TODO
 float PhaseShaping::jp8000_tri(float p) {
     // tri
     // TODO bandlimiting
@@ -121,6 +140,7 @@ float PhaseShaping::jp8000_tri(float p) {
     return 2.0 * (p2 - ceil(p2 - 0.5));
 }
 
+// TODO
 float PhaseShaping::jp8000_supersaw(float p) {
     // saw
     // TODO bandlimiting
@@ -129,31 +149,24 @@ float PhaseShaping::jp8000_supersaw(float p) {
     return sin2(fmod(p2, 1.0f));
 }
 
-float phase_target(float p) {
-    if (p >= 0.75f) {
-        return 1.0f;
-    } else if (p >= 0.25f) {
-        return 0.5f;
-    } else {
-        return 0.0f;
-    }
-}
-
 float PhaseShaping::waveslices(float inc, float p) {
     // bandlimited ramp -> sin
-    float a1_p = a1 > 1.0f ? fmod(a1, 1.0f) : a1;
     float inc2 = a1 * inc;
-    float p2 = glin(p, a1);
+    float p2 = limit(glin(p, a1), 1.0f);
+    float a1_p = limit(a1, 1.0f);
     float diff = phase_target(a1_p) - a1_p;
     float mod = 0.0f;
     if (p < inc) {                // start
-        mod = diff * polyblep(p2 / inc2);
+        mod = diff * polyblep(p2 / inc2); // fails for 0.75
+        if (a1_p > 0.5) mod *= -1.0f;
+        if (p2 - mod < 0.0f) mod -= 1.0f;
     } else if (p > (1.0f - inc)) { // end
         mod = diff * polyblep( (p2 - a1_p) / inc2);
     }
     return sin2(fmod(p2 - mod, 1.0f));
 }
 
+// FIXME
 float PhaseShaping::sinusoids(float inc, float p) {
     // TODO fix polyblep usage
     // bandlimited ramp -> sin
@@ -174,7 +187,7 @@ float PhaseShaping::sinusoids(float inc, float p) {
 }
 
 float PhaseShaping::noise() {
-    return (2.0 * rand() / (RAND_MAX + 1.0) - 1.0);
+    return (2.0f * rand() / (RAND_MAX + 1.0f) - 1.0f);
 }
 
 #define PHASE_SHAPING_LOOP(x) \

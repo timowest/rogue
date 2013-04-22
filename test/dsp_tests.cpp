@@ -54,8 +54,8 @@ int main() {
             osc.setWidth(osc_params[j]);
             osc.process(buffer, SIZE);
 
-            dcBlocker.clear();
-            dcBlocker.process(buffer, buffer, SIZE);
+            //dcBlocker.clear();
+            //dcBlocker.process(buffer, buffer, SIZE);
 
             sprintf(filename, "osc_%i%i.wav", i, j);
             write_wav(filename, buffer);

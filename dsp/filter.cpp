@@ -23,6 +23,7 @@ void DCBlocker::setSamplerate(float r) {
 
 void DCBlocker::process(float* input, float* output, int samples) {
     for (int i = 0; i < samples; i++) {
+        // y(n) = x(n) - x(n - 1) + R * y(n - 1)
         float y = input[i] - x1 + R * y1;
         x1 = input[i];
         y1 = y;
