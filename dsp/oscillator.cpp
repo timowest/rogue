@@ -92,10 +92,9 @@ float PhaseShaping::hardsync(float inc, float p) {
     return gb(p2 - mod);
 }
 
-// TODO
+// TODO bandlimiting
 float PhaseShaping::softsync(float p) {
     // tri
-    // TODO bandlimiting
     return gb(stri(gtri(p, a1, a0)));
 }
 
@@ -132,19 +131,17 @@ float PhaseShaping::slope(float inc, float p) {
     return gb(p2 - mod);
 }
 
-// TODO
+// TODO bandlimiting
 float PhaseShaping::jp8000_tri(float p) {
     // tri
-    // TODO bandlimiting
     float p2 = gb(gtri(p, a1, a0));
     return 2.0 * (p2 - ceil(p2 - 0.5));
 }
 
-// TODO
+// TODO bandlimiting
 float PhaseShaping::jp8000_supersaw(float p) {
     // saw
-    // TODO bandlimiting
-    float m1, m2;
+    float m1 = 0.05, m2 = 0.88f;
     float p2 = gripple2(glin(p, a1), m1, m2);
     return sin2(fmod(p2, 1.0f));
 }
@@ -157,8 +154,9 @@ float PhaseShaping::waveslices(float inc, float p) {
     float diff = phase_target(a1_p) - a1_p;
     float mod = 0.0f;
     if (p < inc) {                // start
-        mod = diff * polyblep(p2 / inc2); // fails for 0.75
-        if (a1_p > 0.5) mod *= -1.0f;
+        mod = diff * polyblep(p2 / inc2);
+        // TODO simplify this
+        if (a1_p > 0.5f) mod *= -1.0f;
         if (p2 - mod < 0.0f) mod -= 1.0f;
     } else if (p > (1.0f - inc)) { // end
         mod = diff * polyblep( (p2 - a1_p) / inc2);
@@ -166,22 +164,19 @@ float PhaseShaping::waveslices(float inc, float p) {
     return sin2(fmod(p2 - mod, 1.0f));
 }
 
-// FIXME
 float PhaseShaping::sinusoids(float inc, float p) {
-    // TODO fix polyblep usage
     // bandlimited ramp -> sin
     float inc2 = inc / (1.0f - width);
     float p2 = gvslope(p, width);
+    float diff = phase_target(width) - width;
     float mod = 0.0f;
-    // XXX same correction as in slope
-    if (p < inc) {                 // start
-        mod = polyblep(p / inc);
-    } else if (p2 > (1.0f - inc2)) { // end
-        mod = polyblep( (p2 - 1.0f) / inc2);
-    } else if (p < width && p > (width - inc)) {
-        mod = width * polyblep( (p2 - width) / inc);
-    } else if (p > width && p2 < inc2) {
-        mod = width * polyblep(p2 / inc2);
+    if (p < width && p > (width - inc)) { // mid end
+        mod = diff * polyblep( (p2 - width) / inc);
+    } else if (p > width && p2 < inc2) {  // mid start
+        mod = diff * polyblep(p2 / inc2);
+        // TODO simplify this
+        if (width > 0.5f) mod *= -1.0f;
+        if (p2 - mod < 0.0f) mod -= 1.0f;
     }
     return sin2(fmod(p2 - mod, 1.0f));
 }
