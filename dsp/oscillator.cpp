@@ -78,7 +78,7 @@ void PhaseShaping::sin2(float* output, int samples) {
 
     for (int i = 0; i < samples; i++) {
         output[i] = sin2(phase);
-        phase = fmod(phase + inc, 1.0);
+        phase = fmod(phase + inc, 1.0f);
     }
 }
 
@@ -103,7 +103,7 @@ void PhaseShaping::hardsync(float* output, int samples) {
             mod = polyblep( (p2 - 1.0f) / inc2);
         }
         output[i] = gb(p2 - mod);
-        phase = fmod(phase + inc, 1.0);
+        phase = fmod(phase + inc, 1.0f);
     }
 }
 
@@ -114,7 +114,7 @@ void PhaseShaping::softsync(float* output, int samples) {
 
     for (int i = 0; i < samples; i++) {
         output[i] = gb(stri(gtri(phase, a1, a0)));
-        phase = fmod(phase + inc, 1.0);
+        phase = fmod(phase + inc, 1.0f);
     }
 }
 
@@ -135,7 +135,7 @@ void PhaseShaping::pulse(float* output, int samples) {
             mod = -polyblep( (phase - width) / inc);
         }
         output[i] = gb(p2 - mod);
-        phase = fmod(phase + inc, 1.0);
+        phase = fmod(phase + inc, 1.0f);
     }
 }
 
@@ -158,7 +158,7 @@ void PhaseShaping::slope(float* output, int samples) {
             mod = width * polyblep(p2 / inc2);
         }
         output[i] = gb(p2 - mod);
-        phase = fmod(phase + inc, 1.0);
+        phase = fmod(phase + inc, 1.0f);
     }
 }
 
@@ -169,7 +169,7 @@ void PhaseShaping::jp8000_tri(float* output, int samples) {
     for (int i = 0; i < samples; i++) {
         float p2 = gb(gtri(phase, a1, a0));
         output[i] = 2.0 * (p2 - ceil(p2 - 0.5));
-        phase = fmod(phase + inc, 1.0);
+        phase = fmod(phase + inc, 1.0f);
     }
 }
 
@@ -181,7 +181,7 @@ void PhaseShaping::jp8000_supersaw(float* output, int samples) {
     for (int i = 0; i < samples; i++) {
         float p2 = gripple2(fmod(glin(phase, a1), 1.0f), m1, m2);
         output[i] = sin2(fmod(p2, 1.0f));
-        phase = fmod(phase + inc, 1.0);
+        phase = fmod(phase + inc, 1.0f);
     }
 }
 
@@ -204,7 +204,7 @@ void PhaseShaping::waveslices(float* output, int samples) {
             mod = diff * polyblep( (p2 - a1_p) / inc2);
         }
         output[i] = sin2(fmod(p2 - mod, 1.0f));
-        phase = fmod(phase + inc, 1.0);
+        phase = fmod(phase + inc, 1.0f);
     }
 }
 
@@ -226,7 +226,7 @@ void PhaseShaping::sinusoids(float* output, int samples) {
             if (p2 - mod < 0.0f) mod -= 1.0f;
         }
         output[i] = sin2(fmod(p2 - mod, 1.0f));
-        phase = fmod(phase + inc, 1.0);
+        phase = fmod(phase + inc, 1.0f);
     }
 }
 
