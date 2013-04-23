@@ -60,10 +60,6 @@ void PhaseShaping::setParams(float a1_, float a0_) {
     a0 = a0_;
 }
 
-float PhaseShaping::sin2(float p) {
-    return sin_.linear(p);
-}
-
 float height_diff(float scale, float offset) {
     float end = scale + offset;
     if (end > 1.0f) {
@@ -72,153 +68,198 @@ float height_diff(float scale, float offset) {
     return end - offset;
 }
 
-float PhaseShaping::hardsync(float inc, float p) {
+
+float PhaseShaping::sin2(float p) {
+    return sin_.linear(p);
+}
+
+void PhaseShaping::sin2(float* output, int samples) {
+    float inc = freq / sample_rate;
+
+    for (int i = 0; i < samples; i++) {
+        output[i] = sin2(phase);
+        phase = fmod(phase + inc, 1.0);
+    }
+}
+
+void PhaseShaping::hardsync(float* output, int samples) {
     // bandlimited saw
     // TODO only one discontinuity if (a1 + a0) < 1.0
+    float inc = freq / sample_rate;
     float inc2 = a1 * inc;
-    float p2 = gramp(p, a1, a0);
-    float mod = 0.0f;
-    if (p < inc) {                  // start
-        float h = height_diff(a1, a0);
-        mod = h * polyblep(p / inc);
-    } else if (p > (1.0f - inc)) {  // end
-        float h = height_diff(a1, a0);
-        mod = h * polyblep( (p2 - h) / inc2);
-    } else if (p2 < inc2) {         // start mid
-        mod = polyblep(p2 / inc2);
-    } else if (p2 > (1.0f - inc2)) {// end mid
-        mod = polyblep( (p2 - 1.0f) / inc2);
+
+    for (int i = 0; i < samples; i++) {
+        float p2 = gramp(phase, a1, a0);
+        float mod = 0.0f;
+        if (phase < inc) {                 // start
+            float h = height_diff(a1, a0);
+            mod = h * polyblep(phase / inc);
+        } else if (phase > (1.0f - inc)) { // end
+            float h = height_diff(a1, a0);
+            mod = h * polyblep( (p2 - h) / inc2);
+        } else if (p2 < inc2) {            // start mid
+            mod = polyblep(p2 / inc2);
+        } else if (p2 > (1.0f - inc2)) {   // end mid
+            mod = polyblep( (p2 - 1.0f) / inc2);
+        }
+        output[i] = gb(p2 - mod);
+        phase = fmod(phase + inc, 1.0);
     }
-    return gb(p2 - mod);
 }
 
 // TODO bandlimiting
-float PhaseShaping::softsync(float p) {
+void PhaseShaping::softsync(float* output, int samples) {
     // tri
-    return gb(stri(gtri(p, a1, a0)));
+    float inc = freq / sample_rate;
+
+    for (int i = 0; i < samples; i++) {
+        output[i] = gb(stri(gtri(phase, a1, a0)));
+        phase = fmod(phase + inc, 1.0);
+    }
 }
 
-float PhaseShaping::pulse(float inc, float p) {
+void PhaseShaping::pulse(float* output, int samples) {
     // bandlimited square
-    float p2 = gpulse(p, width);
-    float mod = 0.0f;
-    if (p < inc) {                 // start
-        mod = polyblep(p / inc);
-    } else if (p > (1.0f - inc)) { // end
-        mod = polyblep( (p - 1.0f) / inc);
-    } else if (p < width && p > (width - inc)) { // mid end
-        mod = -polyblep( (p - width) / inc);
-    } else if (p > width && p < (width + inc)) { // mid start
-        mod = -polyblep( (p - width) / inc);
+    float inc = freq / sample_rate;
+
+    for (int i = 0; i < samples; i++) {
+        float p2 = gpulse(phase, width);
+        float mod = 0.0f;
+        if (phase < inc) {                 // start
+            mod = polyblep(phase / inc);
+        } else if (phase > (1.0f - inc)) { // end
+            mod = polyblep( (phase - 1.0f) / inc);
+        } else if (phase < width && phase > (width - inc)) {
+            mod = -polyblep( (phase - width) / inc);
+        } else if (phase > width && phase < (width + inc)) {
+            mod = -polyblep( (phase - width) / inc);
+        }
+        output[i] = gb(p2 - mod);
+        phase = fmod(phase + inc, 1.0);
     }
-    return gb(p2 - mod);
 }
 
-float PhaseShaping::slope(float inc, float p) {
+
+void PhaseShaping::slope(float* output, int samples) {
     // bandlimited saw
+    float inc = freq / sample_rate;
     float inc2 = inc / (1.0f - width);
-    float p2 = gvslope(p, width);
-    float mod = 0.0f;
-    if (p < inc) {                 // start
-        mod = polyblep(p / inc);
-    } else if (p2 > (1.0f - inc2)) { // end
-        mod = polyblep( (p2 - 1.0f) / inc2);
-    } else if (p < width && p > (width - inc)) {
-        mod = width * polyblep( (p2 - width) / inc);
-    } else if (p > width && p2 < inc2) {
-        mod = width * polyblep(p2 / inc2);
+
+    for (int i = 0; i < samples; i++) {
+        float p2 = gvslope(phase, width);
+        float mod = 0.0f;
+        if (phase < inc) {               // start
+            mod = polyblep(phase / inc);
+        } else if (p2 > (1.0f - inc2)) { // end
+            mod = polyblep( (p2 - 1.0f) / inc2);
+        } else if (phase < width && phase > (width - inc)) {
+            mod = width * polyblep( (p2 - width) / inc);
+        } else if (phase > width && p2 < inc2) {
+            mod = width * polyblep(p2 / inc2);
+        }
+        output[i] = gb(p2 - mod);
+        phase = fmod(phase + inc, 1.0);
     }
-    return gb(p2 - mod);
 }
 
 // TODO bandlimiting
-float PhaseShaping::jp8000_tri(float p) {
-    // tri
-    float p2 = gb(gtri(p, a1, a0));
-    return 2.0 * (p2 - ceil(p2 - 0.5));
+void PhaseShaping::jp8000_tri(float* output, int samples) {
+    float inc = freq / sample_rate;
+
+    for (int i = 0; i < samples; i++) {
+        float p2 = gb(gtri(phase, a1, a0));
+        output[i] = 2.0 * (p2 - ceil(p2 - 0.5));
+        phase = fmod(phase + inc, 1.0);
+    }
 }
 
 // TODO bandlimiting
-float PhaseShaping::jp8000_supersaw(float p) {
-    // saw
-    float m1 = 0.05, m2 = 0.88f;
-    float p2 = gripple2(glin(p, a1), m1, m2);
-    return sin2(fmod(p2, 1.0f));
+void PhaseShaping::jp8000_supersaw(float* output, int samples) {
+    float inc = freq / sample_rate;
+    const float m1 = 0.25f / (2.0 * M_PI), m2 = 0.88f / (2.0 * M_PI);
+
+    for (int i = 0; i < samples; i++) {
+        float p2 = gripple2(fmod(glin(phase, a1), 1.0f), m1, m2);
+        output[i] = sin2(fmod(p2, 1.0f));
+        phase = fmod(phase + inc, 1.0);
+    }
 }
 
-float PhaseShaping::waveslices(float inc, float p) {
+void PhaseShaping::waveslices(float* output, int samples) {
     // bandlimited ramp -> sin
+    float inc = freq / sample_rate;
     float inc2 = a1 * inc;
-    float p2 = limit(glin(p, a1), 1.0f);
     float a1_p = limit(a1, 1.0f);
     float diff = phase_target(a1_p) - a1_p;
-    float mod = 0.0f;
-    if (p < inc) {                // start
-        mod = diff * polyblep(p2 / inc2);
-        // TODO simplify this
-        if (a1_p > 0.5f) mod *= -1.0f;
-        if (p2 - mod < 0.0f) mod -= 1.0f;
-    } else if (p > (1.0f - inc)) { // end
-        mod = diff * polyblep( (p2 - a1_p) / inc2);
+
+    for (int i = 0; i < samples; i++) {
+        float p2 = limit(glin(phase, a1), 1.0f);
+        float mod = 0.0f;
+        if (phase < inc) {                 // start
+            mod = diff * polyblep(p2 / inc2);
+            // TODO simplify this
+            if (a1_p > 0.5f) mod *= -1.0f;
+            if (p2 - mod < 0.0f) mod -= 1.0f;
+        } else if (phase > (1.0f - inc)) { // end
+            mod = diff * polyblep( (p2 - a1_p) / inc2);
+        }
+        output[i] = sin2(fmod(p2 - mod, 1.0f));
+        phase = fmod(phase + inc, 1.0);
     }
-    return sin2(fmod(p2 - mod, 1.0f));
 }
 
-float PhaseShaping::sinusoids(float inc, float p) {
+void PhaseShaping::sinusoids(float* output, int samples) {
     // bandlimited ramp -> sin
+    float inc = freq / sample_rate;
     float inc2 = inc / (1.0f - width);
-    float p2 = gvslope(p, width);
     float diff = phase_target(width) - width;
-    float mod = 0.0f;
-    if (p < width && p > (width - inc)) { // mid end
-        mod = diff * polyblep( (p2 - width) / inc);
-    } else if (p > width && p2 < inc2) {  // mid start
-        mod = diff * polyblep(p2 / inc2);
-        // TODO simplify this
-        if (width > 0.5f) mod *= -1.0f;
-        if (p2 - mod < 0.0f) mod -= 1.0f;
+
+    for (int i = 0; i < samples; i++) {
+        float p2 = gvslope(phase, width);
+        float mod = 0.0f;
+        if (phase < width && phase > (width - inc)) { // mid end
+            mod = diff * polyblep( (p2 - width) / inc);
+        } else if (phase > width && p2 < inc2) {      // mid start
+            mod = diff * polyblep(p2 / inc2);
+            // TODO simplify this
+            if (width > 0.5f) mod *= -1.0f;
+            if (p2 - mod < 0.0f) mod -= 1.0f;
+        }
+        output[i] = sin2(fmod(p2 - mod, 1.0f));
+        phase = fmod(phase + inc, 1.0);
     }
-    return sin2(fmod(p2 - mod, 1.0f));
 }
 
-float PhaseShaping::noise() {
-    return (2.0f * rand() / (RAND_MAX + 1.0f) - 1.0f);
+void PhaseShaping::noise(float* output, int samples) {
+    for (int i = 0; i < samples; i++) {
+        output[i] =  (2.0f * rand() / (RAND_MAX + 1.0f) - 1.0f);
+    }
 }
-
-#define PHASE_SHAPING_LOOP(x) \
-    for (int i = 0; i < samples; i++) { \
-        output[i] = x; \
-        phase = fmod(phase + inc, 1.0); \
-    } \
-    break
 
 void PhaseShaping::process(float* output, int samples) {
     float inc = freq / sample_rate;
 
-    // TODO move loops to type specific functions for better optimizations
     switch(type) {
     case SIN:
-        PHASE_SHAPING_LOOP(sin2(phase));
+        sin2(output, samples); break;
     case HARD:
-        PHASE_SHAPING_LOOP(hardsync(inc, phase));
+        hardsync(output, samples); break;
     case SOFT:
-        PHASE_SHAPING_LOOP(softsync(phase));
+        softsync(output, samples); break;
     case PULSE:
-        PHASE_SHAPING_LOOP(pulse(inc, phase));
+        pulse(output, samples); break;
     case SLOPE:
-        PHASE_SHAPING_LOOP(slope(inc, phase));
+        slope(output, samples); break;
     case TRI:
-        PHASE_SHAPING_LOOP(jp8000_tri(phase));
+        jp8000_tri(output, samples); break;
     case SUPERSAW:
-        PHASE_SHAPING_LOOP(jp8000_supersaw(phase));
+        jp8000_supersaw(output, samples); break;
     case SLICES:
-        PHASE_SHAPING_LOOP(waveslices(inc, phase));
+        waveslices(output, samples); break;
     case SINUSOIDS:
-        PHASE_SHAPING_LOOP(sinusoids(inc, phase));
+        sinusoids(output, samples); break;
     case NOISE:
-        for (int i = 0; i < samples; i++) {
-           output[i] = noise();
-        }
+        noise(output, samples); break;
     }
 }
 
