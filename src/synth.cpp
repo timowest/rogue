@@ -152,6 +152,8 @@ void rogueSynth::post_process(uint32_t from, uint32_t to) {
     rdcBlocker.process(right, right, to - from);
 
     // TODO effects
+
+    // TODO limiter
 }
 
 void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
