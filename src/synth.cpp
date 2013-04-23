@@ -85,7 +85,7 @@ void rogueSynth::update() {
         data.oscs[i].param2      = v(p_osc1_param2 + off);
         data.oscs[i].level_a     = v(p_osc1_level_a + off); // scale
         data.oscs[i].level_b     = v(p_osc1_level_b + off); // scale
-        data.oscs[i].level       = v(p_osc1_level + off); // scale
+        data.oscs[i].level       = v(p_osc1_level + off);   // scale
 
         data.oscs[i].vel_to_vol  = v(p_osc1_vel_to_vol + off);
     }

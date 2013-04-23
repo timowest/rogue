@@ -185,7 +185,7 @@ def main():
             ["retrigger"  , 0, 1, 0]] # toggled
                         
     mods = [["src"        , 0, 17, 0],
-            ["target"     , 0, 39, 0],
+            ["target"     , 0, 43, 0],
             ["amount"     , -1.0, 1.0, 0]]        
 
     idx = 3

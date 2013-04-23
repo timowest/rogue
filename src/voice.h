@@ -78,8 +78,8 @@ class rogueVoice : public lvtk::Voice {
       float sample_rate;
       unsigned char m_key, m_velocity;
 
-      float pitch_modulate(int target);
-      float modulate(int target);
+      template<class Function>
+      float modulate(float init, int target, Function fn);
 
       // configure
       void configLFO(int i);

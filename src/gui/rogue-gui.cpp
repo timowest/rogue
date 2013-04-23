@@ -86,10 +86,10 @@ CHARS mod_src_labels[] = {
 CHARS mod_target_labels[]  = {
         "--   ",
         // osc
-        "OSC 1 Pitch", "OSC 1 Mod", "OSC 1 Amp",
-        "OSC 2 Pitch", "OSC 2 Mod", "OSC 2 Amp",
-        "OSC 3 Pitch", "OSC 3 Mod", "OSC 3 Amp",
-        "OSC 4 Pitch", "OSC 4 Mod", "OSC 4 Amp",
+        "OSC 1 Pitch", "OSC 1 Mod", "OSC 1 PWM", "OSC 1 Amp",
+        "OSC 2 Pitch", "OSC 2 Mod", "OSC 2 PWM", "OSC 2 Amp",
+        "OSC 3 Pitch", "OSC 3 Mod", "OSC 3 PWM", "OSC 3 Amp",
+        "OSC 4 Pitch", "OSC 4 Mod", "OSC 4 PWM", "OSC 4 Amp",
         // dcf
         "Filter 1 Freq", "Filter 1 Q", "Filter 1 Pan", "Filter 1 Amp",
         "Filter 2 Freq", "Filter 2 Q", "Filter 2 Pan", "Filter 2 Amp",

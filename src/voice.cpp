@@ -92,33 +92,25 @@ void rogueVoice::off(unsigned char velocity) {
     in_sustain = true;
 }
 
-static float amp_modulate(float amt, float val) {
+static float amp_mod(float v, float amt, float mval) {
     if (amt > 0) {
-        return 1.0f - amt + amt * val;
+        return v * (1.0f - amt + amt * mval);
     } else {
-        return 1.0f + amt * val;
+        return v * (1.0f + amt * mval);
     }
 }
 
-// TODO optimize
-float rogueVoice::modulate(int target) {
-    float v = 1.0f;
-    for (int i = 0; i < NMOD; i++) {
-        if (data->mods[i].target == target) {
-            ModulationData& modData = data->mods[i];
-            v *= amp_modulate(modData.amount, mod[modData.src]);
-        }
-    }
-    return v;
+static float pitch_mod(float v, float amt, float mval) {
+    return v + amt * mval;
 }
 
-// TODO optimize
-float rogueVoice::pitch_modulate(int target) {
-    float v = 0.0f;
+template<class Function>
+float rogueVoice::modulate(float init, int target, Function fn) {
+    float v = init;
     for (int i = 0; i < NMOD; i++) {
         if (data->mods[i].target == target) {
             ModulationData& modData = data->mods[i];
-            v += 12.0f * modData.amount * mod[modData.src];
+            v = fn(v, modData.amount, mod[modData.src]);
         }
     }
     return v;
@@ -130,7 +122,7 @@ void rogueVoice::configLFO(int i) {
 
     float f = lfoData.freq;
     // key to f
-    f *= modulate(M_LFO1_S + 2 * i);
+    f *= modulate(1.0f, M_LFO1_S + 2 * i, amp_mod);
 
     // NOTE: lfos can't modulate each other's freq
     lfo.lfo.setType(lfoData.type);
@@ -151,7 +143,7 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
         }
 
         // amp modulation
-        v *= modulate(M_LFO1_AMP + 2 * i);
+        v *= modulate(1.0f, M_LFO1_AMP + 2 * i, amp_mod);
     }
     // update mod values
     mod[M_LFO1_BI + 2*i] = v;
@@ -166,7 +158,7 @@ void rogueVoice::configEnv(int i) {
     Env& env = envs[i];
 
     // NOTE: envelopes can't modulate each other's speed
-    float f = 1.0f / modulate(M_ENV1_S + 2 * i); // TODO use different modulation algorithm
+    float f = 1.0f / modulate(1.0f, M_ENV1_S + 2 * i, amp_mod); // TODO use different modulation algorithm
     float a = envData.attack / f;
     float h = envData.hold / f;
     float d = envData.decay / f;
@@ -184,7 +176,7 @@ void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
     if (envData.on) {
         v = env.env.tick(to - from);
         // amp modulation
-        v *= modulate(M_ENV1_AMP + 2 * i);
+        v *= modulate(1.0f, M_ENV1_AMP + 2 * i, amp_mod);
     }
     // update mod values
     mod[M_ENV1 + i] = v;
@@ -205,7 +197,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
     if (oscData.on) {
         // pitch modulation
         float f = 440.0;
-        float pmod = pitch_modulate(M_OSC1_P + 3 * i);
+        float pmod = modulate(0.0f, M_OSC1_P + 4 * i, pitch_mod);
         if (oscData.tracking) {
             f = midi2hz(float(m_key) + oscData.coarse + oscData.fine + pmod);
         } else if (pmod > 0.0f) {
@@ -215,10 +207,13 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
 
         // TODO mod modulation
 
+        // pulse width modulation
+        float width = oscData.width * modulate(1.0f, M_OSC1_PWM + 4 * i, amp_mod);
+
         // process
         osc.osc.setType(oscData.type);
         osc.osc.setFreq(f);
-        osc.osc.setWidth(oscData.width);
+        osc.osc.setWidth(width);
         osc.osc.setParams(oscData.param1, oscData.param2);
         osc.osc.process(osc.buffer + from, to - from);
 
@@ -231,7 +226,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
             v *= 1.0 - oscData.vel_to_vol + oscData.vel_to_vol * midi2f(m_velocity);
         }
 
-        v *= modulate(M_OSC1_AMP + 3 * i);
+        v *= modulate(1.0f, M_OSC1_AMP + 4 * i, amp_mod);
         float step = (v - osc.prev_level) / (to - from);
         float l = osc.prev_level;
         for (int i = from; i < to; i++) {
@@ -272,11 +267,11 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
         float f = filterData.freq * filter.key_vel_to_f;
 
         // freq modulation
-        f *= modulate(M_DCF1_F + 4 * i); // TODO use different modulation algorithm here
+        f *= modulate(1.0f, M_DCF1_F + 4 * i, amp_mod); // TODO use different modulation algorithm here
 
         // res modulation
         float q = filterData.q;
-        q *= modulate(M_DCF1_Q + 4 * i);
+        q *= modulate(1.0f, M_DCF1_Q + 4 * i, amp_mod);
 
         // process
         float* source = buffers[filterData.source];
@@ -292,7 +287,7 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
 
         // amp modulation
         float v = filterData.level;
-        v *= modulate(M_DCF1_AMP + 4 * i);
+        v *= modulate(1.0f, M_DCF1_AMP + 4 * i, amp_mod);
         float step = (v - filter.prev_level) / (to - from);
         float l = filter.prev_level;
         for (int i = from; i < to; i++) {
