@@ -10,6 +10,25 @@ NS = """@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 """
 
+def osc(idx, conf):
+  id = "osc"+str(idx)
+  m = {id+"_on": 1}
+  m[id+"_level"] = 1.0
+  for (k, v) in conf.items():
+    m[id+"_"+k] = v
+  return m
+
+def dcf(id, conf):
+  {}
+
+def lfo(id, conf):
+  {}
+
+def env(id, conf):
+  {}
+
+# TODO merge function
+
 # Leads
 
 # Basses
@@ -25,3 +44,9 @@ NS = """@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
 # Pianos
 
 # Organs
+
+def main():
+  print osc(1, {"type": 1})
+
+if __name__ == "__main__":
+  main()
