@@ -153,6 +153,12 @@ void rogueSynth::post_process(uint32_t from, uint32_t to) {
 
     // TODO effects
 
+    // chorus
+
+    // delay
+
+    // reverb
+
     // TODO limiter
 }
 
