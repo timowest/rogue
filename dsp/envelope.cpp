@@ -12,8 +12,11 @@ namespace dsp {
 // ADSR
 
 void ADSR::on() {
+    // don't reset when retriggered during release
+    if (state_ == IDLE) {
+        last = 0.0;
+    }
     state_ = A;
-    last = 0.0;
 }
 
 void ADSR::off() {
@@ -62,8 +65,11 @@ float ADSR::tick(int samples) {
 // AHDSR
 
 void AHDSR::on() {
+    // don't reset when retriggered during release
+    if (state_ == IDLE) {
+        last = 0.0;
+    }
     state_ = A;
-    last = 0.0;
 }
 
 void AHDSR::off() {

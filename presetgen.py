@@ -33,17 +33,21 @@ def env(id, conf):
 
 # Basses
 
-# Brass
-
-# Strings
-
-# Effects
-
 # FM
 
 # Pianos
 
 # Organs
+
+# Brass
+
+# Reed
+
+# Guitars
+
+# Strings
+
+# Effects
 
 def main():
   print osc(1, {"type": 1})

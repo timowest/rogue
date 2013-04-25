@@ -227,9 +227,10 @@ Widget* rogueGUI::createOSC(int i) {
     control(table, "Ratio", p_osc1_ratio + off, 2, 3);
 
     // row 3
-    control(table, "Param 1", p_osc1_param1 + off, 0, 5);
-    control(table, "Param 2", p_osc1_param2 + off, 1, 5);
-    control(table, "Level", p_osc1_level + off, 2, 5);
+    control(table, "Width", p_osc1_width + off, 0, 5);
+    control(table, "Param 1", p_osc1_param1 + off, 1, 5);
+    control(table, "Param 2", p_osc1_param2 + off, 2, 5);
+    control(table, "Level", p_osc1_level + off, 3, 5);
 
     // row 4
     control(table, "Level A", p_osc1_level_a + off, 0, 7);
