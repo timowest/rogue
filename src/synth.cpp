@@ -27,11 +27,14 @@ rogueSynth::rogueSynth(double rate)
 
 unsigned rogueSynth::find_free_voice(unsigned char key, unsigned char velocity) {
     //is this a retriggered note?
-    for (int i = 0; i < NVOICES; i++) {
-        if ((voices[i]->get_key() == key) && (voices[i]->is_sustained())) {
-            return i;
+    if (false) { // TODO find a proper mode for this
+        for (int i = 0; i < NVOICES; i++) {
+            if ((voices[i]->get_key() == key) && (voices[i]->is_sustained())) {
+                return i;
+            }
         }
     }
+
 
     //take the next free voice if
     // ... notes are sustained but not this new one
@@ -175,7 +178,6 @@ void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
         for (int i = 0; i < NVOICES; ++i) {
             if (voices[i]->get_key() == data[1]) {
                 voices[i]->off(data[2]);
-                break;
            }
         }
         break;
