@@ -16,6 +16,11 @@ void write_wav(char* filename, float* buffer) {
     if (outfile) {
         outfile.write(&buffer[0], SIZE);
     }
+
+    // reset
+    for (int i = 0; i < SIZE; i++) {
+        buffer[i] = 0.0f;
+    }
 }
 
 int main() {
@@ -37,6 +42,8 @@ int main() {
     data.bus_a_level = 0.5;
     data.oscs[0].on = true;
     data.oscs[0].type = 0;
+    data.oscs[0].param1 = 1.0;
+    data.oscs[0].param2 = 0.0;
     data.oscs[0].ratio = 1.0;
     data.oscs[0].level = 1.0;
     data.oscs[0].level_a = 1.0;
@@ -58,7 +65,6 @@ int main() {
     sprintf(filename, "voice_%i.wav", 0);
     write_wav(filename, buffer_l);
 
-
     // LFO based amp modulation
     data.lfos[0].on = true;
     data.lfos[0].type = 0;
@@ -77,6 +83,28 @@ int main() {
     voice.render(SIZE / 2, SIZE);
 
     sprintf(filename, "voice_%i.wav", 1);
+    write_wav(filename, buffer_l);
+
+    // filtering
+    data.oscs[0].type = 1;
+
+    data.mods[0].src = 0;
+    data.mods[0].target = 0;
+
+    data.bus_a_level = 0.0;
+
+    data.filters[0].on = true;
+    data.filters[0].type = 0;
+    data.filters[0].level = 0.5;
+    data.filters[0].freq = 1000.0;
+    data.filters[0].q = 0.0;
+
+    voice.on(69, 64);
+    voice.render(0, SIZE / 2);
+    voice.off(0);
+    voice.render(SIZE / 2, SIZE);
+
+    sprintf(filename, "voice_%i.wav", 2);
     write_wav(filename, buffer_l);
 
 }

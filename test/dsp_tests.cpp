@@ -112,7 +112,7 @@ int main() {
     }
     env.off();
     for (int j = 0.5* SIZE; j < SIZE; j++) {
-            buffer[j] = env.tick();
+        buffer[j] = env.tick();
     }
     sprintf(filename, "env_%i.wav", 0);
     write_wav(filename, buffer);
