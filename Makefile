@@ -48,6 +48,6 @@ guitests: src/rogue.gen src/gui/config.gen
 tests: src/rogue.gen
 	$(CXX) -g -std=c++11 test/dsp_tests.cpp $(SNDFILE) -Idsp -o dsp_tests.out
 	$(CXX) -g -std=c++11 test/voice_tests.cpp $(SNDFILE) $(LVTK) -Idsp -Isrc -o voice_tests.out
-	mkdir wavs
+	mkdir -p wavs
 	./dsp_tests.out
 	./voice_tests.out

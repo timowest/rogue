@@ -61,13 +61,8 @@ void PhaseShaping::setParams(float a1_, float a0_) {
 }
 
 float height_diff(float scale, float offset) {
-    float end = scale + offset;
-    if (end > 1.0f) {
-        end = fmod(end, 1.0f);
-    }
-    return end - offset;
+    return limit(scale + offset, 1.0f) - offset;
 }
-
 
 float PhaseShaping::sin2(float p) {
     return sin_.linear(p);

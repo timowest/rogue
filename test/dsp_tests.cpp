@@ -5,11 +5,11 @@
 #include "envelope.cpp"
 #include "tables.cpp"
 
+#include <iostream>
+
 #define SR 44100.0
 #define SIZE 44100
 #define CHANNELS 1
-
-float osc_params[] = {0.25f, 0.5f, 0.75f, 1.0f, 1.25f, 1.5f};
 
 void write_wav(char* filename, float* buffer) {
     static const int FORMAT = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
@@ -17,6 +17,21 @@ void write_wav(char* filename, float* buffer) {
     if (outfile) {
         outfile.write(&buffer[0], SIZE);
     }
+}
+
+bool has_clicks(float* buffer) {
+    float threshold = 0.3f;
+    float diff = 0.0f;
+    float diff2 = 0.0f;
+    for (int i = 1; i < SIZE; i++) {
+        diff = buffer[i] - buffer[i - 1];
+        if (fabs(diff) > threshold && fabs(diff2) > threshold &&
+            ((diff < 0.0f && diff2 > 0.0f) || (diff > 0.0f && diff2 < 0.0))) {
+            return true;
+        }
+        diff2 = diff;
+    }
+    return false;
 }
 
 int main() {
@@ -46,22 +61,38 @@ int main() {
     dsp::AHDSR env;
 
     // oscs
-    for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 6; j++) {
-            osc.reset();
-            osc.setType(i);
-            osc.setParams(osc_params[j], 0.0f);
-            osc.setWidth(osc_params[j]);
-            osc.process(buffer, SIZE);
+    int errors = 0;
+    int total = 0;
+    float params[] = {0.0f, 0.1f, 0.2f, 0.25f, 0.3f, 0.4f, 0.5f, 0.6f, 0.75f, 0.8f, 0.9f,
+                      1.0f, 1.1f, 1.2f, 1.25f, 1.3f, 1.4f, 1.5f, 1.6f, 1.7f, 1.75f, 1.9f};
+    for (int i = 0; i < 10; i++) { // type
+        for (int j = 0; j < 22; j++) { // param1
+            for (int k = 0; k < 11; k++) { // param2 & width
+                osc.reset();
+                osc.setType(i);
+                osc.setParams(params[j], params[k]);
+                osc.setWidth(params[k]);
+                osc.process(buffer, SIZE);
 
-            //dcBlocker.clear();
-            //dcBlocker.process(buffer, buffer, SIZE);
+                //dcBlocker.clear();
+                //dcBlocker.process(buffer, buffer, SIZE);
 
-            sprintf(filename, "wavs/osc_%i%i.wav", i, j);
-            write_wav(filename, buffer);
+                sprintf(filename, "wavs/osc_%i_%i_%i.wav", i, j, k);
+                write_wav(filename, buffer);
 
-            // TODO test for clicks
+                // click detection
+                // noise is allowed to have clicks
+                if (i != 9 && has_clicks(buffer)) {
+                    std::cout << "ERROR: has clicks " << i << j << k << std::endl;
+                    errors++;
+                }
+                total++;
+            }
         }
+    }
+
+    if (errors > 0) {
+        std::cout << errors << "/" << total << " errors (osc)" << std::endl;
     }
 
     // noise input
