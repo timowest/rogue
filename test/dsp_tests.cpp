@@ -57,7 +57,7 @@ int main() {
             //dcBlocker.clear();
             //dcBlocker.process(buffer, buffer, SIZE);
 
-            sprintf(filename, "osc_%i%i.wav", i, j);
+            sprintf(filename, "wavs/osc_%i%i.wav", i, j);
             write_wav(filename, buffer);
 
             // TODO test for clicks
@@ -77,7 +77,7 @@ int main() {
         moog.setType(i);
         moog.process(noise, buffer, SIZE);
 
-        sprintf(filename, "moog_%i.wav", i);
+        sprintf(filename, "wavs/moog_%i.wav", i);
         write_wav(filename, buffer);
     }
 
@@ -87,7 +87,7 @@ int main() {
         svf.setType(i);
         svf.process(noise, buffer, SIZE);
 
-        sprintf(filename, "svf_%i.wav", i);
+        sprintf(filename, "wavs/svf_%i.wav", i);
         write_wav(filename, buffer);
     }
 
@@ -100,7 +100,7 @@ int main() {
             buffer[j] = lfo.tick();
         }
 
-        sprintf(filename, "lfo_%i.wav", i);
+        sprintf(filename, "wavs/lfo_%i.wav", i);
         write_wav(filename, buffer);
     }
 
@@ -114,7 +114,7 @@ int main() {
     for (int j = 0.5* SIZE; j < SIZE; j++) {
         buffer[j] = env.tick();
     }
-    sprintf(filename, "env_%i.wav", 0);
+    sprintf(filename, "wavs/env_%i.wav", 0);
     write_wav(filename, buffer);
 
     env.on();
@@ -133,7 +133,7 @@ int main() {
     for (int j = 0.75 * SIZE; j < SIZE; j++) {
         buffer[j] = env.tick();
     }
-    sprintf(filename, "env_%i.wav", 1);
+    sprintf(filename, "wavs/env_%i.wav", 1);
     write_wav(filename, buffer);
 
 

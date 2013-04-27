@@ -39,7 +39,7 @@ run:
 	jalv.gtk http://www.github.com/timowest/rogue
 
 clean:
-	rm -rf $(BUNDLE) rogue.so src/rogue.peg rogue.ttl *.out *.wav
+	rm -rf $(BUNDLE) rogue.so src/rogue.peg rogue.ttl wavs *.out 
 	
 guitests: src/rogue.gen src/gui/config.gen	
 	$(CXX) -g -std=c++11 src/gui/knob-test.cpp $(GTKMM) -Isrc -o knobtest.out		
@@ -48,5 +48,6 @@ guitests: src/rogue.gen src/gui/config.gen
 tests: src/rogue.gen
 	$(CXX) -g -std=c++11 test/dsp_tests.cpp $(SNDFILE) -Idsp -o dsp_tests.out
 	$(CXX) -g -std=c++11 test/voice_tests.cpp $(SNDFILE) $(LVTK) -Idsp -Isrc -o voice_tests.out
+	mkdir wavs
 	./dsp_tests.out
 	./voice_tests.out

@@ -3,6 +3,7 @@
 *.so
 *.out
 *.wav
+wavs
 /gen
 log
 lv2-rogue.lv2

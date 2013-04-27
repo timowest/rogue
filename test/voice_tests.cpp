@@ -62,7 +62,7 @@ int main() {
     voice.off(0);
     voice.render(SIZE / 2, SIZE);
 
-    sprintf(filename, "voice_%i.wav", 0);
+    sprintf(filename, "wavs/voice_%i.wav", 0);
     write_wav(filename, buffer_l);
 
     // LFO based amp modulation
@@ -82,7 +82,7 @@ int main() {
     voice.off(0);
     voice.render(SIZE / 2, SIZE);
 
-    sprintf(filename, "voice_%i.wav", 1);
+    sprintf(filename, "wavs/voice_%i.wav", 1);
     write_wav(filename, buffer_l);
 
     // filtering
@@ -104,7 +104,7 @@ int main() {
     voice.off(0);
     voice.render(SIZE / 2, SIZE);
 
-    sprintf(filename, "voice_%i.wav", 2);
+    sprintf(filename, "wavs/voice_%i.wav", 2);
     write_wav(filename, buffer_l);
 
 }
