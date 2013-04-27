@@ -151,7 +151,7 @@ class BiQuad : Filter {
  * Much credit is owed to Antti Huovilainen's 2004 and 2006 papers
  * on the subject.
  *
- * originally by Aaron Krajeski 2012 *
+ * originally by Aaron Krajeski 2012
  * based on http://song-swap.com/MUMT618/aaron/Presentation/
  */
 class MoogFilter : Filter {
