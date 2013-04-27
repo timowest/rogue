@@ -97,7 +97,7 @@ int main() {
     data.filters[0].type = 0;
     data.filters[0].level = 0.5;
     data.filters[0].freq = 1000.0;
-    data.filters[0].q = 0.0;
+    data.filters[0].q = 0.5;
 
     voice.on(69, 64);
     voice.render(0, SIZE / 2);

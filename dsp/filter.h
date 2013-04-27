@@ -170,7 +170,7 @@ class MoogFilter : Filter {
 
   private:
     float dlout_[5], dlin_[5];
-    float drive_, wc_, g_, gres_, gcomp_;
+    float drive_ = 1.0f, wc_, g_, gres_, gcomp_ = 0.5f;
     float sample_rate_;
     int type_;
 };
