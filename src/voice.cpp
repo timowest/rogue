@@ -7,7 +7,6 @@
  *                https://github.com/smbolton/whysynth
  */
 
-#include <stdio.h>
 #include "voice.h"
 
 #define SEMITONE 1.05946f
