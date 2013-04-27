@@ -83,7 +83,7 @@ int main() {
                 // click detection
                 // noise is allowed to have clicks
                 if (i != 9 && has_clicks(buffer)) {
-                    std::cout << "ERROR: has clicks " << i << j << k << std::endl;
+                    std::cout << "ERROR: has clicks " << i << " "<< j << " " << k << std::endl;
                     errors++;
                 }
                 total++;
@@ -92,7 +92,7 @@ int main() {
     }
 
     if (errors > 0) {
-        std::cout << errors << "/" << total << " errors (osc)" << std::endl;
+        std::cout << "ERROR: " << errors << "/" << total << " errors (osc)" << std::endl;
     }
 
     // noise input
