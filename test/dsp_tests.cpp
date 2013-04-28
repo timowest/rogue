@@ -9,6 +9,7 @@
 
 #define SR 44100.0
 #define SIZE 44100
+#define DOUBLE_SIZE 88200
 #define CHANNELS 1
 
 void write_wav(char* filename, float* buffer) {
@@ -19,24 +20,39 @@ void write_wav(char* filename, float* buffer) {
     }
 }
 
-bool has_clicks(float* buffer) {
-    float threshold = 0.3f;
+void write_wav(char* filename, float* left, float* right) {
+    static const int FORMAT = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
+    float buffer[DOUBLE_SIZE];
+    for (int i = 0; i < SIZE; i++) {
+        buffer[2 * i] = left[i];
+        buffer[2 * i + 1] = right[i];
+    }
+    SndfileHandle outfile(filename, SFM_WRITE, FORMAT, 2, SR);
+    if (outfile) {
+        outfile.write(&buffer[0], SIZE);
+    }
+}
+
+int count_clicks(float* buffer) {
+    float threshold = 0.4f;
     float diff = 0.0f;
     float diff2 = 0.0f;
+    int clicks = 0;
     for (int i = 1; i < SIZE; i++) {
         diff = buffer[i] - buffer[i - 1];
         if (fabs(diff) > threshold && fabs(diff2) > threshold &&
             ((diff < 0.0f && diff2 > 0.0f) || (diff > 0.0f && diff2 < 0.0))) {
-            return true;
+            clicks++;
         }
         diff2 = diff;
     }
-    return false;
+    return clicks;
 }
 
 int main() {
     char filename[50];
     float buffer[SIZE];
+    float buffer2[SIZE];
     dsp::PhaseShaping osc;
     osc.setSamplerate(SR);
     osc.setFreq(440.0f);
@@ -63,27 +79,34 @@ int main() {
     // oscs
     int errors = 0;
     int total = 0;
-    float params[] = {0.0f, 0.1f, 0.2f, 0.25f, 0.3f, 0.4f, 0.5f, 0.6f, 0.75f, 0.8f, 0.9f,
-                      1.0f, 1.1f, 1.2f, 1.25f, 1.3f, 1.4f, 1.5f, 1.6f, 1.7f, 1.75f, 1.9f};
+    float params[] = {0.0f, 0.02f, 0.1f, 0.2f, 0.25f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.75f, 0.8f, 0.9f, 0.98f,
+                      1.0f, 1.02f, 1.1f, 1.2f, 1.25f, 1.3f, 1.4f, 1.5f, 1.6f, 1.7f, 1.75f, 1.8f, 1.9f, 1.98f};
     for (int i = 0; i < 10; i++) { // type
-        for (int j = 0; j < 22; j++) { // param1
-            for (int k = 0; k < 11; k++) { // param2 & width
+        for (int j = 0; j < 28; j++) { // param1
+            for (int k = 0; k < 15; k++) { // param2 & width
                 osc.reset();
+                osc.setBandlimit(true);
                 osc.setType(i);
                 osc.setParams(params[j], params[k]);
                 osc.setWidth(params[k]);
                 osc.process(buffer, SIZE);
 
-                //dcBlocker.clear();
-                //dcBlocker.process(buffer, buffer, SIZE);
+                // 2nd version without polyblep
+                osc.reset();
+                osc.setBandlimit(false);
+                osc.process(buffer2, SIZE);
 
                 sprintf(filename, "wavs/osc_%i_%i_%i.wav", i, j, k);
-                write_wav(filename, buffer);
+                write_wav(filename, buffer, buffer2);
 
                 // click detection
                 // noise is allowed to have clicks
-                if (i != 9 && has_clicks(buffer)) {
-                    std::cout << "ERROR: has clicks " << i << " "<< j << " " << k << std::endl;
+                int clicks = count_clicks(buffer);
+                int clicks2 = count_clicks(buffer2);
+                if (i != 9 && clicks > clicks2) {
+                    std::cout << "ERROR: " << i << "_"<< j << "_" << k
+                              << " has " << clicks << " clicks, "
+                              << "params: " << params[j] << " " << params[k] << std::endl;
                     errors++;
                 }
                 total++;
@@ -110,6 +133,8 @@ int main() {
 
         sprintf(filename, "wavs/moog_%i.wav", i);
         write_wav(filename, buffer);
+
+        // TODO verify that output is not zero
     }
 
     // svf
@@ -120,6 +145,8 @@ int main() {
 
         sprintf(filename, "wavs/svf_%i.wav", i);
         write_wav(filename, buffer);
+
+        // TODO verify that output is not zero
     }
 
     // lfos

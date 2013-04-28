@@ -30,6 +30,7 @@ class PhaseShaping {
     void setParams(float a1, float a0);
     void setType(int t) { type = t; }
     void setSamplerate(float r) { sample_rate = r; }
+    void setBandlimit(bool b) { bandlimit = b; }
     void process(float* output, int samples);
 
   protected:
@@ -46,6 +47,7 @@ class PhaseShaping {
     void noise (float* output, int samples);
 
   private:
+    bool bandlimit = true;
     float phase, freq;
     float width = 0.5f, a1 = 1.0f, a0 = 0.0f;
     float sample_rate;
