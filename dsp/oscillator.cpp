@@ -132,8 +132,9 @@ void PhaseShaping::softsync(float* output, int samples) {
 void PhaseShaping::pulse(float* output, int samples) {
     // bandlimited square
     float inc = freq / sample_rate;
+    bool bl = bandlimit && width > inc && width < (1.0f - inc);
 
-    if (bandlimit) {
+    if (bl) {
         for (int i = 0; i < samples; i++) {
             float p2 = gpulse(phase, width);
             float mod = 0.0f;
