@@ -37,13 +37,20 @@ int count_clicks(float* buffer) {
     float threshold = 0.4f;
     float diff = 0.0f;
     float diff2 = 0.0f;
+    float diff3 = 0.0f;
     int clicks = 0;
     for (int i = 1; i < SIZE; i++) {
         diff = buffer[i] - buffer[i - 1];
+        // one sample click
         if (fabs(diff) > threshold && fabs(diff2) > threshold &&
             ((diff < 0.0f && diff2 > 0.0f) || (diff > 0.0f && diff2 < 0.0))) {
             clicks++;
+        // two sample click
+        } else  if (fabs(diff) > threshold && fabs(diff2) < 0.1f && fabs(diff3) > threshold &&
+            ((diff < 0.0f && diff3 > 0.0f) || (diff > 0.0f && diff3 < 0.0))) {
+            clicks++;
         }
+        diff3 = diff2;
         diff2 = diff;
     }
     return clicks;
