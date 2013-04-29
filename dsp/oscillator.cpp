@@ -132,9 +132,8 @@ void PhaseShaping::softsync(float* output, int samples) {
 void PhaseShaping::pulse(float* output, int samples) {
     // bandlimited square
     float inc = freq / sample_rate;
-    bool bl = bandlimit && width > inc && width < (1.0f - inc);
 
-    if (bl) {
+    if (bandlimit) {
         for (int i = 0; i < samples; i++) {
             float p2 = gpulse(phase, width);
             float mod = 0.0f;
@@ -225,9 +224,8 @@ void PhaseShaping::waveslices(float* output, int samples) {
             float p2 = limit(glin(phase, a1), 1.0f);
             float mod = 0.0f;
             if (phase < inc) {                 // start
-                mod = fabs(diff) * polyblep(p2 / inc2);
-                // TODO simplify this
-                if (p2 - mod < 0.0f) mod -= 1.0f;
+                mod = diff * polyblep(p2 / inc2);
+                p2 += phase_target(a1_p);
             } else if (phase > (1.0f - inc)) { // end
                 mod = diff * polyblep( (p2 - a1_p) / inc2);
             }
@@ -241,7 +239,6 @@ void PhaseShaping::waveslices(float* output, int samples) {
             phase = fmod(phase + inc, 1.0f);
         }
     }
-
 }
 
 void PhaseShaping::sinusoids(float* output, int samples) {
@@ -257,9 +254,8 @@ void PhaseShaping::sinusoids(float* output, int samples) {
             if (phase < width && phase > (width - inc)) { // mid end
                 mod = diff * polyblep( (p2 - width) / inc);
             } else if (phase > width && p2 < inc2) {      // mid start
-                mod = fabs(diff) * polyblep(p2 / inc2);
-                // TODO simplify this
-                if (p2 - mod < 0.0f) mod -= 1.0f;
+                mod = diff * polyblep(p2 / inc2);
+                p2 += phase_target(width);
             }
             output[i] = sin2(fmod(p2 - mod, 1.0f));
             phase = fmod(phase + inc, 1.0f);

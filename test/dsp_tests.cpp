@@ -49,6 +49,8 @@ int count_clicks(float* buffer) {
     return clicks;
 }
 
+// TODO split into component specific test functions
+
 int main() {
     char filename[50];
     float buffer[SIZE];
@@ -193,7 +195,6 @@ int main() {
     }
     sprintf(filename, "wavs/env_%i.wav", 1);
     write_wav(filename, buffer);
-
 
     return 0;
 }
