@@ -204,8 +204,6 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         }
         f *= oscData.ratio;
 
-        // TODO mod modulation
-
         // pulse width modulation
         float width = oscData.width * modulate(1.0f, M_OSC1_PWM + 4 * i, amp_mod);
 
@@ -285,8 +283,7 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
         }
 
         // amp modulation
-        float v = filterData.level;
-        v *= modulate(1.0f, M_DCF1_AMP + 4 * i, amp_mod);
+        float v = modulate(1.0f, M_DCF1_AMP + 4 * i, amp_mod);
         float step = (v - filter.prev_level) / (to - from);
         float l = filter.prev_level;
         for (int i = from; i < to; i++) {
@@ -326,12 +323,12 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     // bus a, bus b, filter 1, filter 2
     float left_p[] = {data->bus_a_level * (1.0f - data->bus_a_pan),
                       data->bus_b_level * (1.0f - data->bus_b_pan),
-                      1.0f - data->filters[0].pan,
-                      1.0f - data->filters[1].pan};
+                      data->filters[0].level * (1.0f - data->filters[0].pan),
+                      data->filters[1].level * (1.0f - data->filters[1].pan)};
     float right_p[] = {data->bus_a_level * data->bus_a_pan,
                        data->bus_b_level * data->bus_b_pan,
-                       data->filters[0].pan,
-                       data->filters[1].pan};
+                       data->filters[0].level * data->filters[0].pan,
+                       data->filters[1].level * data->filters[1].pan};
 
     // TODO bus a pan modulation
     // TODO bus b pan modulation
