@@ -28,6 +28,7 @@ class Knob : public Gtk::DrawingArea, public Changeable {
     Knob(float min, float max, float step);
     Knob(float min, float max);
     bool on_motion_notify(GdkEventMotion* event);
+    bool on_scroll_event(GdkEventScroll* event);
     bool on_expose_event(GdkEventExpose* event);
     bool on_button_press(GdkEventButton* event);
     float get_value() { return value; }
@@ -55,11 +56,11 @@ Knob::Knob(float min, float max, float step) : value(0.0), min(min), max(max), s
     set_size_request(40, 40);
     range = max - min;
     sensitivity = range / step;
-    //sensitivity = range / 100.0;
 
     add_events( Gdk::EXPOSURE_MASK | Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON1_MOTION_MASK);
     signal_motion_notify_event().connect(mem_fun(this, &Knob::on_motion_notify));
     signal_button_press_event().connect(mem_fun(this, &Knob::on_button_press));
+    signal_scroll_event().connect(mem_fun(this, &Knob::on_scroll_event));
 }
 
 Knob::Knob(float min, float max) : Knob(min, max, (max-min) / 100.0) {}
@@ -71,6 +72,25 @@ bool Knob::on_motion_notify(GdkEventMotion* event) {
         new_value = max;
     } else if (new_value < min) {
         new_value = min;
+    }
+    value = new_value;
+    value_changed.emit();
+    refresh();
+    return true;
+}
+
+bool Knob::on_scroll_event(GdkEventScroll* event) {
+    float new_value;
+    if (event->direction == GDK_SCROLL_UP) {
+        new_value = value + step;
+        if (new_value > max) {
+            new_value = max;
+        }
+    } else if (event->direction == GDK_SCROLL_DOWN) {
+        new_value = value - step;
+        if (new_value < min) {
+            new_value = min;
+        }
     }
     value = new_value;
     value_changed.emit();
