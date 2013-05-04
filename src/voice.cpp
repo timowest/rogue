@@ -163,9 +163,9 @@ void rogueVoice::configEnv(int i) {
     float d = envData.decay / f;
     float s = envData.sustain;
     float r = envData.release / f;
-    // TODO pre-delay
     // TODO retrigger
     env.env.setCurve(envData.curve);
+    env.env.setPredelay(envData.pre_delay / f);
     env.env.setAHDSR(a, h, d, s, r);
 }
 
