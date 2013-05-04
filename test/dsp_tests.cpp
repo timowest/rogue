@@ -188,7 +188,23 @@ int main() {
         write_wav(filename, buffer);
     }
 
+    // with predelay
     env.setCurve(0.5f);
+    env.setPredelay(2000.0f);
+    env.on();
+    for (int j = 0; j < 0.5 * SIZE; j++) {
+        buffer[j] = env.tick();
+    }
+    env.off();
+    for (int j = 0.5* SIZE; j < SIZE; j++) {
+        buffer[j] = env.tick();
+    }
+    sprintf(filename, "wavs/env_pre_%i.wav", 0);
+    write_wav(filename, buffer);
+
+    // retrigger
+    env.setCurve(0.5f);
+    env.setPredelay(0.0f);
     env.on();
     for (int j = 0; j < 0.25 * SIZE; j++) {
         buffer[j] = env.tick();
@@ -205,7 +221,7 @@ int main() {
     for (int j = 0.75 * SIZE; j < SIZE; j++) {
         buffer[j] = env.tick();
     }
-    sprintf(filename, "wavs/env_%i.wav", 9);
+    sprintf(filename, "wavs/env_retrigger_%i.wav", 0);
     write_wav(filename, buffer);
 
     return 0;

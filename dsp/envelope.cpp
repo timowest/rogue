@@ -12,7 +12,8 @@ namespace dsp {
 // AHDSR
 
 void AHDSR::on() {
-    state_ = A;
+    state_ = preDelaySamples > 0.0f ? PRE : A;
+    counter = preDelaySamples;
     offset = offset + scale * envCurve(last);
     scale = attackTarget - offset;
     last = 0.0f;
@@ -34,7 +35,11 @@ void AHDSR::setAHDSR(float _a, float _h, float _d, float _s, float _r) {
 }
 
 float AHDSR::innerTick() {
-    if (state_ == A) {        // attack
+    if (state_ == PRE) {      // pre-delay
+        if (--counter == 0) {
+            state_ = A;
+        }
+    } else if (state_ == A) { // attack
         last += attackRate;
         if (last >= 1.0f) {
             state_ = H;
@@ -42,7 +47,7 @@ float AHDSR::innerTick() {
             last = 1.0f;
         }
     } else if (state_ == H) { // hold
-        if (counter-- == 0) {
+        if (--counter == 0) {
             state_ = D;
             scale = sustain - attackTarget;
             offset = attackTarget;
@@ -55,13 +60,13 @@ float AHDSR::innerTick() {
             scale = -sustain;
             offset = sustain;
             last = 0.0f;
-
         }
     } else if (state_ == R) { // release
         last += releaseRate;
         if (last >= 1.0f) {
             state_ = IDLE;
-            last = 0.0;
+            scale = offset = 0.0f;
+            last = 0.0f;
         }
     }
     return last;
