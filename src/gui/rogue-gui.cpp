@@ -175,9 +175,6 @@ rogueGUI::rogueGUI(const char* URI) {
         filters->pack_start(*createFilter(i));
     }
 
-    HBox* presets = manage(new HBox());
-    // TODO
-
     Notebook* lfos = manage(new Notebook());
     for (int i = 0; i < NLFO; i++) {
         lfos->append_page(*createLFO(i), lfo_labels[i]);
@@ -195,7 +192,6 @@ rogueGUI::rogueGUI(const char* URI) {
     Widget* main = manage(createMain());
 
     Notebook* tabs = manage(new Notebook());
-    tabs->append_page(*align(presets), "Presets");
     tabs->append_page(*align(lfos), "LFOs");
     tabs->append_page(*align(envelopes), "Envelopes");
     tabs->append_page(*align(modulation), "Modulation");
