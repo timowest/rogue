@@ -9,116 +9,79 @@
 
 namespace dsp {
 
-// ADSR
-
-void ADSR::on() {
-    // don't reset when retriggered during release
-    if (state_ == IDLE) {
-        last = 0.0;
-    }
-    state_ = A;
-}
-
-void ADSR::off() {
-    state_ = R;
-    releaseRate = last / releaseSamples;
-}
-
-void ADSR::setADSR(float _a, float _d, float _s, float _r) {
-    attackRate = attackTarget / _a;
-    decayRate = (attackTarget - _s) / _d;
-    sustain = _s;
-    releaseSamples = _r;
-}
-
-float ADSR::tick() {
-    if (state_ == A) { // attack
-        last += attackRate;
-        if (last >= attackTarget) {
-            last = attackTarget;
-            state_ = D;
-        }
-    } else if (state_ == D) { // decay
-        last -= decayRate;
-        if (last <= sustain) {
-            last = sustain;
-            state_ = S;
-        }
-    } else if (state_ == R) { // release
-        last -= releaseRate;
-        if (last < 0.0) {
-            last = 0.0;
-            state_ = IDLE;
-        }
-    }
-    return last;
-}
-
-float ADSR::tick(int samples) {
-    // TODO optimize
-    for (int i = 0; i < samples; i++) {
-        tick();
-    }
-    return last;
-}
-
 // AHDSR
 
 void AHDSR::on() {
-    // don't reset when retriggered during release
-    if (state_ == IDLE) {
-        last = 0.0;
-    }
     state_ = A;
+    offset = offset + scale * envCurve(last);
+    scale = attackTarget - offset;
+    last = 0.0f;
 }
 
 void AHDSR::off() {
     state_ = R;
-    releaseRate = last / releaseSamples;
+    offset = offset + scale * envCurve(last);
+    scale = -offset;
+    last = 0.0f;
 }
 
 void AHDSR::setAHDSR(float _a, float _h, float _d, float _s, float _r) {
-    attackRate = attackTarget / _a;
+    attackRate = 1.0f / _a;
     holdSamples = _h;
-    decayRate = (attackTarget - _s) / _d;
+    decayRate = 1.0f / _d;
     sustain = _s;
-    releaseSamples = _r;
+    releaseRate = 1.0f / _r;
 }
 
-float AHDSR::tick() {
-    if (state_ == A) { // attack
+float AHDSR::innerTick() {
+    if (state_ == A) {        // attack
         last += attackRate;
-        if (last >= attackTarget) {
-            last = attackTarget;
-            counter = holdSamples;
+        if (last >= 1.0f) {
             state_ = H;
+            counter = holdSamples;
+            last = 1.0f;
         }
     } else if (state_ == H) { // hold
         if (counter-- == 0) {
             state_ = D;
+            scale = sustain - attackTarget;
+            offset = attackTarget;
+            last = 0.0f;
         }
     } else if (state_ == D) { // decay
-        last -= decayRate;
-        if (last <= sustain) {
-            last = sustain;
+        last += decayRate;
+        if (last >= 1.0f) {
             state_ = S;
+            scale = -sustain;
+            offset = sustain;
+            last = 0.0f;
+
         }
     } else if (state_ == R) { // release
-        last -= releaseRate;
-        if (last < 0.0) {
-            last = 0.0;
+        last += releaseRate;
+        if (last >= 1.0f) {
             state_ = IDLE;
+            last = 0.0;
         }
     }
     return last;
+}
+
+float AHDSR::envCurve(float x) {
+    return x / (x + a*(x-1.0f));
+}
+
+float AHDSR::tick() {
+    innerTick();
+    return offset + scale * envCurve(last);
 }
 
 float AHDSR::tick(int samples) {
     // TODO optimize
     for (int i = 0; i < samples; i++) {
-        tick();
+        innerTick();
     }
-    return last;
+    return offset + scale * envCurve(last);
 }
 
 }

@@ -50,6 +50,7 @@ struct EnvData {
     bool on;
     float pre_delay;
     float attack, hold, decay, sustain, release;
+    float curve;
     bool retrigger;
 };
 

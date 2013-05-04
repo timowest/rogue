@@ -165,6 +165,7 @@ void rogueVoice::configEnv(int i) {
     float r = envData.release / f;
     // TODO pre-delay
     // TODO retrigger
+    env.env.setCurve(envData.curve);
     env.env.setAHDSR(a, h, d, s, r);
 }
 
@@ -319,6 +320,9 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     for (int i = 0; i < NOSC; i++) runOsc(i, from, to);
     for (int i = 0; i < NDCF; i++) runFilter(i, from, to);
 
+    float* left = p(p_left);
+    float* right = p(p_right);
+
     // pan config (not interpolated)
     // bus a, bus b, filter 1, filter 2
     float left_p[] = {data->bus_a_level * (1.0f - data->bus_a_pan),
@@ -334,9 +338,6 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     // TODO bus b pan modulation
     // TODO filter1 pan modulation
     // TODO filter2 pan modulation
-
-    float* left = p(p_left);
-    float* right = p(p_right);
 
     // amp modulation
     float e_from = envs[0].last;

@@ -272,7 +272,7 @@ Widget* rogueGUI::createLFO(int i) {
 
 Widget* rogueGUI::createEnv(int i) {
     int off = i * ENV_OFF;
-    Table* table = manage(new Table(2,7));
+    Table* table = manage(new Table(2,8));
     // row 1
     control(table, "Pre-delay", p_env1_pre_delay + off, 0, 1);
     control(table, "Attack", p_env1_attack + off, 1, 1);
@@ -280,7 +280,8 @@ Widget* rogueGUI::createEnv(int i) {
     control(table, "Decay", p_env1_decay + off, 3, 1);
     control(table, "Sustain", p_env1_sustain + off, 4, 1);
     control(table, "Release", p_env1_release + off, 5, 1);
-    control(table, "Retrigger", p_env1_retrigger + off, 6, 1);
+    control(table, "Curve", p_env1_curve + off, 6, 1);
+    control(table, "Retrigger", p_env1_retrigger + off, 7, 1);
 
     return frame(env_labels[i], p_env1_on + off, table);
 }

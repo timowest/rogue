@@ -130,6 +130,7 @@ void rogueSynth::update() {
         data.envs[i].decay       = v(p_env1_decay + off) * rate;
         data.envs[i].sustain     = v(p_env1_sustain + off);
         data.envs[i].release     = v(p_env1_release + off) * rate;
+        data.envs[i].curve       = v(p_env1_curve + off);
         data.envs[i].retrigger   = v(p_env1_retrigger + off);
     }
 

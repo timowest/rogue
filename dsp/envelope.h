@@ -10,40 +10,11 @@
 namespace dsp {
 
 /**
- * ADSR envelope class.
- *
- * This class implements a traditional ADSR (Attack, Decay, Sustain,
- * Release) envelope. It responds to simple keyOn and keyOff
- * messages, keeping track of its state. The \e state = ADSR::IDLE
- * before being triggered and after the envelope value reaches 0.0 in
- * the ADSR::RELEASE state. All rate, target and level settings must
- * be non-negative. All time settings must be positive.
- */
-class ADSR {
-
-    enum {A, D, S, R, IDLE };
-
-  public:
-    void on();
-    void off();
-    void setADSR(float _a, float _d, float _s, float _r);
-    float lastOut() { return last; }
-    int state() { return state_; }
-    float tick(int samples);
-    float tick();
-
-  private:
-    float attackTarget = 1.0;
-    float attackRate, decayRate, releaseSamples, releaseRate = 0.0;
-    float sustain = 0.5;
-    float last = 0.0;
-    int state_ = IDLE;
-};
-
-/**
  * AHDSR envelope class
  */
 class AHDSR {
+
+    enum {LEAD3, LEAD2, LEAD1, LINEAR, LAG1, LAG2, LAG3};
 
     enum {A, H, D, S, R, IDLE };
 
@@ -51,16 +22,21 @@ class AHDSR {
     void on();
     void off();
     void setAHDSR(float _a, float _h, float _d, float _s, float _r);
+    void setCurve(float t) { a = 1.0f - 1.0f/t; }
     float lastOut() { return last; }
     int state() { return state_; }
     float tick(int samples);
     float tick();
 
   private:
+    float envCurve(float x);
+    float innerTick();
     float attackTarget = 1.0;
-    float attackRate, holdSamples, decayRate, releaseSamples, releaseRate = 0.0;
+    float attackRate, holdSamples, decayRate, releaseRate = 0.0;
     float sustain = 0.5;
     float last = 0.0;
+    float a = -1.0f;
+    float scale, offset;
     int state_ = IDLE;
     int counter;
 };

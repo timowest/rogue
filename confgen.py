@@ -182,6 +182,7 @@ def main():
             ["decay"      , 0, 5.0, 0],
             ["sustain"    , 0, 1.0, 1.0],
             ["release"    , 0, 5.0, 0],
+            ["curve"      , 0, 1.0, 0.5],
             ["retrigger"  , 0, 1, 0]] # toggled
                         
     mods = [["src"        , 0, 17, 0],
