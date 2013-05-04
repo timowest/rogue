@@ -26,7 +26,6 @@ class Knob : public Gtk::DrawingArea, public Changeable {
 
   public:
     Knob(float min, float max, float step);
-    Knob(float min, float max);
     bool on_motion_notify(GdkEventMotion* event);
     bool on_scroll_event(GdkEventScroll* event);
     bool on_expose_event(GdkEventExpose* event);
@@ -62,8 +61,6 @@ Knob::Knob(float min, float max, float step) : value(0.0), min(min), max(max), s
     signal_button_press_event().connect(mem_fun(this, &Knob::on_button_press));
     signal_scroll_event().connect(mem_fun(this, &Knob::on_scroll_event));
 }
-
-Knob::Knob(float min, float max) : Knob(min, max, (max-min) / 100.0) {}
 
 bool Knob::on_motion_notify(GdkEventMotion* event) {
     float offset = (origin_y - event->y) * range / sensitivity;

@@ -70,13 +70,14 @@ typedef struct {
     float min;
     float max;
     float default_value;
+    float step;
     int type;
 } port_meta_t;
 
 static const port_meta_t p_port_meta[] = {
-    {"control", 0, 0, 0, KNOB},
-    {"left", 0, 0, 0, KNOB},
-    {"right", 0, 0, 0, KNOB},"""
+    {"control", 0, 0, 0, 1, KNOB},
+    {"left", 0, 0, 0, 1, KNOB},
+    {"right", 0, 0, 0, 1, KNOB},"""
 
 def ttl_control(idx, symbol, name, min, max, default):
     if (min == 0 and max == 1 and isinstance(max, int) and default == 0):
@@ -110,26 +111,24 @@ def ttl_control(idx, symbol, name, min, max, default):
     lv2:default %s
   ]""" % (idx, symbol, name, min, max, default)
 
-def port_meta(symbol, min, max, default):
+def port_meta(symbol, min, max, default, step):
     type = "KNOB"
     if (min == 0 and max == 1 and isinstance(max, int) and default == 0):
         type = "TOGGLE"
     elif (min == 0 and isinstance(max, int)):
         type = "SELECT"
-    #elif symbol.startswith("env"):
-    #   type = "KNOB_S"
     elif "_amount" in symbol:
         type = "KNOB_M"
     elif ("_to_" in symbol or "level" in symbol or "pan" in symbol):
         type = "KNOB_M"    
-    return '    {"%s", %s, %s, %s, %s},' % (symbol, min, max, default, type)
+    return '    {"%s", %s, %s, %s, %s, %s},' % (symbol, min, max, default, step, type)
 
 def controls(ttl, gui, idx, type, count, controls):
     for i in range(count):
         prefix = type+str(i+1)+"_"
         for c in controls:            
             ttl.append(ttl_control(idx, prefix+c[0], c[0], c[1], c[2], c[3]))
-            gui.append(port_meta(prefix+c[0], c[1], c[2], c[3]))
+            gui.append(port_meta(prefix+c[0], c[1], c[2], c[3], c[4]))
             idx += 1
     return idx
 
@@ -137,57 +136,57 @@ def main():
 
     #        suffix        min max default 
 
-    oscs = [["on"         , 0, 1, 0], # toggled
-            ["type"       , 0, 9, 0],
-            ["inv"        , 0, 1, 0], # toggled
-            ["free"       , 0, 1, 0], # toggled
-            ["tracking"   , 0, 1, 0], # toggled
-            ["ratio"      , 0, 16.0, 1],
-            ["coarse"     , -48, 48, 0],
-            ["fine"       , -1.0, 1.0, 0],
-            ["width"      , 0, 1.0, 0.5],
-            ["param1"     , 0, 2.0, 1.0],
-            ["param2"     , 0, 1.0, 0.0],
-            ["level_a"    , 0, 1.0, 0],
-            ["level_b"    , 0, 1.0, 0],
-            ["level"      , 0, 1.0, 0],
+    oscs = [["on"         , 0, 1, 0, 1], # toggled
+            ["type"       , 0, 9, 0, 1],
+            ["inv"        , 0, 1, 0, 1], # toggled
+            ["free"       , 0, 1, 0, 1], # toggled
+            ["tracking"   , 0, 1, 0, 1], # toggled
+            ["ratio"      , 0, 16.0, 1, 0.1],
+            ["coarse"     , -48, 48, 0, 1.0],
+            ["fine"       , -1.0, 1.0, 0, 0.01],
+            ["width"      , 0, 1.0, 0.5, 0.01],
+            ["param1"     , 0, 2.0, 1.0, 0.01],
+            ["param2"     , 0, 1.0, 0.0, 0.01],
+            ["level_a"    , 0, 1.0, 0, 0.01],
+            ["level_b"    , 0, 1.0, 0, 0.01],
+            ["level"      , 0, 1.0, 0, 0.01],
             
-            ["vel_to_vol" , 0, 1.0, 0]] # TODO via matrix           
+            ["vel_to_vol" , 0, 1.0, 0, 0.01]] # TODO via matrix           
     
-    dcfs = [["on"         , 0, 1, 0], # toggled
-            ["type"       , 0, 11, 0],
-            ["source"     , 0, 2, 0],
-            ["freq"       , 0, 20000.0, 440.0],
-            ["q"          , 0, 1.0, 0],
-            ["distortion" , 0, 1.0, 0], 
-            ["level"      , 0, 1.0, 0],
-            ["pan"        , -1.0, 1.0, 0], # ?
+    dcfs = [["on"         , 0, 1, 0, 1], # toggled
+            ["type"       , 0, 11, 0, 1],
+            ["source"     , 0, 2, 0, 1],
+            ["freq"       , 0, 20000.0, 440.0, 10.0],
+            ["q"          , 0, 1.0, 0, 0.01],
+            ["distortion" , 0, 1.0, 0, 0.01], 
+            ["level"      , 0, 1.0, 0, 0.01],
+            ["pan"        , -1.0, 1.0, 0, 0.01], # ?
             
-            ["key_to_f"   , 0, 1.0, 0],
-            ["vel_to_f"   , 0, 1.0, 0]]
+            ["key_to_f"   , 0, 1.0, 0, 0.01],
+            ["vel_to_f"   , 0, 1.0, 0, 0.01]]
   
-    lfos = [["on"         , 0, 1, 0], # toggled
-            ["type"       , 0, 4, 0],
-            ["inv"        , 0, 1, 0], # toggled
-            ["reset_type" , 0, 2, 0],
-            ["freq"       , 0, 10.0, 1000.0],
-            ["symmetry"   , 0, 1.0, 0.5],
-            ["humanize"   , 0, 1.0, 0]]
+    lfos = [["on"         , 0, 1, 0, 1], # toggled
+            ["type"       , 0, 4, 0, 1],
+            ["inv"        , 0, 1, 0, 1], # toggled
+            ["reset_type" , 0, 2, 0, 1],
+            ["freq"       , 0, 10.0, 1000.0, 10.0],
+            ["symmetry"   , 0, 1.0, 0.5, 0.01],
+            ["humanize"   , 0, 1.0, 0, 0.01]]
             # TODO phase spread
   
-    envs = [["on"         , 0, 1, 0], # toggled
-            ["pre_delay"  , 0, 5.0, 0],
-            ["attack"     , 0, 5.0, 0],
-            ["hold"       , 0, 5.0, 0],
-            ["decay"      , 0, 5.0, 0],
-            ["sustain"    , 0, 1.0, 1.0],
-            ["release"    , 0, 5.0, 0],
-            ["curve"      , 0, 1.0, 0.5],
-            ["retrigger"  , 0, 1, 0]] # toggled
+    envs = [["on"         , 0, 1, 0, 1], # toggled
+            ["pre_delay"  , 0, 5.0, 0, 0.1],
+            ["attack"     , 0, 5.0, 0, 0.1],
+            ["hold"       , 0, 5.0, 0, 0.1],
+            ["decay"      , 0, 5.0, 0, 0.1],
+            ["sustain"    , 0, 1.0, 1.0, 0.01],
+            ["release"    , 0, 5.0, 0, 0.1],
+            ["curve"      , 0, 1.0, 0.5, 0.01],
+            ["retrigger"  , 0, 1, 0, 1]] # toggled
                         
-    mods = [["src"        , 0, 17, 0],
-            ["target"     , 0, 43, 0],
-            ["amount"     , -1.0, 1.0, 0]]        
+    mods = [["src"        , 0, 17, 0, 1],
+            ["target"     , 0, 43, 0, 1],
+            ["amount"     , -1.0, 1.0, 0, 0.01]]        
 
     idx = 3
 
@@ -207,19 +206,19 @@ def main():
     # mods
     idx = controls(ttl, gui, idx, "mod", 20, mods)
 
-    globals = [["bus_a_level", 0, 1.0, 0],
-               ["bus_a_pan",   0, 1.0, 0.5],
-               ["bus_b_level", 0, 1.0, 0],
-               ["bus_b_pan",   0, 1.0, 0.5],
-               ["volume",      0, 1.0, 0.5],
+    globals = [["bus_a_level", 0, 1.0, 0, 0.01],
+               ["bus_a_pan",   0, 1.0, 0.5, 0.01],
+               ["bus_b_level", 0, 1.0, 0, 0.01],
+               ["bus_b_pan",   0, 1.0, 0.5, 0.01],
+               ["volume",      0, 1.0, 0.5, 0.01],
 
-               ["glide_time",  0, 5.0, 0],
-               ["bend_range",  0, 12.0, 0]]
+               ["glide_time",  0, 5.0, 0, 0.1],
+               ["bend_range",  0, 12.0, 0, 0.1]]
                # TODO poly and mono modes
 
     for c in globals:
         ttl.append(ttl_control(idx, c[0], c[0], c[1], c[2], c[3]))
-        gui.append(port_meta(c[0], c[1], c[2], c[3]))
+        gui.append(port_meta(c[0], c[1], c[2], c[3], c[4]))
         idx += 1
 
     ttl.append(".")

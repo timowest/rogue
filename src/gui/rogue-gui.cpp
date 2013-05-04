@@ -114,13 +114,13 @@ rogueGUI::rogueGUI(const char* URI) {
     for (int i = 3; i < p_n_ports; i++) {
         uint32_t type = p_port_meta[i].type;
         if (type == KNOB) {
-            scales[i] = manage(new Knob(p_port_meta[i].min, p_port_meta[i].max));
+            scales[i] = manage(new Knob(p_port_meta[i].min, p_port_meta[i].max, p_port_meta[i].step));
         } else if (type == KNOB_M) {
-            Knob* knob = new Knob(p_port_meta[i].min, p_port_meta[i].max);
+            Knob* knob = new Knob(p_port_meta[i].min, p_port_meta[i].max, p_port_meta[i].step);
             knob->set_radius(12.0);
             scales[i] = manage(knob);
         } else if (type == KNOB_S) {
-            Knob* knob = new Knob(p_port_meta[i].min, p_port_meta[i].max);
+            Knob* knob = new Knob(p_port_meta[i].min, p_port_meta[i].max, p_port_meta[i].step);
             knob->set_size(30);
             knob->set_radius(10);
             scales[i] = manage(knob);
