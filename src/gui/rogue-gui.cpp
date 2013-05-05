@@ -12,7 +12,7 @@
 #include "common.h"
 #include "rogue.gen"
 #include "gui/config.gen"
-#include "gui/combo.h"
+#include "gui/select.h"
 #include "gui/knob.h"
 #include "gui/toggle.h"
 #include "gui/panel.h"
@@ -129,22 +129,22 @@ rogueGUI::rogueGUI(const char* URI) {
         } else if (type != SELECT) {
             std::cout << i << std::endl;
         } else if (i == p_osc1_type || i == p_osc2_type || i == p_osc3_type || i == p_osc4_type) {
-            scales[i] = manage(new SelectComboBox(osc_types, 10));
+            scales[i] = manage(new SelectBox(osc_types, 10));
         } else if (i == p_filter1_type || i == p_filter2_type) {
-            scales[i] = manage(new SelectComboBox(filter_types, 12));
+            scales[i] = manage(new SelectBox(filter_types, 12));
         } else if (i == p_filter1_source) {
-            scales[i] = manage(new SelectComboBox(filter1_sources, 2));
+            scales[i] = manage(new SelectBox(filter1_sources, 2));
         } else if (i == p_filter2_source) {
-            scales[i] = manage(new SelectComboBox(filter2_sources, 3));
+            scales[i] = manage(new SelectBox(filter2_sources, 3));
         } else if (i == p_lfo1_type || i == p_lfo2_type || i == p_lfo3_type) {
-            scales[i] = manage(new SelectComboBox(lfo_types, 6));
+            scales[i] = manage(new SelectBox(lfo_types, 6));
         } else if (i == p_lfo1_reset_type || i == p_lfo2_reset_type || i == p_lfo3_reset_type) {
-            scales[i] = manage(new SelectComboBox(lfo_reset_types, 3));
+            scales[i] = manage(new SelectBox(lfo_reset_types, 3));
         } else if (i >= p_mod1_src || i <= p_mod20_amount) {
             if ((i - p_mod1_src) % 3 == 0) {
-                scales[i] = manage(new SelectComboBox(mod_src_labels, M_SIZE));
+                scales[i] = manage(new SelectBox(mod_src_labels, M_SIZE));
             } else {
-                scales[i] = manage(new SelectComboBox(mod_target_labels, M_TARGET_SIZE));
+                scales[i] = manage(new SelectBox(mod_target_labels, M_TARGET_SIZE));
             }
         } else {
             std::cout << i << std::endl;

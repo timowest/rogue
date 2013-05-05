@@ -16,9 +16,9 @@
 
 namespace rogue {
 
-class SelectComboBox : public Gtk::EventBox, public Changeable {
+class SelectBox : public Gtk::EventBox, public Changeable {
   public:
-    SelectComboBox(const char** labels, int count);
+    SelectBox(const char** labels, int count);
     bool on_button_press_event(GdkEventButton* event);
     void on_menu_selection(int i);
     float get_value();
@@ -38,23 +38,23 @@ class SelectComboBox : public Gtk::EventBox, public Changeable {
 
 // implementation
 
-SelectComboBox::SelectComboBox(const char** labels, int count) : labels(labels), count(count){
+SelectBox::SelectBox(const char** labels, int count) : labels(labels), count(count){
     add(label);
     // menu shown on button press
-    signal_button_press_event().connect(sigc::mem_fun(*this, &SelectComboBox::on_button_press_event) );
+    signal_button_press_event().connect(sigc::mem_fun(*this, &SelectBox::on_button_press_event) );
 
     // menu creation
     for (int i = 0; i < count; i++) {
         Gtk::MenuItem* menuItem = manage(new Gtk::MenuItem(labels[i]));
         menuItem->signal_activate().connect(
-            sigc::bind(sigc::mem_fun(*this, &SelectComboBox::on_menu_selection), i));
+            sigc::bind(sigc::mem_fun(*this, &SelectBox::on_menu_selection), i));
         menuPopup.append(*menuItem);
     }
     menuPopup.show_all();
     set_value(0.0f);
 }
 
-bool SelectComboBox::on_button_press_event(GdkEventButton* event) {
+bool SelectBox::on_button_press_event(GdkEventButton* event) {
     if(event->type == GDK_BUTTON_PRESS && event->button == 1) {
         menuPopup.popup(event->button, event->time);
         return true;
@@ -63,26 +63,26 @@ bool SelectComboBox::on_button_press_event(GdkEventButton* event) {
     }
 }
 
-void SelectComboBox::on_menu_selection(int i) {
+void SelectBox::on_menu_selection(int i) {
     index = i;
     label.set_text(labels[index]);
     value_changed.emit();
 }
 
-float SelectComboBox::get_value() {
+float SelectBox::get_value() {
     return (float)index;
 }
 
-void SelectComboBox::set_value(float val) {
+void SelectBox::set_value(float val) {
     index = (int)val;
     label.set_text(labels[index]);
 }
 
-Gtk::Widget* SelectComboBox::get_widget() {
+Gtk::Widget* SelectBox::get_widget() {
     return this;
 }
 
-void SelectComboBox::connect(sigc::slot<void> s) {
+void SelectBox::connect(sigc::slot<void> s) {
     value_changed.connect(s);
 }
 
