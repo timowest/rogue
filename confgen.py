@@ -87,6 +87,7 @@ def ttl_control(idx, symbol, name, min, max, default):
     lv2:symbol "%s";
     lv2:name "%s";
     lv2:minimum %s;
+    lv2:default 0;
     lv2:portProperty lv2:toggled
   ]""" % (idx, symbol, name, min)
     elif isinstance(max, int):
