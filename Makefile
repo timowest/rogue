@@ -10,7 +10,7 @@ LVTK_UI = `pkg-config --cflags --libs lvtk-ui-1`
 GTKMM = `pkg-config --cflags --libs gtkmm-2.4`
 SNDFILE = -lsndfile
 
-$(BUNDLE): manifest.ttl rogue.ttl rogue.so rogue-gui.so presets
+$(BUNDLE): manifest.ttl rogue.ttl presets.ttl rogue.so rogue-gui.so presets
 	rm -rf $(BUNDLE)
 	mkdir $(BUNDLE)
 	cp -r $^ $(BUNDLE)
@@ -26,6 +26,9 @@ src/rogue.gen: rogue.ttl
     
 rogue.ttl:
 	./confgen.py     
+
+presets.ttl:
+	./presetgen.py	
 	
 src/gui/config.gen:
 	./confgen.py
@@ -39,7 +42,7 @@ run:
 	jalv.gtk http://www.github.com/timowest/rogue
 
 clean:
-	rm -rf $(BUNDLE) *.so src/rogue.peg rogue.ttl wavs *.out 
+	rm -rf $(BUNDLE) *.so src/rogue.peg presets.ttl rogue.ttl wavs *.out presets/*
 	
 guitests: src/rogue.gen src/gui/config.gen	
 	$(CXX) -g -std=c++11 src/gui/knob-test.cpp $(GTKMM) -Isrc -o knobtest.out		

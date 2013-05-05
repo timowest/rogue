@@ -13,6 +13,12 @@ NS = """@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 """
 
+INTRO = """<http://www.github.com/timowest/rogue#%s>
+  a pset:Preset ;
+  lv2:appliesTo <http://www.github.com/timowest/rogue> ;
+  rdfs:label "%s" ;
+  lv2:port """
+
 def base(id, conf):
   m = {}
   for (k, v) in conf.items():
@@ -56,11 +62,30 @@ def get_defaults():
 
 defaults = get_defaults()
 
-def merge(*dicts):
-  result = {}
+def merge(dicts):
+  result = defaults.copy()
   for d in dicts:
     result.update(d)
   return result
+
+symbols = []
+
+def preset(name, label, *dicts):
+  content = []
+  content.append(NS)
+  content.append(INTRO % (name, label))
+
+  ports = []
+  for (k, v) in merge(dicts).items():
+    ports.append("""    [ lv2:symbol "%s" ; pset:value %s ] """ % (k, v))
+
+  content.append(",\n".join(ports) + " .")
+
+  symbols.append(name)
+
+  ttlFile = open("presets/" +name+".ttl", "w")
+  ttlFile.write("\n".join(content))
+  ttlFile.close()
 
 # Leads
 
@@ -83,9 +108,13 @@ def merge(*dicts):
 # Effects
 
 def main():  
-  print merge(
-          osc(1, {"type": 1}),
-          dcf(1, {"type": 2}))
+  preset("test", "Test",
+      osc(1, {"type": 1}),
+      dcf(1, {"type": 2}))
+
+  ttlFile = open("presets.ttl", "w")
+  ttlFile.write("test")
+  ttlFile.close()
 
 if __name__ == "__main__":
   main()

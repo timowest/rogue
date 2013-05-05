@@ -2,8 +2,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
 @prefix base: <http://www.github.com/timowest/>.
 @prefix pset: <http://lv2plug.in/ns/ext/presets#>.
-@prefix pre:  <http://www.github.com/timowest/rogue/presets#>.
 
 base:rogue
   a            lv2:Plugin; 
-  rdfs:seeAlso <rogue.ttl>.
+  rdfs:seeAlso <rogue.ttl>, <presets.ttl>.

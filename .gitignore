@@ -9,3 +9,5 @@ log
 lv2-rogue.lv2
 src/rogue.peg
 rogue.ttl
+presets.ttl
+presets/*
