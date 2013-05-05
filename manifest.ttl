@@ -5,4 +5,4 @@
 
 base:rogue
   a            lv2:Plugin; 
-  rdfs:seeAlso <rogue.ttl>, <presets.ttl>.
+  rdfs:seeAlso <rogue.ttl>.
