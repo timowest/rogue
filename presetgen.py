@@ -10,22 +10,37 @@ NS = """@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 """
 
-def osc(idx, conf):
-  id = "osc"+str(idx)
-  m = {id+"_on": 1}
-  m[id+"_level"] = 1.0
+def base(id, conf):
+  m = {}
   for (k, v) in conf.items():
     m[id+"_"+k] = v
   return m
 
-def dcf(id, conf):
-  {}
+def osc(idx, conf):
+  conf = conf.copy()
+  conf.update({"on":1, "level":1.0})
+  return base("osc"+str(idx), conf)
 
-def lfo(id, conf):
-  {}
+def dcf(idx, conf):
+  conf = conf.copy()
+  conf.update({"on":1, "level":1.0})
+  return base("filter"+str(idx), conf)
 
-def env(id, conf):
-  {}
+def lfo(idx, conf):
+  conf = conf.copy()
+  conf.update({"on":1})
+  return base("lfo"+str(idx), conf)
+
+def env(idx, conf):
+  conf = conf.copy()
+  conf.update({"on":1})
+  return base("env"+str(idx), conf)
+
+def merge(*dicts):
+  result = {}
+  for d in dicts:
+    result.update(d)
+  return result
 
 # TODO merge function
 
@@ -50,7 +65,9 @@ def env(id, conf):
 # Effects
 
 def main():
-  print osc(1, {"type": 1})
+  print merge(
+          osc(1, {"type": 1}),
+          dcf(1, {"type": 2}))
 
 if __name__ == "__main__":
   main()
