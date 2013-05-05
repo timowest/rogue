@@ -169,7 +169,7 @@ def main():
             ["type"       , 0, 4, 0, 1],
             ["inv"        , 0, 1, 0, 1], # toggled
             ["reset_type" , 0, 2, 0, 1],
-            ["freq"       , 0, 10.0, 1000.0, 10.0],
+            ["freq"       , 0, 10.0, 100.0, 0.1],
             ["symmetry"   , 0, 1.0, 0.5, 0.01],
             ["humanize"   , 0, 1.0, 0, 0.01]]
             # TODO phase spread
