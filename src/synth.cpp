@@ -35,7 +35,6 @@ unsigned rogueSynth::find_free_voice(unsigned char key, unsigned char velocity) 
         }
     }
 
-
     //take the next free voice if
     // ... notes are sustained but not this new one
     // ... notes are not sustained

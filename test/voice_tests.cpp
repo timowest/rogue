@@ -40,6 +40,8 @@ int main() {
     rogue::SynthData data;
     data.volume = 0.5;
     data.bus_a_level = 0.5;
+    data.bus_a_pan = 0.5;
+
     data.oscs[0].on = true;
     data.oscs[0].type = 0;
     data.oscs[0].param1 = 1.0;
@@ -49,11 +51,13 @@ int main() {
     data.oscs[0].level_a = 1.0;
 
     data.envs[0].on = true;
+    data.envs[0].pre_delay = 0.0f;
     data.envs[0].attack = 0.1 * SR;
     data.envs[0].hold = 0.5 * SR;
     data.envs[0].decay = 0.4 * SR;
     data.envs[0].sustain = 0.8;
     data.envs[0].release = 0.5 * SR;
+    data.envs[0].curve = 0.5;
 
     rogue::rogueVoice voice(SR, &data);
     voice.set_port_buffers(ports);
@@ -96,6 +100,7 @@ int main() {
     data.filters[0].on = true;
     data.filters[0].type = 0;
     data.filters[0].level = 0.5;
+    data.filters[1].pan = 0.5;
     data.filters[0].freq = 1000.0;
     data.filters[0].q = 0.5;
 
