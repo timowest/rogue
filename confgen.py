@@ -116,6 +116,8 @@ def port_meta(symbol, min, max, default, step):
     type = "KNOB"
     if (min == 0 and max == 1 and isinstance(max, int) and default == 0):
         type = "TOGGLE"
+    elif "_tracking" in symbol:
+        type = "TOGGLE"
     elif (min == 0 and isinstance(max, int)):
         type = "SELECT"
     elif "_amount" in symbol:
