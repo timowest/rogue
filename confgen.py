@@ -171,9 +171,8 @@ def main():
             ["inv"        , 0, 1, 0, 1], # toggled
             ["reset_type" , 0, 2, 0, 1],
             ["freq"       , 0, 10.0, 100.0, 0.1],
-            ["symmetry"   , 0, 1.0, 0.5, 0.01],
+            ["width"      , 0, 1.0, 0.5, 0.01],
             ["humanize"   , 0, 1.0, 0, 0.01]]
-            # TODO phase spread
   
     envs = [["on"         , 0, 1, 0, 1], # toggled
             ["pre_delay"  , 0, 5.0, 0, 0.1],

@@ -126,7 +126,7 @@ void rogueVoice::configLFO(int i) {
     // NOTE: lfos can't modulate each other's freq
     lfo.lfo.setType(lfoData.type);
     lfo.lfo.setFreq(f);
-    lfo.lfo.setSymmetry(lfoData.symmetry);
+    lfo.lfo.setWidth(lfoData.width);
     // TODO humanize
     // TODO reset type
 }

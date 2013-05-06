@@ -19,14 +19,14 @@ class LFO {
     void setType(int t) { type = t; }
     void setFreq(float f) { freq = f; }
     void setSamplerate(float r) { sample_rate = r; }
-    void setSymmetry(float s) { symmetry = s; }
+    void setWidth(float w) { width = w; }
     float getValue(float p);
     float tick(int samples);
     float tick();
 
   private:
     int type = 0;
-    float phase = 0.0, freq, symmetry = 0.5;
+    float phase = 0.0, freq, width = 0.5;
     float prev_phase, value;
     float sample_rate;
 };

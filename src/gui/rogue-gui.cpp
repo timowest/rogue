@@ -260,7 +260,7 @@ Widget* rogueGUI::createLFO(int i) {
     control(table, "Type", p_lfo1_type + off, 0, 1);
     control(table, "Reset type", p_lfo1_reset_type + off, 1, 1);
     control(table, "Freq", p_lfo1_freq + off, 2, 1);
-    control(table, "Symmetry", p_lfo1_symmetry + off, 3, 1);
+    control(table, "Width", p_lfo1_width + off, 3, 1);
     control(table, "Humanize", p_lfo1_humanize + off, 4, 1);
 
     return frame(lfo_labels[i], p_lfo1_on + off, table);

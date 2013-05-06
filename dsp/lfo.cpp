@@ -35,7 +35,7 @@ float LFO::getValue(float p) {
     case SAW:
         return 2.0 * p - 1.0;
     case SQUARE:
-        return p < symmetry ? -1.0 : 1.0;
+        return p < width ? -1.0 : 1.0;
     case SH:
         if (prev_phase > p) { // update value once per cycle
             value = (2.0 * rand() / (RAND_MAX + 1.0) - 1.0);
