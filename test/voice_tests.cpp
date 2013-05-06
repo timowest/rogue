@@ -70,7 +70,7 @@ int main() {
     data.lfos[0].type = 0;
     data.lfos[0].inv = false;
     data.lfos[0].freq = 10.0f;
-    data.lfos[0].symmetry = 0.5;
+    data.lfos[0].width = 0.5;
     data.lfos[0].humanize = 0.0;
 
     data.mods[0].src = M_LFO1_UN;
