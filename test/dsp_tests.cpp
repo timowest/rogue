@@ -65,8 +65,7 @@ int main() {
     dsp::PhaseShaping osc;
     osc.setSamplerate(SR);
     osc.setFreq(440.0f);
-    osc.setWidth(0.5f);
-    osc.setParams(1.0f, 0.0f);
+    osc.setParams(1.0f, 0.0f, 0.5f);
 
     dsp::MoogFilter moog;
     moog.setSamplerate(SR);
@@ -96,8 +95,7 @@ int main() {
                 osc.reset();
                 osc.setBandlimit(true);
                 osc.setType(i);
-                osc.setParams(params[j], params[k]);
-                osc.setWidth(params[k]);
+                osc.setParams(params[j], params[k], params[k]);
                 osc.process(buffer, SIZE);
 
                 // 2nd version without polyblep

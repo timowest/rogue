@@ -27,7 +27,20 @@ class PhaseShaping {
     void reset ();
     void setFreq(float f) { freq = f; }
     void setWidth(float w);
-    void setParams(float a1, float a0);
+
+    void setParams(float a1f, float a1t, float a0f, float a0t, float wf, float wt) {
+      this->a1f = a1f;
+      this->a1t = a1t;
+      this->a0f = a0f;
+      this->a0t = a0t;
+      this->wf = wf;
+      this->wt = wt;
+    }
+
+    void setParams(float a1, float a0, float w) {
+        setParams(a1, a1, a0, a0, w, w);
+    }
+
     void setType(int t) { type = t; }
     void setSamplerate(float r) { sample_rate = r; }
     void setBandlimit(bool b) { bandlimit = b; }
@@ -49,7 +62,9 @@ class PhaseShaping {
   private:
     bool bandlimit = true;
     float phase, freq;
-    float width = 0.5f, a1 = 1.0f, a0 = 0.0f;
+    //float width = 0.5f, a1 = 1.0f, a0 = 0.0f;
+    float a1f = 1.0f, a1t = 1.0f, a0f = 0, a0t = 0;
+    float wf = 0.5, wt = 0.5;
     float sample_rate;
     int type;
 };

@@ -22,7 +22,18 @@ struct Osc {
     dsp::PhaseShaping osc;
     float buffer[BUFFER_SIZE];
     float prev_level;
-    void reset() { osc.reset(); }
+    float param1_prev = 1.0f, param2_prev = 0.0f, width_prev = 0.5f;
+
+    void reset() {
+        param1_prev = 1.0f;
+        param2_prev = 0.0f;
+        width_prev = 0.5;
+        prev_level = 0.0f;
+    }
+
+    void resetPhase() {
+        osc.reset();
+    }
 
     void setSamplerate(float r) {
         osc.setSamplerate(r);
@@ -36,6 +47,10 @@ struct Filter {
     float prev_level;
     float key_vel_to_f;
 
+    void reset() {
+        prev_level = 0.0f;
+    }
+
     void setSamplerate(float r) {
         moog.setSamplerate(r);
         svf.setSamplerate(r);
@@ -45,8 +60,15 @@ struct Filter {
 struct LFO {
     dsp::LFO lfo;
     float current, last;
+
     void on() {}
+
     void off() {}
+
+    void reset() {
+        current = 0.0f;
+        last = 0.0f;
+    }
 
     void setSamplerate(float r) {
         lfo.setSamplerate(r);
@@ -56,8 +78,15 @@ struct LFO {
 struct Env {
     dsp::AHDSR env;
     float current, last;
+
     void on() { env.on(); }
+
     void off() { env.off(); }
+
+    void reset() {
+        current = 0.0f;
+        last = 0.0f;
+    }
 };
 
 class rogueVoice : public lvtk::Voice {

@@ -68,11 +68,7 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
     for (int i = 0; i < NLFO; i++) lfos[i].on();
     for (int i = 0; i < NENV; i++) envs[i].on();
     for (int i = 0; i < NOSC; i++) {
-        if (!data->oscs[i].free) oscs[i].reset();
-        oscs[i].prev_level = 0.0f;
-    }
-    for (int i = 0; i < NDCF; i++) {
-        filters[i].prev_level = 0.0f;
+        if (!data->oscs[i].free) oscs[i].resetPhase();
     }
 
     in_sustain = false;
@@ -209,11 +205,15 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         // pulse width modulation
         float width = oscData.width * modulate(1.0f, M_OSC1_PWM + 4 * i, amp_mod);
 
+        float param1 = oscData.param1;
+        float param2 = oscData.param2;
+
         // process
         osc.osc.setType(oscData.type);
         osc.osc.setFreq(f);
-        osc.osc.setWidth(width);
-        osc.osc.setParams(oscData.param1, oscData.param2);
+        osc.osc.setParams(osc.param1_prev, param1,
+                          osc.param2_prev, param2,
+                          osc.width_prev, width);
         osc.osc.process(osc.buffer + from, to - from);
 
         // amp modulation
@@ -239,6 +239,10 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
             bus_a[i] += oscData.level_a * osc.buffer[i];
             bus_b[i] += oscData.level_b * osc.buffer[i];
         }
+
+        osc.param1_prev = param1;
+        osc.param2_prev = param2;
+        osc.width_prev = width;
     }
 }
 
@@ -366,6 +370,11 @@ void rogueVoice::reset() {
     m_key = lvtk::INVALID_KEY;
     in_sustain = false;
     std::memset(mod, 0, sizeof(float) * NMOD);
+
+    for (int i = 0; i < NLFO; i++) lfos[i].reset();
+    for (int i = 0; i < NENV; i++) envs[i].reset();
+    for (int i = 0; i < NOSC; i++) oscs[i].reset();
+    for (int i = 0; i < NDCF; i++) filters[i].reset();
 }
 
 
