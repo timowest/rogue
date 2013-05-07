@@ -226,7 +226,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         }
 
         v *= modulate(1.0f, M_OSC1_AMP + 4 * i, amp_mod);
-        float step = (v - osc.prev_level) / (to - from);
+        float step = (v - osc.prev_level) / float(to - from);
         float l = osc.prev_level;
         for (int i = from; i < to; i++) {
             osc.buffer[i] *= l;
@@ -290,7 +290,7 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
 
         // amp modulation
         float v = modulate(1.0f, M_DCF1_AMP + 4 * i, amp_mod);
-        float step = (v - filter.prev_level) / (to - from);
+        float step = (v - filter.prev_level) / float(to - from);
         float l = filter.prev_level;
         for (int i = from; i < to; i++) {
             filter.buffer[i] *= l;

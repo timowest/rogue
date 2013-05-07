@@ -16,7 +16,7 @@ sintable sin_;
 
 sintable::sintable() {
     for (int i = 0; i < 8001; i++) {
-        values[i] = sin(2.0 * M_PI * float(i) / 8000);
+        values[i] = sin(2.0f * M_PI * float(i) / 8000.0f);
     }
 }
 
@@ -26,9 +26,9 @@ float sintable::fast(float val) {
 }
 
 float sintable::linear(float val) {
-    float pos = 8000.0 * val;
+    float pos = 8000.0f * val;
     float rem = pos - floor(pos);
-    return rem * values[int(pos + 1)] + (1.0 - rem) * values[int(pos)];
+    return rem * values[int(pos + 1)] + (1.0f - rem) * values[int(pos)];
 }
 
 }

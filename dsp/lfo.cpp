@@ -31,31 +31,31 @@ float LFO::getValue(float p) {
     case SIN:
         return sin_.fast(p);
     case TRI:
-        return 2.0 * (p < 0.5 ? 2.0 * p : 2.0 - 2.0 * p) - 1.0;
+        return 2.0f * (p < 0.5f ? 2.0f * p : 2.0f - 2.0f * p) - 1.0f;
     case SAW:
-        return 2.0 * p - 1.0;
+        return 2.0f * p - 1.0f;
     case SQUARE:
         return p < width ? -1.0 : 1.0;
     case SH:
         if (prev_phase > p) { // update value once per cycle
-            value = (2.0 * rand() / (RAND_MAX + 1.0) - 1.0);
+            value = (2.0f * rand() / float(RAND_MAX + 1.0f) - 1.0f);
         }
         prev_phase = p;
         return value;
     default:
-        return 0.0;
+        return 0.0f;
     }
 }
 
 float LFO::tick() {
     float inc = freq / sample_rate;
-    phase = fmod(phase + inc, 1.0);
+    phase = fmod(phase + inc, 1.0f);
     return getValue(phase);
 }
 
 float LFO::tick(int samples) {
     float inc = freq / sample_rate;
-    phase = fmod(phase + float(samples) * inc, 1.0);
+    phase = fmod(phase + float(samples) * inc, 1.0f);
     return getValue(phase);
 }
 
