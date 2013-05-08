@@ -191,7 +191,7 @@ void MoogFilter::clear() {
 }
 
 void MoogFilter::setCoefficients(float freq, float res) {
-    wc_ = 2 * M_PI * freq / sample_rate_;
+    wc_ = 2.0f * M_PI * freq / sample_rate_;
     g_ = 0.9892 * wc_ - 0.4342 * pow(wc_, 2) + 0.1381 * pow(wc_, 3) - 0.0202 * pow(wc_, 4);
     gres_ = res * (1.0029 + 0.0526 * wc_ - 0.926 * pow(wc_, 2) + 0.0218 * pow(wc_, 3));
 }

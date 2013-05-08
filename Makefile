@@ -46,6 +46,7 @@ clean:
 		
 guitests: src/rogue.gen src/gui/config.gen	
 	$(CXX) -g -std=c++11 src/gui/knob-test.cpp $(GTKMM) -Isrc -o knobtest.out		
+	$(CXX) -g -std=c++11 src/gui/label-test.cpp $(GTKMM) -Isrc -o labeltestt.out
 	$(CXX) -g -std=c++11 src/gui/rogue-gui-test.cpp $(GTKMM) $(LVTK_UI) -Isrc -o guitest.out	
 	
 tests: src/rogue.gen

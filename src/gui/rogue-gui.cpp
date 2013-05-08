@@ -12,10 +12,11 @@
 #include "common.h"
 #include "rogue.gen"
 #include "gui/config.gen"
-#include "gui/select.h"
 #include "gui/knob.h"
-#include "gui/toggle.h"
+#include "gui/label.h"
 #include "gui/panel.h"
+#include "gui/select.h"
+#include "gui/toggle.h"
 
 using namespace sigc;
 using namespace Gtk;
@@ -124,6 +125,8 @@ rogueGUI::rogueGUI(const char* URI) {
             knob->set_size(30);
             knob->set_radius(10);
             scales[i] = manage(knob);
+        } else if (type == LABEL) {
+            scales[i] = manage(new LabelBox(p_port_meta[i].min, p_port_meta[i].max, p_port_meta[i].step));
         } else if (type == TOGGLE) {
             scales[i] = manage(new Toggle());
         } else if (type != SELECT) {
@@ -165,42 +168,33 @@ rogueGUI::rogueGUI(const char* URI) {
         }
     }
 
-    HBox* oscs = manage(new HBox());
-    for (int i = 0; i < NOSC; i++) {
-        oscs->pack_start(*createOSC(i));
-    }
-
-    HBox* filters = manage(new HBox());
-    for (int i = 0; i < NDCF; i++) {
-        filters->pack_start(*createFilter(i));
-    }
-
-    Notebook* lfos = manage(new Notebook());
-    for (int i = 0; i < NLFO; i++) {
-        lfos->append_page(*createLFO(i), lfo_labels[i]);
-    }
-
+    Table* table = manage(new Table(3, 3));
+    // oscs
+    table->attach(*createOSC(0), 0, 1, 0, 1);
+    table->attach(*createOSC(1), 1, 2, 0, 1);
+    table->attach(*createOSC(2), 0, 1, 1, 2);
+    table->attach(*createOSC(3), 1, 2, 1, 2);
+    // filters
+    table->attach(*createFilter(0), 2, 3, 0, 1);
+    table->attach(*createFilter(1), 2, 3, 1, 2);
+    // envelopes
     Notebook* envelopes = manage(new Notebook());
     for (int i = 0; i < NENV; i++) {
         envelopes->append_page(*createEnv(i), env_labels[i]);
     }
-    Widget* modulation = createModulation();
-
-    HBox* effects = manage(new HBox());
-    // TODO
+    table->attach(*envelopes, 0, 1, 2, 3);
+    // modulation
+    table->attach(*createModulation(), 1, 2, 2, 3);
+    // lfos
+    Notebook* lfos = manage(new Notebook());
+    for (int i = 0; i < NLFO; i++) {
+        lfos->append_page(*createLFO(i), lfo_labels[i]);
+    }
+    table->attach(*lfos, 2, 3, 2, 3);
 
     Widget* main = manage(createMain());
-
-    Notebook* tabs = manage(new Notebook());
-    tabs->append_page(*align(lfos), "LFOs");
-    tabs->append_page(*align(envelopes), "Envelopes");
-    tabs->append_page(*align(modulation), "Modulation");
-    tabs->append_page(*align(effects), "Effects");
-
-    mainBox.pack_start(*align(oscs));
-    mainBox.pack_start(*align(filters));
-    mainBox.pack_start(*tabs);
     mainBox.pack_start(*align(main));
+    mainBox.pack_start(*table);
     mainBox.pack_end(statusbar);
 
     add(*align(&mainBox));
@@ -210,52 +204,52 @@ rogueGUI::rogueGUI(const char* URI) {
 
 Widget* rogueGUI::createOSC(int i) {
     int off = i * OSC_OFF;
-    Table* table = manage(new Table(8,4));
+    Table* table = manage(new Table(4, 6));
     // row 1
     control(table, "Type", p_osc1_type + off, 0, 1);
     control(table, "Inv", p_osc1_inv + off, 1, 1);
     control(table, "Free", p_osc1_free + off, 2, 1);
     control(table, "Track", p_osc1_tracking + off, 3, 1);
+    control(table, "Param 1", p_osc1_param1 + off, 4, 1);
+    control(table, "Level A", p_osc1_level_a + off, 5, 1);
 
     // row 2
     control(table, "Coarse", p_osc1_coarse + off, 0, 3);
     control(table, "Fine", p_osc1_fine + off, 1, 3);
     control(table, "Ratio", p_osc1_ratio + off, 2, 3);
+    control(table, "Width", p_osc1_width + off, 3, 3);
+    control(table, "Param 2", p_osc1_param2 + off, 4, 3);
+    control(table, "Level B", p_osc1_level_b + off, 5, 3);
 
-    // row 3
-    control(table, "Width", p_osc1_width + off, 0, 5);
-    control(table, "Param 1", p_osc1_param1 + off, 1, 5);
-    control(table, "Param 2", p_osc1_param2 + off, 2, 5);
-    control(table, "Level", p_osc1_level + off, 3, 5);
-
-    // row 4
-    control(table, "Level A", p_osc1_level_a + off, 0, 7);
-    control(table, "Level B", p_osc1_level_b + off, 1, 7);
-    control(table, "Vel > vol", p_osc1_vel_to_vol + off, 2, 7);
+    // TODO
+    //control(table, "Level", p_osc1_level + off, 3, 5);
 
     return frame(osc_labels[i], p_osc1_on + off, table);
 }
 
 Widget* rogueGUI::createFilter(int i) {
     int off = i * DCF_OFF;
-    Table* table = manage(new Table(2,9));
+    Table* table = manage(new Table(4,6));
     // row 1
     control(table, "Type", p_filter1_type + off, 0, 1);
     control(table, "Source", p_filter1_source + off, 1, 1);
     control(table, "Freq", p_filter1_freq + off, 2, 1);
     control(table, "Q", p_filter1_q + off, 3, 1);
-    control(table, "Distortion", p_filter1_distortion + off, 4, 1);
-    control(table, "Level", p_filter1_level + off, 5, 1);
-    control(table, "Pan", p_filter1_pan + off, 6, 1);
-    control(table, "Key > F", p_filter1_key_to_f + off, 7, 1);
-    control(table, "Vel > F", p_filter1_vel_to_f + off, 8, 1);
+    control(table, "Level", p_filter1_level + off, 4, 1);
+
+    // row 2
+    control(table, "Distortion", p_filter1_distortion + off, 0, 3);
+    control(table, "Key > F", p_filter1_key_to_f + off, 1, 3);
+    control(table, "Vel > F", p_filter1_vel_to_f + off, 2, 3);
+    // empty
+    control(table, "Pan", p_filter1_pan + off, 4, 3);
 
     return frame(filter_labels[i], p_filter1_on + off, table);
 }
 
 Widget* rogueGUI::createLFO(int i) {
     int off = i * LFO_OFF;
-    Table* table = manage(new Table(2,5));
+    Table* table = manage(new Table(2, 5));
     // row 1
     control(table, "Type", p_lfo1_type + off, 0, 1);
     control(table, "Reset type", p_lfo1_reset_type + off, 1, 1);
@@ -268,22 +262,24 @@ Widget* rogueGUI::createLFO(int i) {
 
 Widget* rogueGUI::createEnv(int i) {
     int off = i * ENV_OFF;
-    Table* table = manage(new Table(2,8));
+    Table* table = manage(new Table(4, 5));
     // row 1
-    control(table, "Pre-delay", p_env1_pre_delay + off, 0, 1);
-    control(table, "Attack", p_env1_attack + off, 1, 1);
-    control(table, "Hold", p_env1_hold + off, 2, 1);
-    control(table, "Decay", p_env1_decay + off, 3, 1);
-    control(table, "Sustain", p_env1_sustain + off, 4, 1);
-    control(table, "Release", p_env1_release + off, 5, 1);
-    control(table, "Curve", p_env1_curve + off, 6, 1);
-    control(table, "Retrigger", p_env1_retrigger + off, 7, 1);
+    control(table, "Attack", p_env1_attack + off, 0, 1);
+    control(table, "Hold", p_env1_hold + off, 1, 1);
+    control(table, "Decay", p_env1_decay + off, 2, 1);
+    control(table, "Sustain", p_env1_sustain + off, 3, 1);
+    control(table, "Release", p_env1_release + off, 4, 1);
+
+    // row 2
+    control(table, "Pre-delay", p_env1_pre_delay + off, 0, 3);
+    control(table, "Curve", p_env1_curve + off, 1, 3);
+    control(table, "Retrigger", p_env1_retrigger + off, 2, 3);
 
     return frame(env_labels[i], p_env1_on + off, table);
 }
 
 Widget* rogueGUI::createMain() {
-    Table* table = manage(new Table(2,7));
+    Table* table = manage(new Table(2, 7));
     table->set_spacings(5);
     // row 1
     control(table, "Volume", p_volume, 0, 1);
@@ -300,32 +296,36 @@ Widget* rogueGUI::createMain() {
 
 
 Widget* rogueGUI::createModulation() {
-    CHARS labels[] = {"Source", "Amount", "Target"};
-    Table* table = manage(new Table(6, 12));
-    table->set_spacings(5);
-    for (int i = 0; i < 12; i++) {
-        table->attach(*manage(new Label(labels[i % 3])), i, i + 1, 1, 2);
-    }
+    Table* table1 = manage(new Table(5, 6));
+    Table* table2 = manage(new Table(5, 6));
+    //table->set_spacings(5);
     for (int i = 0; i < 5; i++) {
         int off = i * 3;
+        // table 1
         // col 1
-        table->attach(*scales[p_mod1_src + off]->get_widget(), 0, 1, i + 2, i + 3);
-        table->attach(*scales[p_mod1_amount + off]->get_widget(), 1, 2, i + 2, i + 3);
-        table->attach(*scales[p_mod1_target + off]->get_widget(), 2, 3, i + 2, i + 3);
+        table1->attach(*scales[p_mod1_src + off]->get_widget(), 0, 1, i + 1, i + 2);
+        table1->attach(*scales[p_mod1_amount + off]->get_widget(), 1, 2, i + 1, i + 2);
+        table1->attach(*scales[p_mod1_target + off]->get_widget(), 2, 3, i + 1, i + 2);
         // col 2
-        table->attach(*scales[p_mod6_src + off]->get_widget(), 3, 4, i + 2, i + 3);
-        table->attach(*scales[p_mod6_amount + off]->get_widget(), 4, 5, i + 2, i + 3);
-        table->attach(*scales[p_mod6_target + off]->get_widget(), 5, 6, i + 2, i + 3);
-        // col 3
-        table->attach(*scales[p_mod11_src + off]->get_widget(), 6, 7, i + 2, i + 3);
-        table->attach(*scales[p_mod11_amount + off]->get_widget(), 7, 8, i + 2, i + 3);
-        table->attach(*scales[p_mod11_target + off]->get_widget(), 8, 9, i + 2, i + 3);
-        // col 4
-        table->attach(*scales[p_mod16_src + off]->get_widget(), 9, 10, i + 2, i + 3);
-        table->attach(*scales[p_mod16_amount + off]->get_widget(), 10, 11, i + 2, i + 3);
-        table->attach(*scales[p_mod16_target + off]->get_widget(), 11, 12, i + 2, i + 3);
+        table1->attach(*scales[p_mod6_src + off]->get_widget(), 3, 4, i + 1, i + 2);
+        table1->attach(*scales[p_mod6_amount + off]->get_widget(), 4, 5, i + 1, i + 2);
+        table1->attach(*scales[p_mod6_target + off]->get_widget(), 5, 6, i + 1, i + 2);
+
+        // table 2
+        // col 1
+        table2->attach(*scales[p_mod11_src + off]->get_widget(), 0, 1, i + 1, i + 2);
+        table2->attach(*scales[p_mod11_amount + off]->get_widget(), 1, 2, i + 1, i + 2);
+        table2->attach(*scales[p_mod11_target + off]->get_widget(), 2, 3, i + 1, i + 2);
+        // col 2
+        table2->attach(*scales[p_mod16_src + off]->get_widget(), 3, 4, i + 1, i + 2);
+        table2->attach(*scales[p_mod16_amount + off]->get_widget(), 4, 5, i + 1, i + 2);
+        table2->attach(*scales[p_mod16_target + off]->get_widget(), 5, 6, i + 1, i + 2);
     }
-    return table;
+
+    Notebook* mod = manage(new Notebook());
+    mod->append_page(*table1, "Page 1");
+    mod->append_page(*table2, "Page 2");
+    return mod;
 }
 
 

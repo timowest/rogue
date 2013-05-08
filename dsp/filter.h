@@ -142,7 +142,7 @@ class BiQuad : Filter {
 /**
  * Tim Stilson's MoogVCF filter using 'compromise' poles at z = -0.3
  *
- * Several improments are built in, such as corrections for cutoff
+ * Several improvements are built in, such as corrections for cutoff
  * and resonance parameters, removal of the necessity of the
  * separation table, audio rate update of cutoff and resonance
  * and a smoothly saturating tanh() function, clamping output and
