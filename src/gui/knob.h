@@ -43,7 +43,7 @@ class Knob : public Gtk::DrawingArea, public Changeable {
   protected:
     float value;
     float min, max, step;
-    float line_width = 2.5;
+    float line_width = 2.0;
     float radius = 15.0;
     float range, sensitivity, origin_val, origin_y;
     sigc::signal<void> value_changed;
@@ -96,9 +96,11 @@ bool Knob::on_scroll_event(GdkEventScroll* event) {
 }
 
 bool Knob::on_expose_event(GdkEventExpose* event) {
-    static Gdk::Color bgColor = Gdk::Color("black");
-    static Gdk::Color activeColor = Gdk::Color("black");
-    static Gdk::Color passiveColor = Gdk::Color("white");
+    static Gdk::Color bgColor = Gdk::Color("#808080");
+    static Gdk::Color fgColor = Gdk::Color("#c0c0c0");
+    static Gdk::Color fg2Color = Gdk::Color("#b0b0b0");
+    static Gdk::Color arcColor = Gdk::Color("#404040");
+    static Gdk::Color lineColor = Gdk::Color("#ffffff");
     Glib::RefPtr<Gdk::Window> window = get_window();
 
     if (window) {
@@ -110,34 +112,54 @@ bool Knob::on_expose_event(GdkEventExpose* event) {
 
         int xc = width / 2;
         int yc = height / 2;
-        double val = (value - min) / (max - min);
+        double val0 = -min / (max - min);
+        double angle0 = (0.75 + val0 * 1.5) * M_PI;
 
+        double val = (value - min) / (max - min);
         double angle = (0.75 + val * 1.5) * M_PI;
+
         //double angle_start = 0.75 * M_PI;
         //double angle_end = 2.25  * M_PI;
 
         cr->set_antialias(ANTIALIAS_SUBPIXEL);
 
-        // radial gradient
+        // background
         cr->save();
-        Cairo::RefPtr<Cairo::RadialGradient> radial = Cairo::RadialGradient::create(xc, yc, radius, xc - 2.0, yc - 2.0, radius);
-        radial->add_color_stop_rgba(0,  0.0, 0.0, 0.0, 0.5);
-        radial->add_color_stop_rgba(1,  0.0, 0.0, 0.0, 0.0);
-        cr->set_source(radial);
-        cr->arc(xc, yc, radius * 1.2, 0.0, 2 * M_PI);
+        Gdk::Cairo::set_source_color(cr, bgColor);
+        cr->arc(xc, yc + radius * 0.2, radius * 1.2, 0, 2.0 * M_PI);
         cr->fill();
+        cr->restore();
+
+        // foreground
+        cr->save();
+        Gdk::Cairo::set_source_color(cr, fgColor);
+        cr->arc(xc, yc, radius, 0, 2.0 * M_PI);
+        cr->fill();
+        cr->restore();
+
+        // full arc
+        cr->save();
+        Gdk::Cairo::set_source_color(cr, fg2Color);
+        cr->arc(xc, yc, radius, 0, 2.0 * M_PI);
+        cr->set_line_width(1.5);
+        cr->stroke();
         cr->restore();
 
         // arc
         cr->save();
-        Gdk::Cairo::set_source_color(cr, bgColor);
-        cr->arc(xc, yc, radius, 0, 2.0 * M_PI);
-        cr->set_line_width(line_width);
+        Gdk::Cairo::set_source_color(cr, arcColor);
+        if (angle0 < angle) {
+            cr->arc(xc, yc, radius + 5.0, angle0, angle);
+        } else {
+            cr->arc(xc, yc, radius + 5.0, angle, angle0);
+        }
+        cr->set_line_width(3.0);
         cr->stroke();
         cr->restore();
 
         // line
         cr->save();
+        Gdk::Cairo::set_source_color(cr, lineColor);
         cr->move_to(xc + 0.3 * radius * cos(angle), yc + 0.3 * radius * sin(angle));
         cr->line_to(xc + 0.9 * radius * cos(angle), yc + 0.9 * radius * sin(angle));
         cr->set_line_width(line_width);
@@ -181,3 +203,4 @@ void Knob::connect(sigc::slot<void> slot) {
 }
 
 #endif //KNOB_H
+

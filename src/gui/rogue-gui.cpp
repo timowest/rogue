@@ -117,7 +117,7 @@ rogueGUI::rogueGUI(const char* URI) {
         if (type == KNOB) {
             Knob* knob = new Knob(p_port_meta[i].min, p_port_meta[i].max, p_port_meta[i].step);
             knob->set_radius(12.0);
-            knob->set_size(30);
+            knob->set_size(38);
             scales[i] = manage(knob);
         } else if (type == LABEL) {
             scales[i] = manage(new LabelBox(p_port_meta[i].min, p_port_meta[i].max, p_port_meta[i].step));
