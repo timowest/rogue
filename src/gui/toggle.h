@@ -44,7 +44,7 @@ Toggle::Toggle(bool invert) : invert(invert) {
 }
 
 bool Toggle::on_expose_event(GdkEventExpose* event) {
-    static Gdk::Color bgColor = Gdk::Color("black");
+    static Gdk::Color bgColor = Gdk::Color("#808080");
     Glib::RefPtr<Gdk::Window> window = get_window();
 
     if (window) {

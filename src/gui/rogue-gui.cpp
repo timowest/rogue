@@ -17,6 +17,7 @@
 #include "gui/panel.h"
 #include "gui/select.h"
 #include "gui/toggle.h"
+#include "gui/wavedraw.h"
 
 using namespace sigc;
 using namespace Gtk;
@@ -198,22 +199,25 @@ rogueGUI::rogueGUI(const char* URI) {
 
 Widget* rogueGUI::createOSC(int i) {
     int off = i * OSC_OFF;
-    Table* table = manage(new Table(4, 6));
+    Table* table = manage(new Table(4, 8));
     // row 1
     control(table, "Type", p_osc1_type + off, 0, 1);
     control(table, "Inv", p_osc1_inv + off, 1, 1);
     control(table, "Free", p_osc1_free + off, 2, 1);
     control(table, "Track", p_osc1_tracking + off, 3, 1);
-    control(table, "Par 1", p_osc1_param1 + off, 4, 1);
-    control(table, "Vol A", p_osc1_level_a + off, 5, 1);
+
+    Wavedraw* draw = manage(new Wavedraw(140, 70));
+    table->attach(*draw, 4, 8, 1, 3);
 
     // row 2
     control(table, "Coarse", p_osc1_coarse + off, 0, 3);
     control(table, "Fine", p_osc1_fine + off, 1, 3);
     control(table, "Ratio", p_osc1_ratio + off, 2, 3);
     control(table, "Width", p_osc1_width + off, 3, 3);
-    control(table, "Par 2", p_osc1_param2 + off, 4, 3);
-    control(table, "Vol B", p_osc1_level_b + off, 5, 3);
+    control(table, "Par 1", p_osc1_param1 + off, 4, 3);
+    control(table, "Par 2", p_osc1_param2 + off, 5, 3);
+    control(table, "Vol A", p_osc1_level_a + off, 6, 3);
+    control(table, "Vol B", p_osc1_level_b + off, 7, 3);
 
     // TODO
     //control(table, "Level", p_osc1_level + off, 3, 5);
@@ -243,31 +247,39 @@ Widget* rogueGUI::createFilter(int i) {
 
 Widget* rogueGUI::createLFO(int i) {
     int off = i * LFO_OFF;
-    Table* table = manage(new Table(2, 5));
+    Table* table = manage(new Table(4, 7));
     // row 1
     control(table, "Type", p_lfo1_type + off, 0, 1);
     control(table, "Reset", p_lfo1_reset_type + off, 1, 1);
     control(table, "Freq", p_lfo1_freq + off, 2, 1);
     control(table, "Width", p_lfo1_width + off, 3, 1);
-    control(table, "Rand", p_lfo1_humanize + off, 4, 1);
+
+    Wavedraw* draw = manage(new Wavedraw(105, 70));
+    table->attach(*draw, 4, 7, 1, 3);
+
+    // row 2
+    control(table, "Rand", p_lfo1_humanize + off, 0, 3);
 
     return frame(lfo_labels[i], p_lfo1_on + off, table);
 }
 
 Widget* rogueGUI::createEnv(int i) {
     int off = i * ENV_OFF;
-    Table* table = manage(new Table(4, 5));
+    Table* table = manage(new Table(4, 7));
     // row 1
     control(table, "A", p_env1_attack + off, 0, 1);
-    control(table, "H", p_env1_hold + off, 1, 1);
-    control(table, "D", p_env1_decay + off, 2, 1);
-    control(table, "S", p_env1_sustain + off, 3, 1);
-    control(table, "R", p_env1_release + off, 4, 1);
+    control(table, "D", p_env1_decay + off, 1, 1);
+    control(table, "S", p_env1_sustain + off, 2, 1);
+    control(table, "R", p_env1_release + off, 3, 1);
+
+    Wavedraw* draw = manage(new Wavedraw(105, 70));
+    table->attach(*draw, 4, 7, 1, 3);
 
     // row 2
-    control(table, "Pre", p_env1_pre_delay + off, 0, 3);
-    control(table, "Curve", p_env1_curve + off, 1, 3);
-    control(table, "Retr", p_env1_retrigger + off, 2, 3);
+    control(table, "Hold", p_env1_hold + off, 0, 3);
+    control(table, "Pre", p_env1_pre_delay + off, 1, 3);
+    control(table, "Curve", p_env1_curve + off, 2, 3);
+    control(table, "Retr", p_env1_retrigger + off, 3, 3);
 
     return frame(env_labels[i], p_env1_on + off, table);
 }
