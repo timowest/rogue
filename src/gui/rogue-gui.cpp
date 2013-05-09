@@ -53,7 +53,7 @@ class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> >
 #define CHARS static const char*
 
 // checkbox content
-CHARS osc_types[] = {"Sin", "Hard sync", "Soft sync", "Pulse", "Slope", "Tri",
+CHARS osc_types[] = {"Sin", "Saw", "Tri", "Pulse", "Slope", "Tri",
         "Supersaw", "Slices", "Sinusoids", "Noise"};
 
 CHARS filter_types[] = {"LP 24dB", "LP 18dB", "LP 12dB", "LP 6dB", "HP 24dB",
@@ -115,15 +115,9 @@ rogueGUI::rogueGUI(const char* URI) {
     for (int i = 3; i < p_n_ports; i++) {
         uint32_t type = p_port_meta[i].type;
         if (type == KNOB) {
-            scales[i] = manage(new Knob(p_port_meta[i].min, p_port_meta[i].max, p_port_meta[i].step));
-        } else if (type == KNOB_M) {
             Knob* knob = new Knob(p_port_meta[i].min, p_port_meta[i].max, p_port_meta[i].step);
             knob->set_radius(12.0);
-            scales[i] = manage(knob);
-        } else if (type == KNOB_S) {
-            Knob* knob = new Knob(p_port_meta[i].min, p_port_meta[i].max, p_port_meta[i].step);
             knob->set_size(30);
-            knob->set_radius(10);
             scales[i] = manage(knob);
         } else if (type == LABEL) {
             scales[i] = manage(new LabelBox(p_port_meta[i].min, p_port_meta[i].max, p_port_meta[i].step));
@@ -161,7 +155,7 @@ rogueGUI::rogueGUI(const char* URI) {
         scales[i]->connect(slot1);
         int type = p_port_meta[i].type;
         // connect knobs to statusbar
-        if (type == KNOB || type == KNOB_M || type == KNOB_S) {
+        if (type == KNOB) {
             slot<void> slot2 = compose(bind<0>(mem_fun(*this, &rogueGUI::change_status_bar), i),
                 mem_fun(*scales[i], &Changeable::get_value));
             scales[i]->connect(slot2);
@@ -210,16 +204,16 @@ Widget* rogueGUI::createOSC(int i) {
     control(table, "Inv", p_osc1_inv + off, 1, 1);
     control(table, "Free", p_osc1_free + off, 2, 1);
     control(table, "Track", p_osc1_tracking + off, 3, 1);
-    control(table, "Param 1", p_osc1_param1 + off, 4, 1);
-    control(table, "Level A", p_osc1_level_a + off, 5, 1);
+    control(table, "Par 1", p_osc1_param1 + off, 4, 1);
+    control(table, "Vol A", p_osc1_level_a + off, 5, 1);
 
     // row 2
     control(table, "Coarse", p_osc1_coarse + off, 0, 3);
     control(table, "Fine", p_osc1_fine + off, 1, 3);
     control(table, "Ratio", p_osc1_ratio + off, 2, 3);
     control(table, "Width", p_osc1_width + off, 3, 3);
-    control(table, "Param 2", p_osc1_param2 + off, 4, 3);
-    control(table, "Level B", p_osc1_level_b + off, 5, 3);
+    control(table, "Par 2", p_osc1_param2 + off, 4, 3);
+    control(table, "Vol B", p_osc1_level_b + off, 5, 3);
 
     // TODO
     //control(table, "Level", p_osc1_level + off, 3, 5);
@@ -234,13 +228,13 @@ Widget* rogueGUI::createFilter(int i) {
     control(table, "Type", p_filter1_type + off, 0, 1);
     control(table, "Source", p_filter1_source + off, 1, 1);
     control(table, "Freq", p_filter1_freq + off, 2, 1);
-    control(table, "Q", p_filter1_q + off, 3, 1);
-    control(table, "Level", p_filter1_level + off, 4, 1);
+    control(table, "Res", p_filter1_q + off, 3, 1);
+    control(table, "Vol", p_filter1_level + off, 4, 1);
 
     // row 2
-    control(table, "Distortion", p_filter1_distortion + off, 0, 3);
-    control(table, "Key > F", p_filter1_key_to_f + off, 1, 3);
-    control(table, "Vel > F", p_filter1_vel_to_f + off, 2, 3);
+    control(table, "Dist", p_filter1_distortion + off, 0, 3);
+    control(table, "Key>F", p_filter1_key_to_f + off, 1, 3);
+    control(table, "Vel>F", p_filter1_vel_to_f + off, 2, 3);
     // empty
     control(table, "Pan", p_filter1_pan + off, 4, 3);
 
@@ -252,10 +246,10 @@ Widget* rogueGUI::createLFO(int i) {
     Table* table = manage(new Table(2, 5));
     // row 1
     control(table, "Type", p_lfo1_type + off, 0, 1);
-    control(table, "Reset type", p_lfo1_reset_type + off, 1, 1);
+    control(table, "Reset", p_lfo1_reset_type + off, 1, 1);
     control(table, "Freq", p_lfo1_freq + off, 2, 1);
     control(table, "Width", p_lfo1_width + off, 3, 1);
-    control(table, "Humanize", p_lfo1_humanize + off, 4, 1);
+    control(table, "Rand", p_lfo1_humanize + off, 4, 1);
 
     return frame(lfo_labels[i], p_lfo1_on + off, table);
 }
@@ -264,16 +258,16 @@ Widget* rogueGUI::createEnv(int i) {
     int off = i * ENV_OFF;
     Table* table = manage(new Table(4, 5));
     // row 1
-    control(table, "Attack", p_env1_attack + off, 0, 1);
-    control(table, "Hold", p_env1_hold + off, 1, 1);
-    control(table, "Decay", p_env1_decay + off, 2, 1);
-    control(table, "Sustain", p_env1_sustain + off, 3, 1);
-    control(table, "Release", p_env1_release + off, 4, 1);
+    control(table, "A", p_env1_attack + off, 0, 1);
+    control(table, "H", p_env1_hold + off, 1, 1);
+    control(table, "D", p_env1_decay + off, 2, 1);
+    control(table, "S", p_env1_sustain + off, 3, 1);
+    control(table, "R", p_env1_release + off, 4, 1);
 
     // row 2
-    control(table, "Pre-delay", p_env1_pre_delay + off, 0, 3);
+    control(table, "Pre", p_env1_pre_delay + off, 0, 3);
     control(table, "Curve", p_env1_curve + off, 1, 3);
-    control(table, "Retrigger", p_env1_retrigger + off, 2, 3);
+    control(table, "Retr", p_env1_retrigger + off, 2, 3);
 
     return frame(env_labels[i], p_env1_on + off, table);
 }
@@ -283,12 +277,12 @@ Widget* rogueGUI::createMain() {
     table->set_spacings(5);
     // row 1
     control(table, "Volume", p_volume, 0, 1);
-    control(table, "Bus A level", p_bus_a_level, 1, 1);
-    control(table, "Bus A pan", p_bus_a_pan, 2, 1);
-    control(table, "Bus B level", p_bus_b_level, 3, 1);
-    control(table, "Bus B pan", p_bus_b_pan, 4, 1);
-    control(table, "Glide time", p_glide_time, 5, 1);
-    control(table, "Bend range", p_bend_range, 6, 1);
+    control(table, "Vol A", p_bus_a_level, 1, 1);
+    control(table, "Pan A", p_bus_a_pan, 2, 1);
+    control(table, "Vol B", p_bus_b_level, 3, 1);
+    control(table, "Pan B", p_bus_b_pan, 4, 1);
+    control(table, "Glide", p_glide_time, 5, 1);
+    control(table, "Bend", p_bend_range, 6, 1);
 
     //return frame(env_labels[i], p_env1_on + off, table);
     return table;

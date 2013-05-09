@@ -63,7 +63,7 @@ PREFIX = """@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
 PREFIX_GUI = """#ifndef ANALOGUE_META
 #define ANALOGUE_META
 
-enum {KNOB, KNOB_M, KNOB_S, LABEL, TOGGLE, SELECT};
+enum {KNOB, LABEL, TOGGLE, SELECT};
 
 typedef struct {
     const char* symbol;
@@ -122,8 +122,6 @@ def port_meta(symbol, min, max, default, step):
         type = "SELECT"
     elif "_amount" in symbol:
         type = "LABEL"
-    elif ("_to_" in symbol or "level" in symbol or "pan" in symbol):
-        type = "KNOB_M"    
     return '    {"%s", %s, %s, %s, %s, %s},' % (symbol, min, max, default, step, type)
 
 def controls(ttl, gui, idx, type, count, controls):
