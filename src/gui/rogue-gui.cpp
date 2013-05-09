@@ -26,6 +26,8 @@
 #define LFO_DRAW_WIDTH 105
 #define ENV_DRAW_WIDTH 105
 
+#define DRAW_HEIGHT 60
+
 using namespace sigc;
 using namespace Gtk;
 
@@ -58,6 +60,8 @@ class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> >
 
     Wavedraw* oscWaves[NOSC];
     Wavedraw* lfoWaves[NLFO];
+    Wavedraw* envWaves[NENV];
+
     float oscBuffers[NOSC][OSC_DRAW_WIDTH];
     float lfoBuffers[NLFO][LFO_DRAW_WIDTH];
     float envBuffers[NENV][ENV_DRAW_WIDTH];
@@ -201,7 +205,7 @@ rogueGUI::rogueGUI(const char* URI) {
 
     // osc visualizations
     for (int i = 0; i < NOSC; i++) {
-        Wavedraw* draw = manage(new Wavedraw(OSC_DRAW_WIDTH, 70, oscBuffers[i], OSC_DRAW_WIDTH));
+        Wavedraw* draw = manage(new Wavedraw(OSC_DRAW_WIDTH, DRAW_HEIGHT, oscBuffers[i], OSC_DRAW_WIDTH));
         oscWaves[i] = draw;
 
         // connect type, inv, width, param1, param2
@@ -216,7 +220,7 @@ rogueGUI::rogueGUI(const char* URI) {
 
     // lfo visualizations
     for (int i = 0; i < NLFO; i++) {
-        Wavedraw* draw = manage(new Wavedraw(LFO_DRAW_WIDTH, 70, lfoBuffers[i], LFO_DRAW_WIDTH));
+        Wavedraw* draw = manage(new Wavedraw(LFO_DRAW_WIDTH, DRAW_HEIGHT, lfoBuffers[i], LFO_DRAW_WIDTH));
         lfoWaves[i] = draw;
 
         // connect type, inv, width, param1, param2
@@ -227,7 +231,13 @@ rogueGUI::rogueGUI(const char* URI) {
         update_lfo(i, 0.0);
     }
 
-    // TODO env visualizations
+    // env visualizations
+    for (int i = 0; i < NENV; i++) {
+        Wavedraw* draw = manage(new Wavedraw(ENV_DRAW_WIDTH, DRAW_HEIGHT, envBuffers[i], ENV_DRAW_WIDTH));
+        envWaves[i] = draw;
+
+        // TODO connect and update
+    }
 
     Table* table = manage(new Table(4, 3));
     // main
@@ -336,8 +346,7 @@ Widget* rogueGUI::createEnv(int i) {
     control(table, "S", p_env1_sustain + off, 2, 1);
     control(table, "R", p_env1_release + off, 3, 1);
 
-    Wavedraw* draw = manage(new Wavedraw(ENV_DRAW_WIDTH, 70, envBuffers[i], ENV_DRAW_WIDTH));
-    table->attach(*draw, 4, 7, 1, 3);
+    table->attach(*envWaves[i], 4, 7, 1, 3);
 
     // row 2
     control(table, "Hold", p_env1_hold + off, 0, 3);
