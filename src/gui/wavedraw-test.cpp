@@ -15,8 +15,7 @@ int main(int argc, char* argv[]) {
         samples[i] = -1.0 + i / 20.0;
     }
 
-    rogue::Wavedraw draw(160, 80);
-    draw.set_contents(samples, 40);
+    rogue::Wavedraw draw(160, 80, samples, 40);
     Gtk::Alignment alignment(0.0, 0.0, 0.0, 0.0);
     alignment.add(draw);
 

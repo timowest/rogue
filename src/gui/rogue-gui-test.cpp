@@ -1,4 +1,7 @@
 #include <gtkmm/main.h>
+#include "lfo.cpp"
+#include "tables.cpp"
+#include "oscillator.cpp"
 #include "gui/rogue-gui.cpp"
 
 int main(int argc, char* argv[]) {

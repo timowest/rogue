@@ -23,9 +23,10 @@ namespace rogue {
 class Wavedraw : public Gtk::DrawingArea {
 
   public:
-    Wavedraw(int w, int h);
+    Wavedraw(int w, int h, float* samples, int size);
     bool on_expose_event(GdkEventExpose* event);
     void set_contents(float* samples, int size);
+    void refresh();
 
   protected:
     float* samples;
@@ -34,14 +35,9 @@ class Wavedraw : public Gtk::DrawingArea {
 
 // implementation
 
-Wavedraw::Wavedraw(int w, int h) {
+Wavedraw::Wavedraw(int w, int h, float* samples, int size) : samples(samples), size(size) {
     set_size_request(w, h);
     add_events(Gdk::EXPOSURE_MASK);
-}
-
-void Wavedraw::set_contents(float* samples, int size) {
-    this->samples = samples;
-    this->size = size;
 }
 
 bool Wavedraw::on_expose_event(GdkEventExpose* event) {
@@ -69,7 +65,7 @@ bool Wavedraw::on_expose_event(GdkEventExpose* event) {
         Gdk::Cairo::set_source_color(cr, lineColor);
         for (int i = 0; i < size; i++) {
             float x = i * width / float(size);
-            float y = height * 0.5 * (-samples[i] + 1.0);
+            float y = height * 0.5 * (-samples[i] * 0.95 + 1.0);
             if (i > 0) {
                 cr->line_to(x, y);
             }
@@ -80,6 +76,15 @@ bool Wavedraw::on_expose_event(GdkEventExpose* event) {
     }
 
     return true;
+}
+
+void Wavedraw::refresh() {
+    Glib::RefPtr<Gdk::Window> window = get_window();
+
+    if (window) {
+        Gdk::Rectangle r(0, 0, get_allocation().get_width(), get_allocation().get_height());
+        window->invalidate_rect(r, false);
+    }
 }
 
 }

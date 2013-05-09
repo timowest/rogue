@@ -43,6 +43,7 @@ class Knob : public Gtk::DrawingArea, public Changeable {
   protected:
     float value;
     float min, max, step;
+    float val0, angle0;
     float line_width = 2.0;
     float radius = 15.0;
     float range, sensitivity, origin_val, origin_y;
@@ -55,6 +56,9 @@ Knob::Knob(float min, float max, float step) : value(0.0), min(min), max(max), s
     set_size_request(40, 40);
     range = max - min;
     sensitivity = range / step;
+
+    val0 = -min / (max - min);
+    angle0 = (0.75 + val0 * 1.5) * M_PI;
 
     add_events( Gdk::EXPOSURE_MASK | Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON1_MOTION_MASK);
     signal_motion_notify_event().connect(mem_fun(this, &Knob::on_motion_notify));
@@ -96,7 +100,7 @@ bool Knob::on_scroll_event(GdkEventScroll* event) {
 }
 
 bool Knob::on_expose_event(GdkEventExpose* event) {
-    static Gdk::Color bgColor = Gdk::Color("#808080");
+    static Gdk::Color bgColor = Gdk::Color("#909090");
     static Gdk::Color fgColor = Gdk::Color("#c0c0c0");
     static Gdk::Color fg2Color = Gdk::Color("#b0b0b0");
     static Gdk::Color arcColor = Gdk::Color("#404040");
@@ -112,14 +116,9 @@ bool Knob::on_expose_event(GdkEventExpose* event) {
 
         int xc = width / 2;
         int yc = height / 2;
-        double val0 = -min / (max - min);
-        double angle0 = (0.75 + val0 * 1.5) * M_PI;
 
         double val = (value - min) / (max - min);
         double angle = (0.75 + val * 1.5) * M_PI;
-
-        //double angle_start = 0.75 * M_PI;
-        //double angle_end = 2.25  * M_PI;
 
         cr->set_antialias(ANTIALIAS_SUBPIXEL);
 
@@ -181,10 +180,11 @@ void Knob::set_size(int s) {
 }
 
 void Knob::refresh() {
-    Glib::RefPtr<Gdk::Window> win = get_window();
-    if (win) {
+    Glib::RefPtr<Gdk::Window> window = get_window();
+
+    if (window) {
         Gdk::Rectangle r(0, 0, get_allocation().get_width(), get_allocation().get_height());
-        win->invalidate_rect(r, false);
+        window->invalidate_rect(r, false);
     }
 }
 
