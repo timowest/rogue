@@ -279,8 +279,8 @@ Widget* rogueGUI::createOSC(int i) {
     // row 1
     control(table, "Type", p_osc1_type + off, 0, 1);
     control(table, "Inv", p_osc1_inv + off, 1, 1);
-    control(table, "Free", p_osc1_free + off, 2, 1);
-    control(table, "Track", p_osc1_tracking + off, 3, 1);
+    control(table, "Track", p_osc1_tracking + off, 2, 1);
+    control(table, "Level", p_osc1_level + off, 3, 1);
 
     table->attach(*oscWaves[i], 4, 8, 1, 3);
 
@@ -295,7 +295,7 @@ Widget* rogueGUI::createOSC(int i) {
     control(table, "Vol B", p_osc1_level_b + off, 7, 3);
 
     // TODO
-    //control(table, "Level", p_osc1_level + off, 3, 5);
+    //control(table, "Free", p_osc1_free + off, 2, 1);
 
     return frame(osc_labels[i], p_osc1_on + off, table);
 }
