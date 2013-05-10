@@ -1,0 +1,258 @@
+<html>
+<head>
+  <link rel="stylesheet" href="ui.css"/>
+  <script src="jquery-1.9.1.js"></script>
+  <script src="handlebars.js"></script>
+  <script src="ui.js"></script>
+</head>
+<body>
+
+<div class="synth">
+
+<table>
+<tr>
+  <td><div class="browser"></div></td>
+  <td><div class="global"></div></td>
+  <td><div class="effects"></div></td>
+</tr>
+<tr>
+  <td class="oscs" colspan="2">
+  <span class="label">Oscillator</span>
+  <table>
+  <tr>
+    <td><div class="osc"></div></td>
+    <td><div class="osc"></div></td>
+  </tr> 
+  <tr>
+    <td><div class="osc"></div></td>
+    <td><div class="osc"></div></td>
+  </tr>  
+  </table>
+  </td>
+  
+  <td class="filters">
+  <span class="label">Filter</span>
+  <table>
+  <tr>
+    <td><div class="filter"></div></td>
+  </tr>
+  <tr>
+    <td><div class="filter"></div></td>
+  </tr>
+  </table>
+  </td>    
+</tr>
+<tr>
+  <td>
+    <div class="envs"></div>
+  </td>
+  <td>
+    <div class="modulation"></div>
+  </td>
+  <td>    
+    <div class="lfos">
+  </div>
+</tr>  
+</table>
+
+</div>
+
+<script id="browser-tmpl" type="text/x-handlebars-template">
+<span class="label">Browser</span>
+</script>
+
+<script id="master-tmpl" type="text/x-handlebars-template">
+<span class="label">Global</span>
+<table>
+<tr>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+</tr>
+<tr>
+  <td>Volume</td>
+  <td>Vol A</td>
+  <td>Pan A</td>
+  <td>Vol B</td>
+  <td>Pan B</td>
+  <td>Glide</td>
+  <td>Bend</td>
+</tr>
+</table>
+</script>
+
+<script id="osc-tmpl" type="text/x-handlebars-template">
+<table>
+<tr>
+  <td><span class="select">Sin</span></td>
+  <td><span class="toggle">Inv</span></td>
+  <td><span class="toggle">Track</span></td>
+  <td><span class="knob"></span></td>
+  <td colspan="4"><span class="wave"></span></td>
+</tr>
+<tr>
+  <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td> 
+</tr>
+<tr>
+  <td>Coarse</td>
+  <td>Fine</td>
+  <td>Ratio</td>
+  <td>Width</td>
+  <td>Par 1</td>
+  <td>Par 2</td>
+  <td>Vol A</td>
+  <td>Vol B</td>
+</tr>
+</table>
+</script>
+
+<script id="filter-tmpl" type="text/x-handlebars-template">
+<table>
+<tr>
+  <td><span class="select">LP 24 db</span></td>
+  <td><span class="select">Bus A</span></td>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+</tr>
+<tr>
+  <td>Type</td>
+  <td>Source</td>
+  <td>Freq</td>
+  <td>Res</td>
+  <td>Vol</td>
+</tr>
+<tr>
+  <td><span class="knob"></span</td>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+  <td>&nbsp;</td>
+  <td><span class="knob"></span></td>
+</tr>
+<tr>
+  <td>Dist</td>
+  <td>Key > F</td>
+  <td>Vel > F</td>
+  <td>&nbsp;</td>
+  <td>Pan</td>
+</tr>
+</table>
+</script>
+
+<script id="env-tmpl" type="text/x-handlebars-template">
+<span class="label">Envelope</span>
+<table>
+<tr>
+  <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td>
+  <td colspan="4" rowspan="2"><span class="wave"></span></td>
+</tr>
+<tr>
+  <td>A</td>
+  <td>D</td>
+  <td>S</td>
+  <td>R</td>
+</tr>
+<tr>
+  <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td> 
+  <td><span class="togle"></span></td>
+</tr>
+<tr>
+  <td>Hold</td>
+  <td>Pre</td>
+  <td>Curve</td>
+  <td>Retr</td>
+</tr>
+</table>
+</script>
+
+<script id="modulation-tmpl" type="text/x-handlebars-template">
+<span class="label">Modulation</span>
+<table>
+<tr>
+  <td>-<td>
+  <td>-<td>
+  <td>0</td>
+  <td>-<td>
+  <td>-<td>
+  <td>0</td>
+</tr>
+<tr>
+  <td>-<td>
+  <td>-<td>
+  <td>0</td>
+  <td>-<td>
+  <td>-<td>
+  <td>0</td>
+</tr>
+<tr>
+  <td>-<td>
+  <td>-<td>
+  <td>0</td>
+  <td>-<td>
+  <td>-<td>
+  <td>0</td>
+</tr>
+<tr>
+  <td>-<td>
+  <td>-<td>
+  <td>0</td>
+  <td>-<td>
+  <td>-<td>
+  <td>0</td>
+</tr>
+<tr>
+  <td>-<td>
+  <td>-<td>
+  <td>0</td>
+  <td>-<td>
+  <td>-<td>
+  <td>0</td>
+</tr>
+</table>
+</script>
+
+<script id="lfo-tmpl" type="text/x-handlebars-template">
+<span class="label">LFO</span>
+<table>
+<tr>
+  <td><span class="select">Sin</span></td>  
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+  <td rowspan="2"><span class="small-wave"></span></td>
+</tr>
+<tr>
+  <td>Type</td>  
+  <td>Freq</td>
+  <td>Width</td>
+</tr>
+<tr>
+  <td><span class="select">Poly</span></td>
+  <td><span class="knob"></span></td>
+</tr>
+</tr>
+  <td>Reset</td>
+  <td>Rand</td>
+</tr>
+
+</table>
+</script>
+
+</body>
+
+</html>

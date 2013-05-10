@@ -1,0 +1,59 @@
+body {
+    font-family: arial;
+    font-size: 12px;    	
+}
+
+td {
+    text-align: center;
+    font-size: 80%;	
+}
+
+.label {
+    font-weight: bold;	
+    display: block;
+    text-align: left;	
+    padding: 2px;
+}
+
+.browser, .global, .oscs, .filters, .envs, .modulation, .lfos {
+    border: solid 1px;
+    border-radius: 3px;	
+    margin: 2px;
+    padding: 2px;
+}
+
+.browser {
+    height: 5.9em;	
+}
+
+.modulation td {
+    width: 2em;
+    height: 1.7em;	
+}
+
+.osc, .filter {
+    border: dotted 1px #a0a0a0;	
+}
+
+.knob {
+    margin: 0 5px;	
+    display: block;
+    width: 28px;
+    height: 28px;
+    border: solid 1px #808080;	
+    border-radius: 14px;
+}
+
+.wave {
+    display: block;
+    width: 120px;
+    height: 60px;
+    border: solid 1px #808080;
+}
+
+.small-wave {
+    display: block;
+    width: 90px;
+    height: 60px;
+    border: solid 1px #808080;
+}
