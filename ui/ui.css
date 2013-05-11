@@ -12,9 +12,16 @@ td {
     magin: 0;
 }
 
+.title {
+    display: block;
+    text-align: right;
+    font-size: 3em;	
+    font-family: 'Prosto One', cursive;	
+}
+
 .label {
     width: 7.5em;	
-    background: #c0c0c0;
+    /*background: #c0c0c0;*/
     color: #404040;	
     /*text-transform: uppercase;*/	
     font-weight: bold;	
