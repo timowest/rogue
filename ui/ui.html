@@ -1,5 +1,6 @@
 <html>
 <head>
+  <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="ui.css"/>
   <script src="jquery-1.9.1.js"></script>
   <script src="handlebars.js"></script>
@@ -11,47 +12,63 @@
 
 <table>
 <tr>
+  <td><span class="screw"></span></td>
   <td><div class="browser"></div></td>
   <td><div class="global"></div></td>
   <td><div class="effects"></div></td>
+  <td><span class="screw"></span></td>
 </tr>
 <tr>
-  <td class="oscs" colspan="2">
-  <span class="label">Oscillator</span>
+  <td><span class="screw"></span></td>
+  <td colspan="2">
+  <div class="oscs">
+  <span class="label">Oscillators</span>
   <table>
   <tr>
+    <td><span class="idx">1</span></td>
     <td><div class="osc"></div></td>
-    <td><div class="osc"></div></td>
+    <td><span class="idx">2</span></td>
+    <td><div class="osc"></div></td>    
   </tr> 
   <tr>
+    <td><span class="idx">3</span></td>
     <td><div class="osc"></div></td>
-    <td><div class="osc"></div></td>
+    <td><span class="idx">4</span></td>
+    <td><div class="osc"></div></td>    
   </tr>  
   </table>
+  </div>
   </td>
   
-  <td class="filters">
-  <span class="label">Filter</span>
+  <td>
+  <div class="filters">
+  <span class="label">Filters</span>
   <table>
   <tr>
+    <td><span class="idx">1</span></td>
     <td><div class="filter"></div></td>
   </tr>
   <tr>
+    <td><span class="idx">2</span></td>
     <td><div class="filter"></div></td>
   </tr>
   </table>
+  </div>
   </td>    
+  <td><span class="screw"></span></td>
 </tr>
 <tr>
-  <td>
+  <td><span class="screw"></span></td>
+  <td>    
     <div class="envs"></div>
   </td>
   <td>
     <div class="modulation"></div>
   </td>
   <td>    
-    <div class="lfos">
-  </div>
+    <div class="lfos"></div>
+  </td>
+  <td><span class="screw"></span></td>
 </tr>  
 </table>
 
@@ -70,8 +87,10 @@
   <td><span class="knob"></span></td>
   <td><span class="knob"></span></td>
   <td><span class="knob"></span></td>
+<!--
   <td><span class="knob"></span></td>
   <td><span class="knob"></span></td>
+-->
 </tr>
 <tr>
   <td>Volume</td>
@@ -79,8 +98,32 @@
   <td>Pan A</td>
   <td>Vol B</td>
   <td>Pan B</td>
+<!--
   <td>Glide</td>
   <td>Bend</td>
+-->
+</tr>
+</table>
+</script>
+
+<script id="effects-tmpl" type="text/x-handlebars-template">
+<span class="label">Effects</span>
+<table>
+<tr>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
+</tr>
+<tr>
+  <td>A</td>
+  <td>B</td>
+  <td>C</td>
+  <td>D</td>
+  <td>E</td>
+  <td>F</td>
 </tr>
 </table>
 </script>
@@ -92,11 +135,18 @@
   <td><span class="toggle">Inv</span></td>
   <td><span class="toggle">Track</span></td>
   <td><span class="knob"></span></td>
-  <td colspan="4"><span class="wave"></span></td>
+  <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
 </tr>
 <tr>
-  <td><span class="knob"></span></td> 
-  <td><span class="knob"></span></td> 
+  <td>Type</td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td>Vol</td>
+  <td>Vol A</td>
+  <td>Vol B</td>
+</tr> 
+<tr>
   <td><span class="knob"></span></td> 
   <td><span class="knob"></span></td> 
   <td><span class="knob"></span></td> 
@@ -111,8 +161,6 @@
   <td>Width</td>
   <td>Par 1</td>
   <td>Par 2</td>
-  <td>Vol A</td>
-  <td>Vol B</td>
 </tr>
 </table>
 </script>
@@ -125,55 +173,58 @@
   <td><span class="knob"></span></td>
   <td><span class="knob"></span></td>
   <td><span class="knob"></span></td>
+  <td><span class="knob"></span></td>
 </tr>
 <tr>
   <td>Type</td>
   <td>Source</td>
   <td>Freq</td>
   <td>Res</td>
-  <td>Vol</td>
+  <td>X</td>
+  <td>Vol</td>  
 </tr>
 <tr>
   <td><span class="knob"></span</td>
   <td><span class="knob"></span></td>
   <td><span class="knob"></span></td>
   <td>&nbsp;</td>
-  <td><span class="knob"></span></td>
+  <td>&nbsp;</td>
+  <td><span class="knob"></span></td>  
 </tr>
 <tr>
   <td>Dist</td>
   <td>Key > F</td>
   <td>Vel > F</td>
   <td>&nbsp;</td>
-  <td>Pan</td>
+  <td>&nbsp;</td>
+  <td>Pan</td>  
 </tr>
 </table>
 </script>
 
 <script id="env-tmpl" type="text/x-handlebars-template">
-<span class="label">Envelope</span>
+<span class="label">Envelopes</span>
 <table>
 <tr>
   <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td>
   <td><span class="knob"></span></td> 
   <td><span class="knob"></span></td> 
   <td><span class="knob"></span></td>
-  <td colspan="4" rowspan="2"><span class="wave"></span></td>
 </tr>
 <tr>
-  <td>A</td>
-  <td>D</td>
-  <td>S</td>
-  <td>R</td>
+  <td>Attack</td>
+  <td>Hold</td>
+  <td>Decay</td>
+  <td>Sustain</td>
+  <td>Release</td>
 </tr>
 <tr>
-  <td><span class="knob"></span></td> 
-  <td><span class="knob"></span></td> 
+  <td><span class="knob"></span></td>  
   <td><span class="knob"></span></td> 
   <td><span class="togle"></span></td>
 </tr>
-<tr>
-  <td>Hold</td>
+<tr>  
   <td>Pre</td>
   <td>Curve</td>
   <td>Retr</td>
@@ -228,28 +279,24 @@
 </script>
 
 <script id="lfo-tmpl" type="text/x-handlebars-template">
-<span class="label">LFO</span>
+<span class="label">LFOs</span>
 <table>
 <tr>
   <td><span class="select">Sin</span></td>  
   <td><span class="knob"></span></td>
   <td><span class="knob"></span></td>
-  <td rowspan="2"><span class="small-wave"></span></td>
+  <td>Inv</td>
+  <td><span class="select">Poly</span></td>
+  <td><span class="knob"></span></td>
 </tr>
 <tr>
   <td>Type</td>  
   <td>Freq</td>
   <td>Width</td>
-</tr>
-<tr>
-  <td><span class="select">Poly</span></td>
-  <td><span class="knob"></span></td>
-</tr>
-</tr>
+  <td>&nbsp;</td>
   <td>Reset</td>
   <td>Rand</td>
 </tr>
-
 </table>
 </script>
 

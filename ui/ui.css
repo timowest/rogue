@@ -1,52 +1,118 @@
 body {
     font-family: arial;
+    font-family: 'Source Sans Pro', sans-serif;
     font-size: 12px;    	
 }
 
 td {
+    vertical-align: top;
     text-align: center;
     font-size: 80%;	
+    padding: 0;
+    magin: 0;
 }
 
 .label {
+    width: 7.5em;	
+    background: #c0c0c0;
+    color: #404040;	
+    /*text-transform: uppercase;*/	
     font-weight: bold;	
     display: block;
     text-align: left;	
     padding: 2px;
+    
+    border-bottom-right-radius: 20px;
 }
 
-.browser, .global, .oscs, .filters, .envs, .modulation, .lfos {
-    border: solid 1px;
-    border-radius: 3px;	
+.browser .label {
+    width: 6em;	
+}
+
+.global .label, .effects .label, .lfos .label, .filters .label {
+    width: 5em;	
+}
+
+.synth {
+    background: #c0c0c0;    
+    width: 910px;
+    /*padding: 5px 20px;*/	
+}
+
+.screw {
+    display: block;
     margin: 2px;
-    padding: 2px;
+    width: 6px;
+    height: 6px;
+    background: black;
+    border-radius: 3px;	
+}
+
+.browser, .global, .effects, .oscs, .filters, .envs, .modulation, .lfos {
+    margin: 4px;	
+    padding: 0 0 2px 0; 
+    background: #d0d0d0;
+    
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+/*.browser > table, .global > table, .oscs > table, .filters > table, .envs > table, .modulation > table, .lfos > table {
+    width: 100%;    
+    height: 100%;
+}*/
+
+.browser table, .global table, .effects table, .osc table, .filter table, .envs table, .modulation table, .lfos table {
+    margin: 2px;
+    background: white;
+    border-radius: 10px;    	
+}
+
+/*.global table, .effects table {
+    background: transparent;    
+}*/
+
+.browser table, .global table, .effects table, .envs table, .modulation table, .lfos table {
+    margin: 4px;	
+}
+
+.idx {
+    display: block;  
+    font-weight: bold;
+    text-align: left;
+    padding: 2px;       
 }
 
 .browser {
     height: 5.9em;	
+    /*border: solid 1px white;*/
 }
 
 .modulation td {
-    width: 2em;
-    height: 1.7em;	
+    width: 1.5em;
+    height: 1.45em;	
 }
 
 .osc, .filter {
-    border: dotted 1px #a0a0a0;	
+    /*border: dotted 1px #a0a0a0;*/	
 }
 
 .knob {
     margin: 0 5px;	
     display: block;
-    width: 28px;
-    height: 28px;
-    border: solid 1px #808080;	
-    border-radius: 14px;
+    width: 32px;
+    height: 32px;
+    background: url(knob.png);
+    
+    /*background-color: #b0b0b0;
+    border: solid 1px #909090;	
+    border-radius: 14px;*/
 }
 
 .wave {
     display: block;
-    width: 120px;
+    width: 140px;
     height: 60px;
     border: solid 1px #808080;
 }

@@ -1,6 +1,7 @@
 $(document).ready(function() {
   var browserTmpl = Handlebars.compile($("#browser-tmpl").html());
   var masterTmpl = Handlebars.compile($("#master-tmpl").html());
+  var effectsTmpl = Handlebars.compile($("#effects-tmpl").html());
   var oscTmpl = Handlebars.compile($("#osc-tmpl").html());
   var filterTmpl = Handlebars.compile($("#filter-tmpl").html());
   var envTmpl = Handlebars.compile($("#env-tmpl").html());
@@ -9,6 +10,7 @@ $(document).ready(function() {
   
   $(".browser").html(browserTmpl({}));
   $(".global").html(masterTmpl({}));
+  $(".effects").html(effectsTmpl({}));
   $(".osc").html(oscTmpl({}));
   $(".filter").html(filterTmpl({}));
   $(".envs").html(envTmpl({}));
