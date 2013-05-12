@@ -282,41 +282,46 @@ void StateVariableFilter::process(float* input, float* output, int samples) {
 // StateVariableFilter 2
 
 void StateVariableFilter2::clear() {
-    drive = 0.0;
-    an = bn = 0.0f;
+    v0z = v1 = v2 = 0.0f;
 }
 
 void StateVariableFilter2::setCoefficients(float fc, float res) {
-    float Fc = std::min(2.0f * sinf(M_PI * fc / (sample_rate * 2.0)), 1.0f);
-    float Dc = std::min(1.0f / res, 2.0f);
-    D = std::min(Dc, 2.0f - Fc);
-    //F = Fc * (1.22f - 0.22f * D * Fc);
-    F = Fc;
+    float g = tan(M_PI * fc / sample_rate);
+    //float damping = 1.0f / res;
+    //k = damping;
+    k = 1.0 - 0.99 * res;
+    float ginv = g / (1.0f + g * (g + k));
+    g1 = ginv;
+    g2 = 2.0f * (g + k) * ginv;
+    g3 = g * ginv;
+    g4 = 2.0f * ginv;
 }
 
 void StateVariableFilter2::process(float* input, float* output, int samples) {
     for (int i = 0; i < samples; i++) {
-        float x = input[i];
-        float bi = bn + F*an;
-        float ci = x - bi - D*an;
-        float ai = an + F*ci;
+        float v0 = input[i];
+        float v1z = v1;
+        float v2z = v2;
+        float v3 = v0 + v0z - 2.0 * v2z;
+        v1 += g1 * v3 - g2 * v1z;
+        v2 += g3 * v3 + g4 * v1z;
+        v0z = v0;
 
-        float b = bi + F*ai;
-        float c = x - b - D*ai;
-        float a = ai + F*c;
-
-        // TODO move to outer loop like in MoogFilter
+        // TODO move to outer loop
         switch (type) {
-        case LP: output[i] = bi; break;
-        case BP1: output[i] = 2.0f * a; break;
-        case BP2: output[i] = a + ai; break;
-        case HP: output[i] = (c + ci) / 2.0f; break;
-        case PEAK: output[i] = b - ci; break;
-        case NOTCH: output[i] = b + c; break;
+        case LP:
+            output[i] = v2;
+            break;
+        case BP:
+            output[i] = v1;
+            break;
+        case HP:
+            output[i] = v0 - k * v1 - v2;
+            break;
+        case NOTCH:
+            output[i] = v0 - k * v1;
+            break;
         }
-
-        an = a;
-        bn = b;
     }
 }
 

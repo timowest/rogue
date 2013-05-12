@@ -167,11 +167,11 @@ int main() {
     }
 
     // svf2
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 10; j++) {
             svf2.clear();
             svf2.setType(i);
-            svf2.setCoefficients(1000.0, float(j) * 1.0);
+            svf2.setCoefficients(1000.0, float(j) * 0.1);
             svf2.process(noise, buffer, SIZE);
 
             sprintf(filename, "wavs/svf2_%i%i.wav", i, j);

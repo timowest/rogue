@@ -201,32 +201,28 @@ class StateVariableFilter : Filter {
 };
 
 /**
- * Beat Frei's improved Chamberlin State Variable Filter
- * with upsampling and distortion
+ * Andrew Simper's State Variable Filter (improved version)
  *
- * res = 0.0 - infinity
- * distortion = 0.0 - 0.25
- *
- * based on Digital Sound Generation - Filters
- */
+ * based on Linear Trapezoidal Integrated State Variable Filter With Low Noise Optimisation
+ * (2011)
+*/
 class StateVariableFilter2 : Filter {
 
-    enum {LP, HP, BP1, BP2, PEAK, NOTCH};
+    enum {LP, HP, BP, NOTCH};
 
   public:
     void clear();
     void setType(int t) { type = t; }
     void setSamplerate(float rate) { sample_rate = rate; }
     void setCoefficients(float fc, float res);
-    void setDistortion(float d) { drive = d; }
     void process(float* input, float* output, int samples);
 
   private:
-    float F, D;
-    float drive = 0.0;
     float sample_rate;
     int type = 0;
-    float an, bn;
+
+    float v0z, v1, v2;
+    float k, g1, g2, g3, g4;
 
 };
 
