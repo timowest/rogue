@@ -257,7 +257,7 @@ void StateVariableFilter::setType(int type) {
 }
 
 void StateVariableFilter::setCoefficients(float fc, float res) {
-    freq = 2.0 * sin(M_PI * std::min(0.25, fc / (sample_rate * 2.0)));
+    freq = 2.0 * sinf(M_PI * std::min(0.25, fc / (sample_rate * 2.0)));
     damp = std::min(2.0*(1.0 - pow(res, 0.25)), std::min(2.0, 2.0 / freq - freq * 0.5));
 }
 
@@ -276,6 +276,47 @@ void StateVariableFilter::process(float* input, float* output, int samples) {
         high  = notch - low;
         band  = freq * high + band - drive * band * band * band;
         output[i] += 0.5 * *out;
+    }
+}
+
+// StateVariableFilter 2
+
+void StateVariableFilter2::clear() {
+    drive = 0.0;
+    an = bn = 0.0f;
+}
+
+void StateVariableFilter2::setCoefficients(float fc, float res) {
+    float Fc = std::min(2.0f * sinf(M_PI * fc / (sample_rate * 2.0)), 1.0f);
+    float Dc = std::min(1.0f / res, 2.0f);
+    D = std::min(Dc, 2.0f - Fc);
+    //F = Fc * (1.22f - 0.22f * D * Fc);
+    F = Fc;
+}
+
+void StateVariableFilter2::process(float* input, float* output, int samples) {
+    for (int i = 0; i < samples; i++) {
+        float x = input[i];
+        float bi = bn + F*an;
+        float ci = x - bi - D*an;
+        float ai = an + F*ci;
+
+        float b = bi + F*ai;
+        float c = x - b - D*ai;
+        float a = ai + F*c;
+
+        // TODO move to outer loop like in MoogFilter
+        switch (type) {
+        case LP: output[i] = bi; break;
+        case BP1: output[i] = 2.0f * a; break;
+        case BP2: output[i] = a + ai; break;
+        case HP: output[i] = (c + ci) / 2.0f; break;
+        case PEAK: output[i] = b - ci; break;
+        case NOTCH: output[i] = b + c; break;
+        }
+
+        an = a;
+        bn = b;
     }
 }
 

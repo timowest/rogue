@@ -78,6 +78,10 @@ int main() {
     svf.setSamplerate(SR);
     svf.setCoefficients(1000.0, 0.5);
 
+    dsp::StateVariableFilter2 svf2;
+    svf2.setSamplerate(SR);
+    svf2.setCoefficients(1000.0, 0.5);
+
     dsp::LFO lfo;
     lfo.setSamplerate(SR);
     lfo.setFreq(10.0);
@@ -134,26 +138,47 @@ int main() {
 
     // moog
     for (int i = 0; i < 8; i++) {
-        moog.clear();
-        moog.setType(i);
-        moog.process(noise, buffer, SIZE);
+        for (int j = 0; j < 10; j++) {
+            moog.clear();
+            moog.setType(i);
+            moog.setCoefficients(1000.0, float(j) * 0.1);
+            moog.process(noise, buffer, SIZE);
 
-        sprintf(filename, "wavs/moog_%i.wav", i);
-        write_wav(filename, buffer);
+            sprintf(filename, "wavs/moog_%i%i.wav", i, j);
+            write_wav(filename, buffer);
 
-        // TODO verify that output is not zero
+            // TODO verify that output is not zero
+        }
     }
 
     // svf
     for (int i = 0; i < 4; i++) {
-        svf.clear();
-        svf.setType(i);
-        svf.process(noise, buffer, SIZE);
+        for (int j = 0; j < 10; j++) {
+            svf.clear();
+            svf.setType(i);
+            svf.setCoefficients(1000.0, float(j) * 0.1);
+            svf.process(noise, buffer, SIZE);
 
-        sprintf(filename, "wavs/svf_%i.wav", i);
-        write_wav(filename, buffer);
+            sprintf(filename, "wavs/svf_%i%i.wav", i, j);
+            write_wav(filename, buffer);
 
-        // TODO verify that output is not zero
+            // TODO verify that output is not zero
+        }
+    }
+
+    // svf2
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 10; j++) {
+            svf2.clear();
+            svf2.setType(i);
+            svf2.setCoefficients(1000.0, float(j) * 1.0);
+            svf2.process(noise, buffer, SIZE);
+
+            sprintf(filename, "wavs/svf2_%i%i.wav", i, j);
+            write_wav(filename, buffer);
+
+            // TODO verify that output is not zero
+        }
     }
 
     // lfos

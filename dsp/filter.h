@@ -189,6 +189,7 @@ class StateVariableFilter : Filter {
     void setType(int type);
     void setSamplerate(float rate) { sample_rate = rate; }
     void setCoefficients(float fc, float res);
+    void setDistortion(float d) { drive = d; }
     void process(float* input, float* output, int samples);
 
   private:
@@ -199,7 +200,38 @@ class StateVariableFilter : Filter {
     float sample_rate;
 };
 
+/**
+ * Beat Frei's improved Chamberlin State Variable Filter
+ * with upsampling and distortion
+ *
+ * res = 0.0 - infinity
+ * distortion = 0.0 - 0.25
+ *
+ * based on Digital Sound Generation - Filters
+ */
+class StateVariableFilter2 : Filter {
+
+    enum {LP, HP, BP1, BP2, PEAK, NOTCH};
+
+  public:
+    void clear();
+    void setType(int t) { type = t; }
+    void setSamplerate(float rate) { sample_rate = rate; }
+    void setCoefficients(float fc, float res);
+    void setDistortion(float d) { drive = d; }
+    void process(float* input, float* output, int samples);
+
+  private:
+    float F, D;
+    float drive = 0.0;
+    float sample_rate;
+    int type = 0;
+    float an, bn;
+
+};
+
 // TODO CombFilter
+
 
 }
 
