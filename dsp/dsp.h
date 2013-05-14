@@ -13,5 +13,6 @@
 #include "lfo.h"
 #include "oscillator.h"
 #include "tables.h"
+#include "va.h"
 
 #endif

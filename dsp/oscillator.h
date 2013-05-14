@@ -23,10 +23,9 @@ class PhaseShaping {
     enum {SIN, HARD, SOFT, PULSE, SLOPE, TRI, SUPERSAW, SLICES, SINUSOIDS, NOISE};
 
   public:
-    void clear ();
-    void reset ();
+    void clear();
+    void reset();
     void setFreq(float f) { freq = f; }
-    void setWidth(float w);
 
     void setParams(float a1f, float a1t, float a0f, float a0t, float wf, float wt) {
       this->a1f = a1f;

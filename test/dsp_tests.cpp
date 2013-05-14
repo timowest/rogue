@@ -4,6 +4,7 @@
 #include "lfo.cpp"
 #include "envelope.cpp"
 #include "tables.cpp"
+#include "va.cpp"
 
 #include <iostream>
 
@@ -67,6 +68,10 @@ int main() {
     osc.setFreq(440.0f);
     osc.setParams(1.0f, 0.0f, 0.5f);
 
+    dsp::VA va;
+    va.setSamplerate(SR);
+    va.setFreq(440.f);
+
     dsp::MoogFilter moog;
     moog.setSamplerate(SR);
     moog.setCoefficients(1000.0, 0.5);
@@ -127,6 +132,18 @@ int main() {
 
     if (errors > 0) {
         std::cout << "ERROR: " << errors << "/" << total << " errors (osc)" << std::endl;
+    }
+
+    // va
+    for (int i = 0; i < 5; i++) {
+        va.reset();
+        va.setBandlimit(true);
+        va.setType(i);
+        //va.setParams(params[j], params[k], params[k]);
+        va.process(buffer, SIZE);
+
+        sprintf(filename, "wavs/va_%i.wav", i);
+        write_wav(filename, buffer);
     }
 
     // noise input
