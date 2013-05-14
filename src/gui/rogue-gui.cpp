@@ -22,7 +22,10 @@
 #include "oscillator.h"
 #include "lfo.h"
 
-#define DRAW_WIDTH 140
+#define OSC_DRAW_WIDTH 140
+#define LFO_DRAW_WIDTH 105
+#define ENV_DRAW_WIDTH 105
+
 #define DRAW_HEIGHT 60
 
 using namespace sigc;
@@ -55,8 +58,13 @@ class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> >
     char statusBarText[100];
     Changeable* scales[p_n_ports];
 
-    Wavedraw* draw;
-    float drawBuffer[DRAW_WIDTH];
+    Wavedraw* oscWaves[NOSC];
+    Wavedraw* lfoWaves[NLFO];
+    Wavedraw* envWaves[NENV];
+
+    float oscBuffers[NOSC][OSC_DRAW_WIDTH];
+    float lfoBuffers[NLFO][LFO_DRAW_WIDTH];
+    float envBuffers[NENV][ENV_DRAW_WIDTH];
 
     dsp::PhaseShaping osc;
     dsp::LFO lfo;
@@ -179,17 +187,27 @@ rogueGUI::rogueGUI(const char* URI) {
 
     osc.setBandlimit(false);
     osc.setFreq(1.0f);
-    osc.setSamplerate(DRAW_WIDTH);
+    osc.setSamplerate(OSC_DRAW_WIDTH);
 
     lfo.setFreq(1.0);
-    lfo.setSamplerate(DRAW_WIDTH);
+    lfo.setSamplerate(LFO_DRAW_WIDTH);
 
-    std::memset(drawBuffer, 0, sizeof(float) * DRAW_WIDTH);
-
-    draw = manage(new Wavedraw(DRAW_WIDTH, DRAW_HEIGHT, drawBuffer, DRAW_WIDTH));
+    // clear buffers
+    for (int i = 0; i < NOSC; i++) {
+        std::memset(oscBuffers[i], 0, sizeof(float) * OSC_DRAW_WIDTH);
+    }
+    for (int i = 0; i < NLFO; i++) {
+        std::memset(lfoBuffers[i], 0, sizeof(float) * LFO_DRAW_WIDTH);
+    }
+    for (int i = 0; i < NENV; i++) {
+        std::memset(envBuffers[i], 0, sizeof(float) * ENV_DRAW_WIDTH);
+    }
 
     // osc visualizations
     for (int i = 0; i < NOSC; i++) {
+        Wavedraw* draw = manage(new Wavedraw(OSC_DRAW_WIDTH, DRAW_HEIGHT, oscBuffers[i], OSC_DRAW_WIDTH));
+        oscWaves[i] = draw;
+
         // connect type, inv, width, param1, param2
         slot<void> slot1 = compose(bind<0>(mem_fun(*this, &rogueGUI::update_osc), i),
                     mem_fun(*scales[p_osc1_type + i * OSC_OFF], &Changeable::get_value));
@@ -202,6 +220,9 @@ rogueGUI::rogueGUI(const char* URI) {
 
     // lfo visualizations
     for (int i = 0; i < NLFO; i++) {
+        Wavedraw* draw = manage(new Wavedraw(LFO_DRAW_WIDTH, DRAW_HEIGHT, lfoBuffers[i], LFO_DRAW_WIDTH));
+        lfoWaves[i] = draw;
+
         // connect type, inv, width, param1, param2
         slot<void> slot1 = compose(bind<0>(mem_fun(*this, &rogueGUI::update_lfo), i),
                     mem_fun(*scales[p_lfo1_type + i * LFO_OFF], &Changeable::get_value));
@@ -212,12 +233,14 @@ rogueGUI::rogueGUI(const char* URI) {
 
     // env visualizations
     for (int i = 0; i < NENV; i++) {
+        Wavedraw* draw = manage(new Wavedraw(ENV_DRAW_WIDTH, DRAW_HEIGHT, envBuffers[i], ENV_DRAW_WIDTH));
+        envWaves[i] = draw;
+
         // TODO connect and update
     }
 
     Table* table = manage(new Table(4, 3));
     // main
-    table->attach(*align(draw), 0, 1, 0, 1);
     table->attach(*createMain(), 1, 2, 0, 1);
     // oscs
     table->attach(*createOSC(0), 0, 1, 1, 2);
@@ -252,14 +275,14 @@ rogueGUI::rogueGUI(const char* URI) {
 
 Widget* rogueGUI::createOSC(int i) {
     int off = i * OSC_OFF;
-    Table* table = manage(new Table(4, 6));
+    Table* table = manage(new Table(4, 8));
     // row 1
     control(table, "Type", p_osc1_type + off, 0, 1);
     control(table, "Inv", p_osc1_inv + off, 1, 1);
     control(table, "Track", p_osc1_tracking + off, 2, 1);
     control(table, "Level", p_osc1_level + off, 3, 1);
-    control(table, "Vol A", p_osc1_level_a + off, 4, 1);
-    control(table, "Vol B", p_osc1_level_b + off, 5, 1);
+
+    table->attach(*oscWaves[i], 4, 8, 1, 3);
 
     // row 2
     control(table, "Coarse", p_osc1_coarse + off, 0, 3);
@@ -268,6 +291,8 @@ Widget* rogueGUI::createOSC(int i) {
     control(table, "Width", p_osc1_width + off, 3, 3);
     control(table, "Par 1", p_osc1_param1 + off, 4, 3);
     control(table, "Par 2", p_osc1_param2 + off, 5, 3);
+    control(table, "Vol A", p_osc1_level_a + off, 6, 3);
+    control(table, "Vol B", p_osc1_level_b + off, 7, 3);
 
     // TODO
     //control(table, "Free", p_osc1_free + off, 2, 1);
@@ -304,6 +329,8 @@ Widget* rogueGUI::createLFO(int i) {
     control(table, "Freq", p_lfo1_freq + off, 2, 1);
     control(table, "Width", p_lfo1_width + off, 3, 1);
 
+    table->attach(*lfoWaves[i], 4, 7, 1, 3);
+
     // row 2
     control(table, "Rand", p_lfo1_humanize + off, 0, 3);
 
@@ -318,6 +345,8 @@ Widget* rogueGUI::createEnv(int i) {
     control(table, "D", p_env1_decay + off, 1, 1);
     control(table, "S", p_env1_sustain + off, 2, 1);
     control(table, "R", p_env1_release + off, 3, 1);
+
+    table->attach(*envWaves[i], 4, 7, 1, 3);
 
     // row 2
     control(table, "Hold", p_env1_hold + off, 0, 3);
@@ -340,6 +369,7 @@ Widget* rogueGUI::createMain() {
     control(table, "Glide", p_glide_time, 5, 1);
     control(table, "Bend", p_bend_range, 6, 1);
 
+    //return frame(env_labels[i], p_env1_on + off, table);
     return table;
 }
 
@@ -441,9 +471,9 @@ void rogueGUI::update_osc(int i, float value) {
     osc.setType((int)value);
     osc.setParams(p1, p2, w);
     osc.reset();
-    osc.process(drawBuffer, DRAW_WIDTH);
+    osc.process(oscBuffers[i], OSC_DRAW_WIDTH);
 
-    draw->refresh();
+    oscWaves[i]->refresh();
 }
 
 void rogueGUI::update_lfo(int i, float value) {
@@ -452,11 +482,12 @@ void rogueGUI::update_lfo(int i, float value) {
     lfo.setType((int)value);
     lfo.setWidth(w);
     lfo.reset();
-    for (int j = 0; j <DRAW_WIDTH; j++) {
-        drawBuffer[j] = lfo.tick();
+    float* buffer = lfoBuffers[i];
+    for (int j = 0; j < LFO_DRAW_WIDTH; j++) {
+        buffer[j] = lfo.tick();
     }
 
-    draw->refresh();
+    lfoWaves[i]->refresh();
 }
 
 static int _ = rogueGUI::register_class("http://www.github.com/timowest/rogue/ui");

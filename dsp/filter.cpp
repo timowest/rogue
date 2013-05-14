@@ -297,31 +297,29 @@ void StateVariableFilter2::setCoefficients(float fc, float res) {
     g4 = 2.0f * ginv;
 }
 
-void StateVariableFilter2::process(float* input, float* output, int samples) {
-    for (int i = 0; i < samples; i++) {
-        float v0 = input[i];
-        float v1z = v1;
-        float v2z = v2;
-        float v3 = v0 + v0z - 2.0 * v2z;
-        v1 += g1 * v3 - g2 * v1z;
-        v2 += g3 * v3 + g4 * v1z;
-        v0z = v0;
+#define SVF2_LOOP(x) \
+    for (int i = 0; i < samples; i++) { \
+        float v0 = input[i]; \
+        float v1z = v1; \
+        float v2z = v2; \
+        float v3 = v0 + v0z - 2.0 * v2z; \
+        v1 += g1 * v3 - g2 * v1z; \
+        v2 += g3 * v3 + g4 * v1z; \
+        v0z = v0; \
+        output[i] = x; \
+    } \
+    break
 
-        // TODO move to outer loop
-        switch (type) {
-        case LP:
-            output[i] = v2;
-            break;
-        case BP:
-            output[i] = v1;
-            break;
-        case HP:
-            output[i] = v0 - k * v1 - v2;
-            break;
-        case NOTCH:
-            output[i] = v0 - k * v1;
-            break;
-        }
+void StateVariableFilter2::process(float* input, float* output, int samples) {
+    switch (type) {
+    case LP:
+        SVF2_LOOP(v2);
+    case BP:
+        SVF2_LOOP(v1);
+    case HP:
+        SVF2_LOOP(v0 - k * v1 - 2);
+    case NOTCH:
+        SVF2_LOOP(v0 - k * v1);
     }
 }
 
