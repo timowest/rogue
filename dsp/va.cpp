@@ -35,7 +35,7 @@ float mod_saw(float x, float P) {
 void VA::process(float* output, int samples) {
     float inc = freq / sample_rate;
 
-    // TRI, SAW, SAW_TRI, SQUARE, PULSE
+    // TRI, SAW, SAW_TRI, PULSE
 
     if (type == TRI) {
         // TODO
@@ -48,9 +48,7 @@ void VA::process(float* output, int samples) {
         }
     } else if (type == SAW_TRI) {
         // TODO
-    } else if (type == SQUARE) {
-        // TODO
-    } else {
+    } else if (type == PULSE) {
         // TODO
     }
 }

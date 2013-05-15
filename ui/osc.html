@@ -1,0 +1,44 @@
+<html>
+<head>
+  <script src="js/jquery-1.9.1.js"></script>
+  <script src="js/jquery.flot.js"></script>
+  <script src="js/phase.js"></script>
+  <script src="js/osc.js"></script>
+  <style>
+body { font-family: sans; }
+.plot { width: 300px; height: 175px; }
+  </style>  
+</head>
+<body>
+  
+width 
+<input type="number" id="width" min="0" max="1" step="0.01" value="0.5"/>  
+  
+<table>
+    <tr>
+    <th>VA</th>
+    <td>tri <div class="plot" data-fn="va_tri"></div></td>
+    <td>saw <div class="plot" data-fn="va_saw"></div></td>
+    <td>saw_tri <div class="plot" data-fn="va_saw_tri"></div></td>
+    <td>pulse <div class="plot" data-fn="va_pulse"></div></td>
+  </tr>
+  <tr>
+    <th>PS</th>
+    <td>sin <div class="plot" data-fn="ps_sin"></div></td>
+    <!-- TODO -->
+  </tr>
+  <tr>
+    <th>EL</th>
+    <td>saw <div class="plot" data-fn="el_saw"></div></td>
+    <td>tri <div class="plot" data-fn="el_tri"></div></td>
+    <td>pulse <div class="plot" data-fn="el_pulse"></div></td>
+    <td>slope <div class="plot" data-fn="el_slope"></div></td>
+  </tr>
+  <tr>
+    <th>NO</th>
+    <td>white <div class="plot" data-fn="no_white"></div></td>
+  </tr>
+</table>
+  
+</body>
+</html>

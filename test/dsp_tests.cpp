@@ -135,7 +135,7 @@ int main() {
     }
 
     // va
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 4; i++) {
         va.reset();
         va.setBandlimit(true);
         va.setType(i);

@@ -9,9 +9,14 @@
 
 namespace dsp {
 
+/**
+ * Various Minimoog emulations
+ *
+ * - Sawooth based on "Discrete-Time Modelling of the Moog Sawtooth Oscillator Waveform"
+ */
 class VA {
 
-    enum {TRI, SAW, SAW_TRI, SQUARE, PULSE};
+    enum {TRI, SAW, SAW_TRI, PULSE};
 
   public:
     void clear();
