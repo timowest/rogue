@@ -6,10 +6,16 @@
   <script src="js/osc.js"></script>
   <style>
 body { font-family: sans; }
-.plot { width: 300px; height: 175px; }
+.plot { width: 250px; height: 150px; }
   </style>  
 </head>
 <body>
+
+<h2>rogue oscillators</h2>
+  
+<!-- 
+maybe also tone parameter
+ -->  
   
 width 
 <input type="number" id="width" min="0" max="1" step="0.01" value="0.5"/>  
@@ -17,28 +23,35 @@ width
 <table>
     <tr>
     <th>VA</th>
-    <td>tri <div class="plot" data-fn="va_tri"></div></td>
-    <td>saw <div class="plot" data-fn="va_saw"></div></td>
-    <td>saw_tri <div class="plot" data-fn="va_saw_tri"></div></td>
-    <td>pulse <div class="plot" data-fn="va_pulse"></div></td>
+    <td>Saw <div class="plot" data-fn="va_saw"></div></td>
+    <td>Tri <div class="plot" data-fn="va_tri"></div></td>
+    <td>Saw Tri <div class="plot" data-fn="va_saw_tri"></div></td>
+    <td>Pulse <div class="plot" data-fn="va_pulse"></div></td>
   </tr>
   <tr>
     <th>PS</th>
-    <td>sin <div class="plot" data-fn="ps_sin"></div></td>
+    <td>Sine <div class="plot" data-fn="ps_sin"></div></td>
+    <td>Sine Saw <div class="plot" data-fn="ps_sin_saw"></div></td>
+    <!-- TODO Sine Pulse -->
+    <td>Sine FM <div class="plot" data-fn="ps_sin_fm"></div></td>
+    <td>Half Sine <div class="plot" data-fn="ps_sin_half"></div></td>
     <!-- TODO -->
   </tr>
   <tr>
     <th>EL</th>
-    <td>saw <div class="plot" data-fn="el_saw"></div></td>
-    <td>tri <div class="plot" data-fn="el_tri"></div></td>
-    <td>pulse <div class="plot" data-fn="el_pulse"></div></td>
-    <td>slope <div class="plot" data-fn="el_slope"></div></td>
+    <td>Saw <div class="plot" data-fn="el_saw"></div></td>
+    <td>Tri <div class="plot" data-fn="el_tri"></div></td>
+    <td>Tri 2 <div class="plot" data-fn="el_tri2"></div></td>
+    <td>Tri 3 <div class="plot" data-fn="el_tri3"></div></td>
+    <td>Pulse <div class="plot" data-fn="el_pulse"></div></td>
+    <td>Slope <div class="plot" data-fn="el_slope"></div></td>
   </tr>
   <tr>
     <th>NO</th>
-    <td>white <div class="plot" data-fn="no_white"></div></td>
+    <td>White <div class="plot" data-fn="no_white"></div></td>
   </tr>
 </table>
   
 </body>
 </html>
+
