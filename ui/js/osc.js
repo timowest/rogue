@@ -203,6 +203,18 @@ function el_slope(x, w) {
   return gb(gvslope(x, w));
 }
 
+function el_alpha1(x, w) {
+  var pw = gpulse((2.0 * x) % 1.0, w);
+  var saw = el_saw(x);
+  return gb(pw * (saw + 1.0) - 1.0)
+}
+
+function el_alpha2(x, w) {
+  var pw = gpulse((4.0 * x) % 1.0, w);
+  var saw = el_saw(x);
+  return gb(pw * (saw + 1.0) - 1.0)
+}
+
 // additive synthesis
 
 function as_saw(x, w) {
