@@ -6,7 +6,7 @@
   <script src="js/osc.js"></script>
   <style>
 body { font-family: sans; }
-.plot { width: 250px; height: 150px; }
+.plot { width: 250px; height: 140px; }
   </style>  
 </head>
 <body>
@@ -28,30 +28,57 @@ width
     <td>Saw Tri <div class="plot" data-fn="va_saw_tri"></div></td>
     <td>Pulse <div class="plot" data-fn="va_pulse"></div></td>
   </tr>
+  
   <tr>
-    <th>PS</th>
-    <td>Sine <div class="plot" data-fn="ps_sin"></div></td>
-    <td>Sine Saw <div class="plot" data-fn="ps_sin_saw"></div></td>
-    <!-- TODO Sine Pulse -->
-    <td>Sine FM <div class="plot" data-fn="ps_sin_fm"></div></td>
-    <td>Half Sine <div class="plot" data-fn="ps_sin_half"></div></td>
-    <!-- TODO -->
+    <th>PD</th>
+    <td>Saw <div class="plot" data-fn="pd_saw"></div></td>
+    <td>Square <div class="plot" data-fn="pd_square"></div></td>
+    <td>Pulse <div class="plot" data-fn="pd_pulse"></div></td>
+    <td>Double sine <div class="plot" data-fn="pd_double_sine"></div></td>
+    <td>Saw pulse  <div class="plot" data-fn="pd_saw_pulse"></div></td>
   </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Res 1 <div class="plot" data-fn="pd_res1"></div></td>
+    <td>Res 2 <div class="plot" data-fn="pd_res2"></div></td>
+    <td>Res 3 <div class="plot" data-fn="pd_res3"></div></td>
+    <td>Half Sine <div class="plot" data-fn="pd_sin_half"></div></td>
+  </tr>
+  
   <tr>
     <th>EL</th>
     <td>Saw <div class="plot" data-fn="el_saw"></div></td>
+    <td>Double Saw <div class="plot" data-fn="el_double_saw"></div></td>
     <td>Tri <div class="plot" data-fn="el_tri"></div></td>
     <td>Tri 2 <div class="plot" data-fn="el_tri2"></div></td>
-    <td>Tri 3 <div class="plot" data-fn="el_tri3"></div></td>
+    <td>Tri 3 <div class="plot" data-fn="el_tri3"></div></td>   
+  </tr>
+  <tr>
+    <th>&nbsp;</th>
     <td>Pulse <div class="plot" data-fn="el_pulse"></div></td>
+    <td>Pulse Saw <div class="plot" data-fn="el_pulse_saw"></div></td>
     <td>Slope <div class="plot" data-fn="el_slope"></div></td>
   </tr>
+  
+  <tr>
+    <th>AS</th>
+    <td>Saw Add <div class="plot" data-fn="as_saw"></div></td>
+    <td>Square Add <div class="plot" data-fn="as_square"></div></td>
+  </tr>
+  <!-- 
   <tr>
     <th>NO</th>
     <td>White <div class="plot" data-fn="no_white"></div></td>
   </tr>
+   -->
 </table>
-  
+
+VA (Virtual analog) - PWM control<br/>
+PD (Phase distortion) - distortion control<br/>
+EL (Electronic) - PWM control<br/>
+AS (Additive synthesis) - amount of partials
+
+
 </body>
 </html>
 
