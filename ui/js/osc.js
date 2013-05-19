@@ -114,27 +114,25 @@ function pd_saw_pulse(x, w) {
   return cos2(x2);
 }
 
-// TODO saw pulse
-
 function pd_res1(x, w) {
   var mod = Math.exp(w * 6.0); // FIXME
   var x2 = x * mod;
   var window = 1.0 - x;
-  return window * sin2(x2);
+  return 0.5 - window * (0.5 - cos2(x2));
 }
 
 function pd_res2(x, w) {
   var mod = Math.exp(w * 6.0); // FIXME
   var x2 = x * mod;
   var window = x < 0.5 ? 2.0 * x : 2.0 * (1.0 - x);
-  return window * sin2(x2);
+  return 0.5 - window * (0.5 - cos2(x2));
 }
 
 function pd_res3(x, w) {
   var mod = Math.exp(w * 6.0); // FIXME
   var x2 = x * mod;
   var window = x < 0.5 ? 1.0 : 2.0 * (1.0 - x);
-  return window * sin2(x2);
+  return 0.5 - window * (0.5 - cos2(x2));
 }
 
 
