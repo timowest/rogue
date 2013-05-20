@@ -118,21 +118,21 @@ function pd_res1(x, w) {
   var mod = Math.exp(w * 6.0); // FIXME
   var x2 = x * mod;
   var window = 1.0 - x;
-  return 0.5 - window * (0.5 - cos2(x2));
+  return 1.0 - window * (1.0 - cos2(x2));
 }
 
 function pd_res2(x, w) {
   var mod = Math.exp(w * 6.0); // FIXME
   var x2 = x * mod;
   var window = x < 0.5 ? 2.0 * x : 2.0 * (1.0 - x);
-  return 0.5 - window * (0.5 - cos2(x2));
+  return 1.0 - window * (1.0 - cos2(x2));
 }
 
 function pd_res3(x, w) {
   var mod = Math.exp(w * 6.0); // FIXME
   var x2 = x * mod;
   var window = x < 0.5 ? 1.0 : 2.0 * (1.0 - x);
-  return 0.5 - window * (0.5 - cos2(x2));
+  return 1.0 - window * (1.0 - cos2(x2));
 }
 
 
@@ -206,13 +206,13 @@ function el_slope(x, w) {
 function el_alpha1(x, w) {
   var pw = gpulse((2.0 * x) % 1.0, w);
   var saw = el_saw(x);
-  return gb(pw * (saw + 1.0) - 1.0)
+  return pw * (saw + 1.0) - 1.0;
 }
 
 function el_alpha2(x, w) {
   var pw = gpulse((4.0 * x) % 1.0, w);
   var saw = el_saw(x);
-  return gb(pw * (saw + 1.0) - 1.0)
+  return pw * (saw + 1.0) - 1.0;
 }
 
 // additive synthesis
