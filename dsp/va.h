@@ -13,6 +13,7 @@ namespace dsp {
  * Various Minimoog emulations
  *
  * - Sawooth based on "Discrete-Time Modelling of the Moog Sawtooth Oscillator Waveform"
+ *   (Minimoog Voyager)
  */
 class VA {
 
