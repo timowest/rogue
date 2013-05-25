@@ -21,6 +21,18 @@ struct sintable {
 
 extern sintable sin_;
 
+/**
+ * cos table (range 0 - 1)
+ */
+struct costable {
+    float values[8001];
+    costable();
+    float fast(float in);
+    float linear(float in);
+};
+
+extern costable cos_;
+
 }
 
 #endif

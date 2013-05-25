@@ -8,6 +8,10 @@
 #include "phase.h"
 #include "tables.h"
 
+#define SIN(x) sin_.linear(x)
+#define COS(x) cos_.linear(x)
+#define CASE(a,b) case a: b(output, samples); break;
+
 namespace dsp {
 
 static float polyblep(float t) {
@@ -18,121 +22,266 @@ static float polyblep(float t) {
     }
 }
 
-static float phase_target(float p) {
-    if (p >= 0.75f) {
-        return 1.0f;
-    } else if (p >= 0.25f) {
-        return 0.5f;
+static float pd(float x, float w) {
+    if (x < w) {
+        return 0.5f * x / w;
     } else {
-        return 0.0f;
+        return 0.5f + 0.5f * (x - w) / (1.0f - w);
     }
 }
 
-static float limit(float x, float max) {
-    if (x > max) {
-        return fmod(x, max);
-    } else {
-        return x;
+// VA
+
+void VA::saw(float* output, int samples) {
+    // TODO
+    // apply 6db / 50Hz highpass to standard waves ?!?
+}
+
+void VA::tri_saw(float* output, int samples) {
+    // TODO
+    // apply 6db / 50Hz highpass to standard waves ?!?
+}
+
+void VA::pulse(float* output, int samples) {
+    // TODO
+    // apply 6db / 50Hz highpass to standard waves ?!?
+}
+
+void VA::process(float* output, int samples) {
+    switch (type) {
+    CASE(SAW, saw)
+    CASE(TRI_SAW, tri_saw)
+    CASE(PULSE, pulse)
     }
 }
 
-// PhaseShaping
+// PD
 
-void PhaseShaping::clear() {
-    phase = 0.0f;
-    freq = 440.0f;
-    type = SIN;
-
-    wf = wt = 0.5f;
-    a1f = a1t = 1.0f;
-    a0f = a0t = 0.0f;
-}
-
-void PhaseShaping::reset() {
-    phase = 0.0;
-}
-
-float height_diff(float scale, float offset) {
-    if (offset == 1.0f) {
-        offset = 0.0f;
-    }
-    double height = scale + offset;
-    if (height >= 1.00001) {
-        return fmod(height, 1.0) - offset;
-    } else {
-        return scale;
-    }
-}
-
-float PhaseShaping::sin2(float p) {
-    return sin_.linear(p);
-}
-
-void PhaseShaping::sin2(float* output, int samples) {
+void PD::saw(float* output, int samples) {
     float inc = freq / sample_rate;
+    float mod = 0.5f - wf * 0.5;
+    float m_step = 0.5f * (wf - wt) / (float)samples;
 
     for (int i = 0; i < samples; i++) {
-        output[i] = sin2(phase);
+        output[i] = COS(pd(phase, mod));
         phase = fmod(phase + inc, 1.0f);
+        mod += m_step;
     }
 }
 
-void PhaseShaping::hardsync(float* output, int samples) {
-    // bandlimited saw
-    // TODO only one discontinuity if (a1 + a0) < 1.0
+void PD::square(float* output, int samples) {
     float inc = freq / sample_rate;
-
-    float a1 = a1f, a0 = a0f;
-    float a1_step = (a1t - a1f) / (float)samples;
-    float a0_step = (a0t - a0f) / (float)samples;
+    float mod = 0.5f - wf * 0.5;
+    float m_step = 0.5f * (wf - wt) / (float)samples;
 
     for (int i = 0; i < samples; i++) {
-        float inc2 = a1 * inc;
-        float p2 = gramp(phase, a1, a0);
-        float mod = 0.0f;
-
-        if (bandlimit) {
-            if (phase < inc) {                 // start
-                float h = height_diff(a1, a0);
-                mod = h * polyblep(phase / inc);
-            } else if (phase > (1.0f - inc)) { // end
-                float h = height_diff(a1, a0);
-                mod = h * polyblep( (phase - 1.0) / inc);
-            } else if (p2 < inc2) {            // start mid
-                mod = polyblep(p2 / inc2);
-            } else if (p2 > (1.0f - inc2)) {   // end mid
-                mod = polyblep( (p2 - 1.0f) / inc2);
-            }
+        float p2;
+        if (phase < mod) {
+            p2 = phase * 0.5f / mod;
+        } else if (phase < 0.5f) {
+            p2 = 0.5f;
+        } else if (phase < 0.5f + mod) {
+            p2 = (phase - 0.5f) * 0.5f / mod + 0.5f;
+        } else {
+            p2 = 1.0f;
         }
-
-        output[i] = gb(p2 - mod);
+        output[i] = COS(p2);
         phase = fmod(phase + inc, 1.0f);
-        a1 += a1_step;
-        a0 += a0_step;
+        mod += m_step;
     }
 }
 
-// TODO bandlimiting
-void PhaseShaping::softsync(float* output, int samples) {
-    // tri
+void PD::pulse(float* output, int samples) {
     float inc = freq / sample_rate;
-
-    float a1 = a1f, a0 = a0f;
-    float a1_step = (a1t - a1f) / (float)samples;
-    float a0_step = (a0t - a0f) / (float)samples;
+    float mod = 1.0f - wf;
+    float m_step = (wf - wt) / (float)samples;
 
     for (int i = 0; i < samples; i++) {
-        output[i] = gb(stri(gtri(phase, a1, a0)));
+        float p2 = phase < mod ? phase / mod : 1.0f;
+        output[i] = COS(p2);
         phase = fmod(phase + inc, 1.0f);
-        a1 += a1_step;
-        a0 += a0_step;
+        mod += m_step;
     }
 }
 
-void PhaseShaping::pulse(float* output, int samples) {
-    // bandlimited square
+void PD::double_sine(float* output, int samples) {
+    float inc = freq / sample_rate;
+    float mod = 1.0f - wf;
+    float m_step = (wf - wt) / (float)samples;
+
+    for (int i = 0; i < samples; i++) {
+        float p2 = 0;
+        if (phase < 0.5f) {
+            p2 = 2.0f * phase;
+        } else {
+            p2 = 1.0f - (phase - 0.5f) / (0.5f * mod);
+            if (p2 < 0) p2 = 0;
+        }
+        output[i] = COS(p2);
+        phase = fmod(phase + inc, 1.0f);
+        mod += m_step;
+    }
+}
+
+void PD::saw_pulse(float* output, int samples) {
+    float inc = freq / sample_rate;
+    float mod = 1.0f - wf;
+    float m_step = (wf - wt) / (float)samples;
+
+    for (int i = 0; i < samples; i++) {
+        float p2 = 0;
+        if (phase < 0.5f) {
+            p2 = phase;
+        } else {
+            p2 = 0.5f - (phase - 0.5f) / mod;
+            if (p2 < 0) p2 = 0;
+        }
+        output[i] = COS(p2);
+        phase = fmod(phase + inc, 1.0f);
+        mod += m_step;
+    }
+}
+
+void PD::res1(float* output, int samples) {
+    float inc = freq / sample_rate;
+    float mod = expf(wf * 6.0f * (float)M_LN2);
+    float modt = expf(wt * 6.0f * (float)M_LN2);
+    float m_step = (modt - mod) / (float)samples;
+
+    for (int i = 0; i < samples; i++) {
+        float p2 = fmod(mod * phase, 1.0f);
+        float window = 1.0f - phase;
+        output[i] = 1.0f - window * (1.0 - COS(p2));
+        phase = fmod(phase + inc, 1.0f);
+        mod += m_step;
+    }
+}
+
+void PD::res2(float* output, int samples) {
+    float inc = freq / sample_rate;
+    float mod = expf(wf * 6.0f * (float)M_LN2);
+    float modt = expf(wt * 6.0f * (float)M_LN2);
+    float m_step = (modt - mod) / (float)samples;
+
+    for (int i = 0; i < samples; i++) {
+        float p2 = fmod(mod * phase, 1.0f);
+        float window = phase < 0.5f ? 2.0f * phase : 2.0f * (1.0f - phase);
+        output[i] = 1.0f - window * (1.0 - COS(p2));
+        phase = fmod(phase + inc, 1.0f);
+        mod += m_step;
+    }
+}
+
+void PD::res3(float* output, int samples) {
+    float inc = freq / sample_rate;
+    float mod = expf(wf * 6.0f * (float)M_LN2);
+    float modt = expf(wt * 6.0f * (float)M_LN2);
+    float m_step = (modt - mod) / (float)samples;
+
+    for (int i = 0; i < samples; i++) {
+        float p2 = fmod(mod * phase, 1.0f);
+        float window = phase < 0.5f ? 1.0f : 2.0f * (1.0f - phase);
+        output[i] = 1.0f - window * (1.0 - COS(p2));
+        phase = fmod(phase + inc, 1.0f);
+        mod += m_step;
+    }
+}
+
+void PD::half_sine(float* output, int samples) {
+    float inc = freq / sample_rate;
+    float mod = 0.5f - wf * 0.5;
+    float m_step = 0.5f * (wf - wt) / (float)samples;
+
+    for (int i = 0; i < samples; i++) {
+        output[i] = SIN(0.5f * pd(phase, mod));
+        phase = fmod(phase + inc, 1.0f);
+        mod += m_step;
+    }
+}
+
+void PD::process(float* output, int samples) {
+    switch (type) {
+    CASE(SAW, saw)
+    CASE(SQUARE, square)
+    CASE(PULSE, pulse)
+    CASE(DOUBLE_SINE, double_sine)
+    CASE(SAW_PULSE, saw_pulse)
+    CASE(RES1, res1)
+    CASE(RES2, res2)
+    CASE(RES3, res3)
+    CASE(HALF_SINE, half_sine)
+    }
+}
+
+// EL
+
+// TODO polyblep
+void EL::saw(float* output, int samples) {
     float inc = freq / sample_rate;
 
+    for (int i = 0; i < samples; i++) {
+        output[i] = gb(phase);
+        phase = fmod(phase + inc, 1.0f);
+    }
+}
+
+void EL::double_saw(float* output, int samples) {
+    float inc = freq / sample_rate;
+    float width = wf;
+    float w_step = (wt - wf) / (float)samples;
+
+    for (int i = 0; i < samples; i++) {
+        float p2 = pd(phase, width);
+        if (phase < width) {
+            output[i] = 4.0f * p2 - 1.0f;
+        } else {
+            output[i] = 4.0f * (p2 - 0.5f) - 1.0f;
+        }
+        phase = fmod(phase + inc, 1.0f);
+        width += w_step;
+    }
+}
+
+void EL::tri(float* output, int samples) {
+    float inc = freq / sample_rate;
+    float width = wf;
+    float w_step = (wt - wf) / (float)samples;
+
+    for (int i = 0; i < samples; i++) {
+        output[i] = gb(gtri(phase, width));
+        phase = fmod(phase + inc, 1.0f);
+        width += w_step;
+    }
+}
+
+void EL::tri2(float* output, int samples) {
+    float inc = freq / sample_rate;
+    float width = wf;
+    float w_step = (wt - wf) / (float)samples;
+
+    for (int i = 0; i < samples; i++) {
+        float p = gtri(phase, width);
+        output[i] = gb(p * sqrt(p) + p * (1.0-p));
+        phase = fmod(phase + inc, 1.0f);
+        width += w_step;
+    }
+}
+
+void EL::tri3(float* output, int samples) {
+    float inc = freq / sample_rate;
+    float width = wf;
+    float w_step = (wt - wf) / (float)samples;
+
+    for (int i = 0; i < samples; i++) {
+        float p = gtri(phase, width);
+        output[i] = gb(phase < width ? sqrt(p) : p*p*p);
+        phase = fmod(phase + inc, 1.0f);
+        width += w_step;
+    }
+}
+
+void EL::pulse(float* output, int samples) {
+    float inc = freq / sample_rate;
     bool bl = bandlimit && wf > inc && wf < (1.0f - inc);
     float width = wf;
     float w_step = (wt - wf) / (float)samples;
@@ -159,11 +308,27 @@ void PhaseShaping::pulse(float* output, int samples) {
     }
 }
 
+// TODO polyblep
+void EL::pulse_saw(float* output, int samples) {
+    float inc = freq / sample_rate;
+    float width = wf;
+    float w_step = (wt - wf) / (float)samples;
 
-void PhaseShaping::slope(float* output, int samples) {
+    for (int i = 0; i < samples; i++) {
+        float p2 = pd(phase, width);
+        if (phase < width) {
+            output[i] = 2.0f * p2;
+        } else {
+            output[i] = -2.0f * (p2 - 0.5f);
+        }
+        phase = fmod(phase + inc, 1.0f);
+        width += w_step;
+    }
+}
+
+void EL::slope(float* output, int samples) {
     // bandlimited saw
     float inc = freq / sample_rate;
-
     float width = wf;
     float w_step = (wt - wf) / (float)samples;
 
@@ -190,131 +355,82 @@ void PhaseShaping::slope(float* output, int samples) {
     }
 }
 
-// TODO bandlimiting
-void PhaseShaping::jp8000_tri(float* output, int samples) {
+void EL::alpha1(float* output, int samples) {
+    // pulse
+    float f = freq;
+    float p = phase;
+    freq = 2.0f * freq;
+    pulse(output, samples);
+
+    // saw
+    phase = p;
+    freq = f;
     float inc = freq / sample_rate;
-
-    float a1 = a1f, a0 = a0f;
-    float a1_step = (a1t - a1f) / (float)samples;
-    float a0_step = (a0t - a0f) / (float)samples;
-
     for (int i = 0; i < samples; i++) {
-        float p2 = gb(gtri(phase, a1, a0));
-        output[i] = 2.0 * (p2 - ceil(p2 - 0.5));
+        output[i] = phase * (output[i] + 1.0) - 1.0f;
         phase = fmod(phase + inc, 1.0f);
-        a1 += a1_step;
-        a0 += a0_step;
     }
 }
 
-// TODO bandlimiting
-void PhaseShaping::jp8000_supersaw(float* output, int samples) {
+void EL::alpha2(float* output, int samples) {
+    // pulse
+    float f = freq;
+    float p = phase;
+    freq = 4.0f * freq;
+    pulse(output, samples);
+
+    // saw
+    phase = p;
+    freq = f;
     float inc = freq / sample_rate;
-    const float m1 = 0.25f / (2.0 * M_PI), m2 = 0.88f / (2.0 * M_PI);
-
-    float a1 = a1f;
-    float a1_step = (a1t - a1f) / (float)samples;
-
     for (int i = 0; i < samples; i++) {
-        float p2 = gripple2(fmod(glin(phase, a1), 1.0f), m1, m2);
-        output[i] = sin2(fmod(p2, 1.0f));
+        output[i] = phase * (output[i] + 1.0) - 1.0f;
         phase = fmod(phase + inc, 1.0f);
-        a1 += a1_step;
     }
 }
 
-void PhaseShaping::waveslices(float* output, int samples) {
-    // bandlimited ramp -> sin
-    float inc = freq / sample_rate;
-
-    float a1 = a1f;
-    float a1_step = (a1t - a1f) / (float)samples;
-
-    for (int i = 0; i < samples; i++) {
-        float p2 = limit(glin(phase, a1), 1.0f);
-        float mod = 0.0f;
-
-        if (bandlimit) {
-            if (phase < inc) {                 // start
-                float a1_p = limit(a1, 1.0f);
-                float diff = a1_p - phase_target(a1_p);
-                float inc2 = a1 * inc;
-                mod = diff * polyblep(p2 / inc2);
-                p2 += phase_target(a1_p);
-            } else if (phase > (1.0f - inc)) { // end
-                float a1_p = limit(a1, 1.0f);
-                float diff = a1_p - phase_target(a1_p);
-                float inc2 = a1 * inc;
-                mod = diff * polyblep( (p2 - a1_p) / inc2);
-            }
-        }
-
-        output[i] = sin2(fmod(p2 - mod, 1.0f));
-        phase = fmod(phase + inc, 1.0f);
-        a1 += a1_step;
+void EL::process(float* output, int samples) {
+    switch (type) {
+    CASE(SAW, saw)
+    CASE(DOUBLE_SAW, double_saw)
+    CASE(TRI, tri)
+    CASE(TRI2, tri2)
+    CASE(TRI3, tri3)
+    CASE(PULSE, pulse)
+    CASE(PULSE_SAW, pulse_saw)
+    CASE(SLOPE, slope)
+    CASE(ALPHA1, alpha1)
+    CASE(ALPHA2, alpha2)
     }
 }
 
-void PhaseShaping::sinusoids(float* output, int samples) {
-    // bandlimited ramp -> sin
-    float inc = freq / sample_rate;
+// AS
 
-    float width = wf;
-    float w_step = (wt - wf) / (float)samples;
+void AS::saw(float* output, int samples) {
+    // TODO
+}
 
-    for (int i = 0; i < samples; i++) {
-        float p2 = gvslope(phase, width);
-        float mod = 0.0f;
+void AS::square(float* output, int samples) {
+    // TODO
+}
 
-        if (bandlimit) {
-            float inc2 = inc / (1.0f - width);
+void AS::impulse(float* output, int samples) {
+    // TODO
+}
 
-            if (phase < width && phase > (width - inc)) { // mid end
-                float diff = width - phase_target(width);
-                mod = diff * polyblep( (p2 - width) / inc);
-            } else if (phase > width && p2 < inc2) {      // mid start
-                float diff = width - phase_target(width);
-                mod = diff * polyblep(p2 / inc2);
-                p2 += phase_target(width);
-            }
-        }
-
-        output[i] = sin2(fmod(p2 - mod, 1.0f));
-        phase = fmod(phase + inc, 1.0f);
-        width += w_step;
+void AS::process(float* output, int samples) {
+    switch (type) {
+    CASE(SAW, saw)
+    CASE(SQUARE, square)
+    CASE(IMPULSE, impulse)
     }
 }
 
-void PhaseShaping::noise(float* output, int samples) {
+// Noise
+
+void Noise::process(float* output, int samples) {
     for (int i = 0; i < samples; i++) {
         output[i] =  (2.0f * rand() / (RAND_MAX + 1.0f) - 1.0f);
-    }
-}
-
-void PhaseShaping::process(float* output, int samples) {
-    float inc = freq / sample_rate;
-
-    switch(type) {
-    case SIN:
-        sin2(output, samples); break;
-    case HARD:
-        hardsync(output, samples); break;
-    case SOFT:
-        softsync(output, samples); break;
-    case PULSE:
-        pulse(output, samples); break;
-    case SLOPE:
-        slope(output, samples); break;
-    case TRI:
-        jp8000_tri(output, samples); break;
-    case SUPERSAW:
-        jp8000_supersaw(output, samples); break;
-    case SLICES:
-        waveslices(output, samples); break;
-    case SINUSOIDS:
-        sinusoids(output, samples); break;
-    case NOISE:
-        noise(output, samples); break;
     }
 }
 

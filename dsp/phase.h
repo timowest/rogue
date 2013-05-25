@@ -44,6 +44,14 @@ float gtri(float x) {
     return fabs(gb(x));
 }
 
+float gtri(float x, float w) {
+    if (x < w) {
+        return x / w;
+    } else {
+        return 1.0 - (x-w) / (1.0-w);
+    }
+}
+
 float gtri(float x, float a1, float a0) {
     return mod1(glin(fabs(gb(x)), a1, a0));
 }

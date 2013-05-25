@@ -129,8 +129,6 @@ function pd_res3(x, w) {
   return 1.0 - window * (1.0 - cos2(x2));
 }
 
-
-// preserve
 function pd_sin_half(x, w) {
   var mod = 0.5 - w * 0.5;
   return gb(sin2(0.5 * pd(x, mod))); 
