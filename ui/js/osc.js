@@ -6,7 +6,6 @@ function tanh (arg) {
   return (Math.exp(arg) - Math.exp(-arg)) / (Math.exp(arg) + Math.exp(-arg));
 }
 
-
 function sin2(x) { 
     return Math.sin(TWO_PI * x);     
 }
@@ -32,19 +31,14 @@ function va_saw(phase) {
   return Math.sin(2.0 * M_PI * phase + mod_saw(phase, P) - 0.5 * M_PI);
 }
 
-// TODO
-function va_tri(x) {
+function va_tri(x, w, t) {
   return 0;
 }
 
-//TODO
-function va_saw_tri(x) {
-  return 0;
-}
-
-//TODO
-function va_pulse(x, w) {
-  return 0;
+function va_pulse(x, w, t) {
+  var saw1 = pd_saw(x, w, t);
+  var saw2 = pd_saw((x + w) % 1.0, w, t);
+  return saw1 - saw2;
 }
 
 // phase distortion
@@ -217,17 +211,17 @@ function el_alpha2(x, w) {
 
 // additive synthesis
 
-function as_saw(x, w) {
+function as_saw(x, w, t) {
   var y = 0;
-  for (var i = 1.0; i < (20.0 * w); i++) {
+  for (var i = 1.0; i < (20.0 * t); i++) {
     y += sin2(i * x) * 1.0/i;
   }
   return -0.55 * y;
 }
 
-function as_square(x, w) {
+function as_square(x, w, t) {
   var y = 0;
-  for (var i = 1.0; i < (40.0 * w); i += 2) {
+  for (var i = 1.0; i < (40.0 * t); i += 2) {
     y += sin2(i * x) * 1.0/i;
   }
   return y;
@@ -240,14 +234,14 @@ function no_white(x) {
 }
 
 function update_plot() {
+  var tone = parseFloat($("#tone").val());
   var width = parseFloat($("#width").val());
-  console.log(width);
   
   $(".plot").each(function() {
     var fn = window[$(this).attr("data-fn")];    
     var arr = [];
     for (var p = 0.0; p < 1.5; p += 0.01) {
-      arr.push([p, fn(fmod(p,1.0), width)])
+      arr.push([p, fn(fmod(p, 1.0), width, tone)])
     }
     $.plot(this, [arr]);
   });
@@ -259,5 +253,5 @@ $(document).ready(function() {
 //  $.plot("#plot", [ d2, d3 ]);
   
   update_plot();
-  $("#width").change(update_plot);
+  $("input").change(update_plot);
 });

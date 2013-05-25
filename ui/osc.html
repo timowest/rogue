@@ -16,6 +16,9 @@ body { font-family: sans; }
 <!-- 
 maybe also tone parameter
  -->  
+
+tone
+<input type="number" id="tone" min="0" max="1" step="0.01" value="0.5"/>
   
 width 
 <input type="number" id="width" min="0" max="1" step="0.01" value="0.5"/>  
@@ -24,8 +27,7 @@ width
     <tr>
     <th>VA</th>
     <td>Saw <div class="plot" data-fn="va_saw"></div></td>
-    <td>Tri <div class="plot" data-fn="va_tri"></div></td>
-    <td>Saw Tri <div class="plot" data-fn="va_saw_tri"></div></td>
+    <td>Tri Saw <div class="plot" data-fn="va_tri"></div></td>
     <td>Pulse <div class="plot" data-fn="va_pulse"></div></td>
   </tr>
   
