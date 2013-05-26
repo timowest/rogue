@@ -205,16 +205,8 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         // pulse width modulation
         float width = oscData.width * modulate(1.0f, M_OSC1_PWM + 4 * i, amp_mod);
 
-        float param1 = oscData.param1;
-        float param2 = oscData.param2;
-
         // process
-        osc.osc.setType(oscData.type);
-        osc.osc.setFreq(f);
-        osc.osc.setParams(osc.param1_prev, param1,
-                          osc.param2_prev, param2,
-                          osc.width_prev, width);
-        osc.osc.process(osc.buffer + from, to - from);
+        osc.process(oscData.type, f, oscData.tone, osc.width_prev, width, osc.buffer + from, to - from);
 
         // amp modulation
         float v = oscData.level;
@@ -240,8 +232,6 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
             bus_b[i] += oscData.level_b * osc.buffer[i];
         }
 
-        osc.param1_prev = param1;
-        osc.param2_prev = param2;
         osc.width_prev = width;
     }
 }

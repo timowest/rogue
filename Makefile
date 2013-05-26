@@ -56,7 +56,3 @@ tests: src/rogue.gen
 	mkdir -p wavs
 	./dsp_tests.out	
 	./voice_tests.out
-	
-perftests: src/rogue.gen
-	$(CXX) -g -std=c++11 test/perf_tests.cpp $(SNDFILE) $(FAST) -Idsp -o perf_tests.out
-	./perf_tests.out

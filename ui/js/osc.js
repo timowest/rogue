@@ -130,7 +130,7 @@ function pd_res3(x, w) {
 }
 
 function pd_sin_half(x, w) {
-  var mod = 0.5 - w * 0.5;
+  var mod = 0.5 + w * 0.5;
   return gb(sin2(0.5 * pd(x, mod))); 
 }
 

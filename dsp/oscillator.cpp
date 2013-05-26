@@ -189,11 +189,11 @@ void PD::res3(float* output, int samples) {
 
 void PD::half_sine(float* output, int samples) {
     float inc = freq / sample_rate;
-    float mod = 0.5f - wf * 0.5;
-    float m_step = 0.5f * (wf - wt) / (float)samples;
+    float mod = 0.5f + wf * 0.5;
+    float m_step = 0.5f * (wt - wf) / (float)samples;
 
     for (int i = 0; i < samples; i++) {
-        output[i] = SIN(0.5f * pd(phase, mod));
+        output[i] = gb(SIN(0.5f * pd(phase, mod)));
         phase = fmod(phase + inc, 1.0f);
         mod += m_step;
     }
@@ -433,5 +433,11 @@ void Noise::process(float* output, int samples) {
         output[i] =  (2.0f * rand() / (RAND_MAX + 1.0f) - 1.0f);
     }
 }
+
+// TODO pink noise
+
+// TODO brown noise
+
+
 
 }

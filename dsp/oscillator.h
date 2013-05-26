@@ -9,6 +9,9 @@
 
 namespace dsp {
 
+/**
+ * abstract oscillator class
+ */
 class Oscillator {
   protected:
     float freq = 440.0f, sample_rate, phase = 0.0f;
@@ -46,10 +49,11 @@ class Oscillator {
 /**
  * Virtual Analog
  */
-class VA : Oscillator {
+class VA : public Oscillator {
 
     enum {SAW, TRI_SAW, PULSE};
 
+  public:
     void saw(float* output, int samples);
     void tri_saw(float* output, int samples);
     void pulse(float* output, int samples);
@@ -60,10 +64,11 @@ class VA : Oscillator {
 /**
  * Phase Distortion
  */
-class PD : Oscillator {
+class PD : public Oscillator {
 
     enum {SAW, SQUARE, PULSE, DOUBLE_SINE, SAW_PULSE, RES1, RES2, RES3, HALF_SINE};
 
+  public:
     void saw(float* output, int samples);
     void square(float* output, int samples);
     void pulse(float* output, int samples);
@@ -82,10 +87,11 @@ class PD : Oscillator {
 /**
  * Electronic
  */
-class EL : Oscillator {
+class EL : public Oscillator {
 
     enum {SAW, DOUBLE_SAW, TRI, TRI2, TRI3, PULSE, PULSE_SAW, SLOPE, ALPHA1, ALPHA2};
 
+  public:
     void saw(float* output, int samples);
     void double_saw(float* output, int samples);
     void tri(float* output, int samples);
@@ -105,10 +111,11 @@ class EL : Oscillator {
 /**
  * Additive Synthesis
  */
-class AS : Oscillator {
+class AS : public Oscillator {
 
     enum {SAW, SQUARE, IMPULSE};
 
+  public:
     void saw(float* output, int samples);
     void square(float* output, int samples);
     void impulse(float* output, int samples);
@@ -118,8 +125,9 @@ class AS : Oscillator {
 /**
  * Noise
  */
-class Noise : Oscillator {
+class Noise : public Oscillator {
 
+  public:
     void process(float* output, int samples);
 };
 

@@ -4,7 +4,6 @@
 #include "lfo.cpp"
 #include "envelope.cpp"
 #include "tables.cpp"
-#include "va.cpp"
 
 #include <iostream>
 
@@ -63,14 +62,25 @@ int main() {
     char filename[50];
     float buffer[SIZE];
     float buffer2[SIZE];
-    dsp::PhaseShaping osc;
-    osc.setSamplerate(SR);
-    osc.setFreq(440.0f);
-    osc.setParams(1.0f, 0.0f, 0.5f);
 
     dsp::VA va;
     va.setSamplerate(SR);
-    va.setFreq(440.f);
+    va.setFreq(440.0f);
+
+    dsp::PD pd;
+    pd.setSamplerate(SR);
+    pd.setFreq(440.0f);
+
+    dsp::EL el;
+    el.setSamplerate(SR);
+    el.setFreq(440.0f);
+
+    dsp::AS as;
+    as.setSamplerate(SR);
+    as.setFreq(440.0f);
+
+    dsp::Noise no;
+    no.setSamplerate(SR);
 
     dsp::MoogFilter moog;
     moog.setSamplerate(SR);
@@ -93,65 +103,56 @@ int main() {
 
     dsp::AHDSR env;
 
-    // oscs
-    int errors = 0;
-    int total = 0;
-    float params[] = {0.0f, 0.02f, 0.1f, 0.2f, 0.25f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.75f, 0.8f, 0.9f, 0.98f,
-                      1.0f, 1.02f, 1.1f, 1.2f, 1.25f, 1.3f, 1.4f, 1.5f, 1.6f, 1.7f, 1.75f, 1.8f, 1.9f, 1.98f};
-    for (int i = 0; i < 10; i++) { // type
-        for (int j = 0; j < 28; j++) { // param1
-            for (int k = 0; k < 15; k++) { // param2 & width
-                osc.reset();
-                osc.setBandlimit(true);
-                osc.setType(i);
-                osc.setParams(params[j], params[k], params[k]);
-                osc.process(buffer, SIZE);
-
-                // 2nd version without polyblep
-                osc.reset();
-                osc.setBandlimit(false);
-                osc.process(buffer2, SIZE);
-
-                sprintf(filename, "wavs/osc_%i_%i_%i.wav", i, j, k);
-                write_wav(filename, buffer, buffer2);
-
-                // click detection
-                // noise is allowed to have clicks
-                int clicks = count_clicks(buffer);
-                int clicks2 = count_clicks(buffer2);
-                if (i != 9 && clicks > clicks2) {
-                    std::cout << "ERROR: " << i << "_"<< j << "_" << k
-                              << " has " << clicks << " clicks, "
-                              << "params: " << params[j] << " " << params[k] << std::endl;
-                    errors++;
-                }
-                total++;
-            }
-        }
-    }
-
-    if (errors > 0) {
-        std::cout << "ERROR: " << errors << "/" << total << " errors (osc)" << std::endl;
-    }
-
     // va
     for (int i = 0; i < 4; i++) {
         va.reset();
         va.setBandlimit(true);
         va.setType(i);
-        //va.setParams(params[j], params[k], params[k]);
         va.process(buffer, SIZE);
 
         sprintf(filename, "wavs/va_%i.wav", i);
         write_wav(filename, buffer);
     }
 
+    // pd
+    for (int i = 0; i < 9; i++) {
+        pd.reset();
+        pd.setBandlimit(true);
+        pd.setType(i);
+        pd.process(buffer, SIZE);
+
+        sprintf(filename, "wavs/pd_%i.wav", i);
+        write_wav(filename, buffer);
+    }
+
+    // el
+    for (int i = 0; i < 10; i++) {
+        el.reset();
+        el.setBandlimit(true);
+        el.setType(i);
+        el.process(buffer, SIZE);
+
+        sprintf(filename, "wavs/el_%i.wav", i);
+        write_wav(filename, buffer);
+    }
+
+    // as
+    for (int i = 0; i < 3; i++) {
+        as.reset();
+        as.setBandlimit(true);
+        as.setType(i);
+        as.process(buffer, SIZE);
+
+        sprintf(filename, "wavs/as_%i.wav", i);
+        write_wav(filename, buffer);
+    }
+
     // noise input
     float noise[SIZE];
-    osc.reset();
-    osc.setFreq(1000.0);
-    osc.setType(9);
-    osc.process(noise, SIZE);
+    no.reset();
+    no.setFreq(1000.0);
+    no.setType(0);
+    no.process(noise, SIZE);
 
     // moog
     for (int i = 0; i < 8; i++) {

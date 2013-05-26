@@ -66,7 +66,7 @@ class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> >
     float lfoBuffers[NLFO][LFO_DRAW_WIDTH];
     float envBuffers[NENV][ENV_DRAW_WIDTH];
 
-    dsp::PhaseShaping osc;
+    //dsp::PhaseShaping osc;
     dsp::LFO lfo;
 };
 
@@ -76,8 +76,12 @@ class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> >
 #define CHARS static const char*
 
 // checkbox content
-CHARS osc_types[] = {"Sin", "Saw", "Tri", "Pulse", "Slope", "Tri",
-        "Supersaw", "Slices", "Sinusoids", "Noise"};
+CHARS osc_types[] = {
+        "VA Saw", "VA Tri Saw", "VA Pulse",
+        "PD Saw", "PD Square", "PD Pulse", "PD Double Sine", "PD Saw Pulse", "PD Res 1", "PD Res 2", "PD Res 3", "PD Half Sine",
+        "Saw", "Double Saw", "Tri", "Tri 2", "Tri 3", "Pulse", "Pulse Saw", "Slope", "Alpha 1", "Alpha 2",
+        "AS Saw", "AS Square", "AS Impulse",
+        "Noise"};
 
 CHARS filter_types[] = {"LP 24dB", "LP 18dB", "LP 12dB", "LP 6dB", "HP 24dB",
         "BP 12dB", "BP 18dB", "Notch",
@@ -149,7 +153,7 @@ rogueGUI::rogueGUI(const char* URI) {
         } else if (type != SELECT) {
             std::cout << i << std::endl;
         } else if (i == p_osc1_type || i == p_osc2_type || i == p_osc3_type || i == p_osc4_type) {
-            scales[i] = manage(new SelectBox(osc_types, 10));
+            scales[i] = manage(new SelectBox(osc_types, 26));
         } else if (i == p_filter1_type || i == p_filter2_type) {
             scales[i] = manage(new SelectBox(filter_types, 12));
         } else if (i == p_filter1_source) {
@@ -185,9 +189,9 @@ rogueGUI::rogueGUI(const char* URI) {
         }
     }
 
-    osc.setBandlimit(false);
-    osc.setFreq(1.0f);
-    osc.setSamplerate(OSC_DRAW_WIDTH);
+    //osc.setBandlimit(false);
+    //osc.setFreq(1.0f);
+    //osc.setSamplerate(OSC_DRAW_WIDTH);
 
     lfo.setFreq(1.0);
     lfo.setSamplerate(LFO_DRAW_WIDTH);
@@ -213,8 +217,6 @@ rogueGUI::rogueGUI(const char* URI) {
                     mem_fun(*scales[p_osc1_type + i * OSC_OFF], &Changeable::get_value));
         scales[p_osc1_type + i * OSC_OFF]->connect(slot1);
         scales[p_osc1_width + i * OSC_OFF]->connect(slot1);
-        scales[p_osc1_param1 + i * OSC_OFF]->connect(slot1);
-        scales[p_osc1_param2 + i * OSC_OFF]->connect(slot1);
         update_osc(i, 0.0);
     }
 
@@ -288,11 +290,10 @@ Widget* rogueGUI::createOSC(int i) {
     control(table, "Coarse", p_osc1_coarse + off, 0, 3);
     control(table, "Fine", p_osc1_fine + off, 1, 3);
     control(table, "Ratio", p_osc1_ratio + off, 2, 3);
-    control(table, "Width", p_osc1_width + off, 3, 3);
-    control(table, "Par 1", p_osc1_param1 + off, 4, 3);
-    control(table, "Par 2", p_osc1_param2 + off, 5, 3);
-    control(table, "Vol A", p_osc1_level_a + off, 6, 3);
-    control(table, "Vol B", p_osc1_level_b + off, 7, 3);
+    control(table, "Tone", p_osc1_width + off, 3, 3);
+    control(table, "Width", p_osc1_width + off, 4, 3);
+    control(table, "Vol A", p_osc1_level_a + off, 5, 3);
+    control(table, "Vol B", p_osc1_level_b + off, 6, 3);
 
     // TODO
     //control(table, "Free", p_osc1_free + off, 2, 1);
@@ -465,13 +466,11 @@ void rogueGUI::change_status_bar(uint32_t port, float value) {
 
 void rogueGUI::update_osc(int i, float value) {
     float w = scales[p_osc1_width + i * OSC_OFF]->get_value();
-    float p1 = scales[p_osc1_param1 + i * OSC_OFF]->get_value();
-    float p2 = scales[p_osc1_param2 + i * OSC_OFF]->get_value();
 
-    osc.setType((int)value);
-    osc.setParams(p1, p2, w);
-    osc.reset();
-    osc.process(oscBuffers[i], OSC_DRAW_WIDTH);
+    //osc.setType((int)value);
+    //osc.setParams(p1, p2, w);
+    //osc.reset();
+    //osc.process(oscBuffers[i], OSC_DRAW_WIDTH);
 
     oscWaves[i]->refresh();
 }
