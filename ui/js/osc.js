@@ -16,29 +16,38 @@ function cos2(x) {
 
 // virtual analog
 
-function mod_saw(x, P) {
-  var m = M_PI - 2.0 * M_PI * P;
-  if (x < P) {
-      return m * (x / P);
-  } else {
-      return m * (1.0 - x) / (1.0 - P);
+// based on csound atone
+// http://sourceforge.net/p/csound/csound5-git/ci/master/tree/OOps/ugens5.c
+var highpass = function() {
+  var prev = 0;
+  
+  return function(x, f) {
+    var b = 2.0 - Math.cos(2.0 * PI * f);
+    var c2 = b - Math.sqrt(b*b - 1.0);
+    
+    var y = c2 * (prev + x)
+    prev = y - x
+    return y;
   }
 }
 
-function va_saw(phase) {
-  var freq = 44.0;
-  var P = 0.9924 - 0.00002151 * freq;
-  return Math.sin(2.0 * M_PI * phase + mod_saw(phase, P) - 0.5 * M_PI);
+var hp1 = highpass();
+var hp2 = highpass();
+var hp3 = highpass();
+
+function va_saw(x, w, t) {
+  var y = gb(x);
+  return hp1(y, t);
 }
 
 function va_tri(x, w, t) {
-  return 0;
+  var y = gb(tri(x, w));
+  return hp2(y, t);
 }
 
 function va_pulse(x, w, t) {
-  var saw1 = pd_saw(x, w, t);
-  var saw2 = pd_saw((x + w) % 1.0, w, t);
-  return saw1 - saw2;
+  var y = gb(gpulse(x, w));
+  return hp3(y, t);
 }
 
 // phase distortion
@@ -141,11 +150,10 @@ function el_saw(x) {
 }
 
 function el_double_saw(x, w) {
-  var x2 = pd(x, w);
   if (x < w) {
-    return (x2 * 4.0) - 1.0;
+    return gb(x / w);
   } else {
-    return (x2-0.5) * 4.0 - 1.0;
+    return gb((x - w) / (1.0 - w));
   }
 }
 
@@ -211,7 +219,7 @@ function el_alpha2(x, w) {
 
 function as_saw(x, w, t) {
   var y = 0;
-  for (var i = 1.0; i < (20.0 * t); i++) {
+  for (var i = 1.0; i < (40.0 * t); i++) {
     y += sin2(i * x) * 1.0/i;
   }
   return -0.55 * y;
@@ -223,6 +231,14 @@ function as_square(x, w, t) {
     y += sin2(i * x) * 1.0/i;
   }
   return y;
+}
+
+function as_impulse(x, w, t) {
+  var y = 0;
+  for (var i = 1.0; i < (40.0 * t); i++) {
+    y += sin2(i * x);
+  }
+  return 0.05 * y;
 }
 
 // noise

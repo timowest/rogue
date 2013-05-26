@@ -189,7 +189,6 @@ rogueGUI::rogueGUI(const char* URI) {
         }
     }
 
-    //osc.setBandlimit(false);
     //osc.setFreq(1.0f);
     //osc.setSamplerate(OSC_DRAW_WIDTH);
 

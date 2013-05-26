@@ -106,7 +106,6 @@ int main() {
     // va
     for (int i = 0; i < 4; i++) {
         va.reset();
-        va.setBandlimit(true);
         va.setType(i);
         va.process(buffer, SIZE);
 
@@ -117,7 +116,6 @@ int main() {
     // pd
     for (int i = 0; i < 9; i++) {
         pd.reset();
-        pd.setBandlimit(true);
         pd.setType(i);
         pd.process(buffer, SIZE);
 
@@ -128,7 +126,6 @@ int main() {
     // el
     for (int i = 0; i < 10; i++) {
         el.reset();
-        el.setBandlimit(true);
         el.setType(i);
         el.process(buffer, SIZE);
 
@@ -139,7 +136,6 @@ int main() {
     // as
     for (int i = 0; i < 3; i++) {
         as.reset();
-        as.setBandlimit(true);
         as.setType(i);
         as.process(buffer, SIZE);
 

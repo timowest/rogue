@@ -32,19 +32,48 @@ static float pd(float x, float w) {
 
 // VA
 
+void VA::highpass(float* output, int samples) {
+    float b = 2.0f - COS((0.602f * freq) / sample_rate);
+    float c2 = b - sqrt(b*b - 1.0f);
+
+    for (int i = 0; i < samples; i++) {
+        float x = output[i];
+        output[i] = c2 * (prev + x);
+        prev = output[i] - x;
+    }
+}
+
 void VA::saw(float* output, int samples) {
-    // TODO
-    // apply 6db / 50Hz highpass to standard waves ?!?
+    // saw
+    el.setType(0);
+    el.setFreq(freq);
+    el.setParams(tone, wf, wt);
+    el.process(output, samples);
+
+    // highpass
+    highpass(output, samples);
 }
 
 void VA::tri_saw(float* output, int samples) {
-    // TODO
-    // apply 6db / 50Hz highpass to standard waves ?!?
+    // tri
+    el.setType(2);
+    el.setFreq(freq);
+    el.setParams(tone, wf, wt);
+    el.process(output, samples);
+
+    // highpass
+    highpass(output, samples);
 }
 
 void VA::pulse(float* output, int samples) {
-    // TODO
-    // apply 6db / 50Hz highpass to standard waves ?!?
+    // pulse
+    el.setType(5);
+    el.setFreq(freq);
+    el.setParams(tone, wf, wt);
+    el.process(output, samples);
+
+    // highpass
+    highpass(output, samples);
 }
 
 void VA::process(float* output, int samples) {
@@ -215,12 +244,17 @@ void PD::process(float* output, int samples) {
 
 // EL
 
-// TODO polyblep
 void EL::saw(float* output, int samples) {
     float inc = freq / sample_rate;
 
     for (int i = 0; i < samples; i++) {
-        output[i] = gb(phase);
+        float mod = 0.0f;
+        if (phase < inc) { // start
+            mod = polyblep(phase / inc);
+        } else if (phase > (1.0f - inc)) { // end
+            mod = polyblep( (phase - 1.0) / inc);
+        }
+        output[i] = gb(phase - mod);
         phase = fmod(phase + inc, 1.0f);
     }
 }
@@ -231,12 +265,28 @@ void EL::double_saw(float* output, int samples) {
     float w_step = (wt - wf) / (float)samples;
 
     for (int i = 0; i < samples; i++) {
-        float p2 = pd(phase, width);
+        float p2;
+        float mod = 0.0f;
         if (phase < width) {
-            output[i] = 4.0f * p2 - 1.0f;
+            float inc2 = inc / width;
+            p2 = phase / width;
+
+            if (p2 < inc2) { // start
+                mod = polyblep(p2 / inc2);
+            } else if (p2 > (1.0f - inc2)) { // end
+                mod = polyblep((p2 - 1.0f) / inc2);
+            }
         } else {
-            output[i] = 4.0f * (p2 - 0.5f) - 1.0f;
+            float inc2 = inc / (1.0f - width);
+            p2 = (phase - width) / (1.0f - width);
+
+            if (p2 < inc2) {
+                mod = polyblep(p2 / inc2);
+            } else if (p2 > (1.0f - inc2)) {
+                mod = polyblep((p2 - 1.0f) / inc2);
+            }
         }
+        output[i] = gb(p2 - mod);
         phase = fmod(phase + inc, 1.0f);
         width += w_step;
     }
@@ -282,23 +332,31 @@ void EL::tri3(float* output, int samples) {
 
 void EL::pulse(float* output, int samples) {
     float inc = freq / sample_rate;
-    bool bl = bandlimit && wf > inc && wf < (1.0f - inc);
+    bool bl = wf > inc && wf < (1.0f - inc);
     float width = wf;
     float w_step = (wt - wf) / (float)samples;
 
     for (int i = 0; i < samples; i++) {
-        float p2 = gpulse(phase, width);
+        float p2;
         float mod = 0.0f;
 
-        if (bl) {
-            if (phase < inc) {                 // start
-                mod = polyblep(phase / inc);
-            } else if (phase > (1.0f - inc)) { // end
-                mod = polyblep( (phase - 1.0f) / inc);
-            } else if (phase < width && phase > (width - inc)) {
-                mod = -polyblep( (phase - width) / inc);
-            } else if (phase > width && phase < (width + inc)) {
-                mod = -polyblep( (phase - width) / inc);
+        if (phase < width) {
+            p2 = 0.0f;
+            if (bl) {
+                if (phase < inc) { // start
+                    mod = polyblep(phase / inc);
+                } else if (phase > (width - inc)) {
+                    mod = -polyblep( (phase - width) / inc);
+                }
+            }
+        } else {
+            p2 = 1.0f;
+            if (bl) {
+                if (phase > (1.0f - inc)) { // end
+                    mod = polyblep( (phase - 1.0f) / inc);
+                } else if (phase < (width + inc)) {
+                    mod = -polyblep( (phase - width) / inc);
+                }
             }
         }
 
@@ -326,6 +384,7 @@ void EL::pulse_saw(float* output, int samples) {
     }
 }
 
+// TODO optimize
 void EL::slope(float* output, int samples) {
     // bandlimited saw
     float inc = freq / sample_rate;
@@ -336,17 +395,15 @@ void EL::slope(float* output, int samples) {
         float p2 = gvslope(phase, width);
         float mod = 0.0f;
 
-        if (bandlimit) {
-            float inc2 = inc / (1.0f - width);
-            if (phase < inc) {               // start
-                mod = polyblep(phase / inc);
-            } else if (p2 > (1.0f - inc2)) { // end
-                mod = polyblep( (p2 - 1.0f) / inc2);
-            } else if (phase < width && phase > (width - inc)) {
-                mod = width * polyblep( (p2 - width) / inc);
-            } else if (phase > width && p2 < inc2) {
-                mod = width * polyblep(p2 / inc2);
-            }
+        float inc2 = inc / (1.0f - width);
+        if (phase < inc) {               // start
+            mod = polyblep(phase / inc);
+        } else if (p2 > (1.0f - inc2)) { // end
+            mod = polyblep( (p2 - 1.0f) / inc2);
+        } else if (phase < width && phase > (width - inc)) {
+            mod = width * polyblep( (p2 - width) / inc);
+        } else if (phase > width && p2 < inc2) {
+            mod = width * polyblep(p2 / inc2);
         }
 
         output[i] = gb(p2 - mod);
@@ -407,15 +464,50 @@ void EL::process(float* output, int samples) {
 // AS
 
 void AS::saw(float* output, int samples) {
-    // TODO
+    float inc = freq / sample_rate;
+    // TODO take sr into account
+    float max = 20.0f * tone;
+
+    for (int i = 0.; i < samples; i++) {
+        float y = 0.0f;
+        for (float j = 1; j < max; j++) {
+            y += SIN(fmod(j * phase, 1.0f)) * 1.0/j;
+        }
+        // TODO take max into account
+        output[i] = -0.5 * y;
+        phase = fmod(phase + inc, 1.0f);
+    }
 }
 
 void AS::square(float* output, int samples) {
-    // TODO
+    float inc = freq / sample_rate;
+    // TODO take sr into account
+    float max = 40.0f * tone;
+
+    for (int i = 0; i < samples; i++) {
+        float y = 0.0f;
+        for (float j = 1; j < max; j += 2.0f) {
+            y += SIN(fmod(j * phase, 1.0f)) * 1.0/j;
+        }
+        output[i] = y;
+        phase = fmod(phase + inc, 1.0f);
+    }
 }
 
 void AS::impulse(float* output, int samples) {
-    // TODO
+    float inc = freq / sample_rate;
+    // TODO take sr into account
+    float max = 20.0f * tone;
+
+    for (int i = 0; i < samples; i++) {
+        float y = 0.0f;
+        for (float j = 1; j < max; j++) {
+            y += SIN(fmod(j * phase, 1.0f));
+        }
+        // TODO take max into account
+        output[i] = 0.05 * y;
+        phase = fmod(phase + inc, 1.0f);
+    }
 }
 
 void AS::process(float* output, int samples) {

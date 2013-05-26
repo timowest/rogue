@@ -17,12 +17,10 @@ class Oscillator {
     float freq = 440.0f, sample_rate, phase = 0.0f;
     float tone = 0.5f, wf = 0.5f, wt = 0.5f;
     int type = 0;
-    bool bandlimit = true;
 
   public:
     void setType(int t) { type = t; }
-    void setSamplerate(float r) { sample_rate = r; }
-    void setBandlimit(bool b) { bandlimit = b; }
+    virtual void setSamplerate(float r) { sample_rate = r; }
     void setFreq(float f) { freq = f; }
 
     void setParams(float _t, float _wf, float _wt) {
@@ -47,22 +45,9 @@ class Oscillator {
 };
 
 /**
- * Virtual Analog
- */
-class VA : public Oscillator {
-
-    enum {SAW, TRI_SAW, PULSE};
-
-  public:
-    void saw(float* output, int samples);
-    void tri_saw(float* output, int samples);
-    void pulse(float* output, int samples);
-    void process(float* output, int samples);
-
-};
-
-/**
  * Phase Distortion
+ *
+ * Implements the waveforms of Casio CZ synths
  */
 class PD : public Oscillator {
 
@@ -107,6 +92,30 @@ class EL : public Oscillator {
 
 
 // TODO JP8000 tri mod, supersaw
+
+/**
+ * Virtual Analog
+ */
+class VA : public Oscillator {
+
+    enum {SAW, TRI_SAW, PULSE};
+
+    float prev = 0.0f;
+    EL el;
+
+  public:
+    void setSamplerate(float r) {
+        Oscillator::setSamplerate(r);
+        el.setSamplerate(r);
+    }
+
+    void highpass(float* output, int samples);
+    void saw(float* output, int samples);
+    void tri_saw(float* output, int samples);
+    void pulse(float* output, int samples);
+    void process(float* output, int samples);
+
+};
 
 /**
  * Additive Synthesis
