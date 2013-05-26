@@ -222,7 +222,7 @@ function as_saw(x, w, t) {
   for (var i = 1.0; i < (40.0 * t); i++) {
     y += sin2(i * x) * 1.0/i;
   }
-  return -0.55 * y;
+  return -2/PI * y;
 }
 
 function as_square(x, w, t) {
@@ -230,7 +230,7 @@ function as_square(x, w, t) {
   for (var i = 1.0; i < (40.0 * t); i += 2) {
     y += sin2(i * x) * 1.0/i;
   }
-  return y;
+  return 4/PI * y;
 }
 
 function as_impulse(x, w, t) {

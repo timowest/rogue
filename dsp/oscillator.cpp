@@ -473,8 +473,7 @@ void AS::saw(float* output, int samples) {
         for (float j = 1; j < max; j++) {
             y += SIN(fmod(j * phase, 1.0f)) * 1.0/j;
         }
-        // TODO take max into account
-        output[i] = -0.5 * y;
+        output[i] = -2.0f/M_PI * y;
         phase = fmod(phase + inc, 1.0f);
     }
 }
@@ -489,7 +488,7 @@ void AS::square(float* output, int samples) {
         for (float j = 1; j < max; j += 2.0f) {
             y += SIN(fmod(j * phase, 1.0f)) * 1.0/j;
         }
-        output[i] = y;
+        output[i] = 4.0/M_PI * y;
         phase = fmod(phase + inc, 1.0f);
     }
 }
