@@ -215,6 +215,21 @@ function el_alpha2(x, w) {
   return pw * (saw + 1.0) - 1.0;
 }
 
+function mix(f1, f2, c, x, w, t) {
+  var s1 = f1(x, w, t);
+  var s2 = f1((x + t) % 1.0, w, t);
+  var p = f2((c * x) % 1.0, w, t);
+  return p * s1 + (1-p) * s2;
+}
+
+function el_beta1(x, w, t) {
+  return mix(el_saw, gpulse, 2.0, x, w, t);
+}
+
+function el_beta2(x, w, t) {
+  return mix(el_saw, gpulse, 4.0, x, w, t);
+}
+
 // additive synthesis
 
 function as_saw(x, w, t) {
