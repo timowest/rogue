@@ -24,14 +24,6 @@ struct Osc {
     float width_prev = 0.5f;
     dsp::Oscillator* oscs[5];
 
-    Osc() {
-        oscs[0] = &va;
-        oscs[1] = &pd;
-        oscs[2] = &el;
-        oscs[3] = &as;
-        oscs[4] = &noise;
-    }
-
     void reset() {
         width_prev = 0.5;
         prev_level = 0.0f;
@@ -44,6 +36,12 @@ struct Osc {
     }
 
     void setSamplerate(float r) {
+        oscs[0] = &va;
+        oscs[1] = &pd;
+        oscs[2] = &el;
+        oscs[3] = &as;
+        oscs[4] = &noise;
+
         for (int i = 0; i < 5; i++) {
             oscs[i]->setSamplerate(r);
         }
