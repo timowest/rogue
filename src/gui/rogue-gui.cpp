@@ -19,8 +19,7 @@
 #include "gui/toggle.h"
 #include "gui/wavedraw.h"
 
-#include "oscillator.h"
-#include "lfo.h"
+#include "wrappers.h"
 
 #define OSC_DRAW_WIDTH 140
 #define LFO_DRAW_WIDTH 105
@@ -66,7 +65,7 @@ class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> >
     float lfoBuffers[NLFO][LFO_DRAW_WIDTH];
     float envBuffers[NENV][ENV_DRAW_WIDTH];
 
-    //dsp::PhaseShaping osc;
+    Osc osc;
     dsp::LFO lfo;
 };
 
@@ -190,7 +189,7 @@ rogueGUI::rogueGUI(const char* URI) {
     }
 
     //osc.setFreq(1.0f);
-    //osc.setSamplerate(OSC_DRAW_WIDTH);
+    osc.setSamplerate(OSC_DRAW_WIDTH);
 
     lfo.setFreq(1.0);
     lfo.setSamplerate(LFO_DRAW_WIDTH);
@@ -464,13 +463,9 @@ void rogueGUI::change_status_bar(uint32_t port, float value) {
 }
 
 void rogueGUI::update_osc(int i, float value) {
+    float t = scales[p_osc1_tone + i * OSC_OFF]->get_value();
     float w = scales[p_osc1_width + i * OSC_OFF]->get_value();
-
-    //osc.setType((int)value);
-    //osc.setParams(p1, p2, w);
-    //osc.reset();
-    //osc.process(oscBuffers[i], OSC_DRAW_WIDTH);
-
+    osc.process((int)value, 1.0f, t, w, w, oscBuffers[i], OSC_DRAW_WIDTH);
     oscWaves[i]->refresh();
 }
 
