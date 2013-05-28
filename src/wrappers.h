@@ -57,7 +57,7 @@ struct Osc {
         } else if (type < 23) {
             osc = &el;
             type = type - 12;
-        } else if (type > 26) {
+        } else if (type < 26) {
             osc = &as;
             type = type - 23;
         } else {
