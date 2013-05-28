@@ -125,7 +125,7 @@ bool Knob::on_expose_event(GdkEventExpose* event) {
         // background
         cr->save();
         Gdk::Cairo::set_source_color(cr, bgColor);
-        cr->arc(xc, yc + radius * 0.2, radius * 1.2, 0, 2.0 * M_PI);
+        cr->arc(xc, yc + radius * 0.1, radius * 1.1, 0, 2.0 * M_PI);
         cr->fill();
         cr->restore();
 
