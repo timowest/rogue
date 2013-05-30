@@ -190,6 +190,13 @@ function el_pulse(x, w) {
   return gb(gpulse(x, w));
 }
 
+function el_pulse2(x, w) {
+  // 0.75
+  var min = 0.5 - 0.5 * w;
+  var max = 0.5 + 0.5 * w;
+  return (x > min && x < max) ? 1 : -1;
+}
+
 function el_pulse_saw(x, w) {
   var x2 = pd(x, w);
   if (x < w) {
@@ -228,6 +235,12 @@ function el_beta1(x, w, t) {
 
 function el_beta2(x, w, t) {
   return mix(el_saw, gpulse, 4.0, x, w, t);
+}
+
+function el_pulse_tri(x, w, t) {
+  var pw = el_pulse2(x, w, t);
+  var tw = el_tri(x, 0.5, t);
+  return t * pw + (1-t) * tw;
 }
 
 // additive synthesis
