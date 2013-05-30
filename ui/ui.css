@@ -42,7 +42,7 @@ td {
 
 .synth {
     background: #c0c0c0;    
-    width: 910px;
+    width: 1040px;
     /*padding: 5px 20px;*/	
 }
 
@@ -122,6 +122,7 @@ td {
     width: 140px;
     height: 60px;
     border: solid 1px #808080;
+    margin: 2px;
 }
 
 .small-wave {
@@ -129,4 +130,5 @@ td {
     width: 90px;
     height: 60px;
     border: solid 1px #808080;
+    margin: 2px;
 }
