@@ -288,7 +288,7 @@ Widget* rogueGUI::createOSC(int i) {
     control(table, "Coarse", p_osc1_coarse + off, 0, 3);
     control(table, "Fine", p_osc1_fine + off, 1, 3);
     control(table, "Ratio", p_osc1_ratio + off, 2, 3);
-    control(table, "Tone", p_osc1_width + off, 3, 3);
+    control(table, "Tone", p_osc1_tone + off, 3, 3);
     control(table, "Width", p_osc1_width + off, 4, 3);
     control(table, "Vol A", p_osc1_level_a + off, 5, 3);
     control(table, "Vol B", p_osc1_level_b + off, 6, 3);
