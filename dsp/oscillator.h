@@ -136,6 +136,8 @@ class AS : public Oscillator {
  */
 class Noise : public Oscillator {
 
+    enum {WHITE, PINK, LP, BP};
+
   public:
     void process(float* output, int samples);
 };
