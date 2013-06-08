@@ -243,6 +243,70 @@ function el_pulse_tri(x, w, t) {
   return t * pw + (1-t) * tw;
 }
 
+// copied from lmms triple oscillator
+function el_exp(x, w, t) {
+  if (x > 0.5) {
+    return -1.0 + 8.0 * (1.0 - x) * (1.0 - x);
+  } else {
+    return -1.0 + 8.0 * x * x;
+  }
+}
+
+// fm
+
+function fm1(x, w, t) {
+  return sin2(x);
+}
+
+function fm2(x, w, t) {
+  return sin2(0.5 * x);
+}
+
+function fm3(x, w, t) {
+  var y = sin2(x);
+  if (x > 0.25 && x < 0.75)
+    return -y;
+  else
+    return y;  
+}
+
+function fm4(x, w, t) {
+  if (x < 0.5)
+    return sin2(2 * x)
+  else
+    return 0;
+}
+
+function fm5(x, w, t) {
+  if (x < 0.5)
+    return fm2(2 * x, w, t)
+  else
+    return 0;
+}
+
+function fm6(x, w, t) {
+  if (x < 0.25)
+    return sin2(2*x, w, t)
+  else if (x > 0.5 && x < 0.75)
+    return sin2(2*(x-0.25), w, t)
+  else
+    return 0;
+}
+
+function fm7(x, w, t) {
+  if (x < 0.25 || x > 0.5 && x < 0.75)
+    return sin2(x, w, t)
+  else
+    return 0;
+}
+
+function fm8(x, w, t) {
+  if (x < 0.25 || x > 0.5 && x < 0.75) 
+    return sin2(x % 0.25, w, t);
+  else
+    return 0;
+}
+
 // additive synthesis
 
 function as_saw(x, w, t) {
