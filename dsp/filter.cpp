@@ -211,27 +211,34 @@ void MoogFilter::compute(float in) {
     for (int i = 0; i < samples; i++) { \
         compute(input[i]); \
         output[i] = x; \
-    } \
-    break
+    }
 
 void MoogFilter::process(float* input, float* output, int samples) {
     switch(type_) {
     case LP24: // 24dB LP
-        MOOG_LOOP(dlout_[4]);
+        MOOG_LOOP(dlout_[4])
+        break;
     case LP18: // 18dB LP
-        MOOG_LOOP(dlout_[3]);
+        MOOG_LOOP(dlout_[3])
+        break;
     case LP12: // 12dB LP
-        MOOG_LOOP(dlout_[2]);
+        MOOG_LOOP(dlout_[2])
+        break;
     case LP6:  // 6db LP
-        MOOG_LOOP(dlout_[1]);
+        MOOG_LOOP(dlout_[1])
+        break;
     case HP24: // 24dB HP
-        MOOG_LOOP(dlout_[0] - dlout_[4]);
+        MOOG_LOOP(dlout_[0] - dlout_[4])
+        break;
     case BP12: // 12db BP
-        MOOG_LOOP(dlout_[4] - dlout_[2]);
+        MOOG_LOOP(dlout_[4] - dlout_[2])
+        break;
     case BP18: // 18/6dB BP
-        MOOG_LOOP(dlout_[3] - dlout_[4]);
+        MOOG_LOOP(dlout_[3] - dlout_[4])
+        break;
     case NOTCH:// NOTCH
-        MOOG_LOOP((dlout_[3] - dlout_[4]) + 2/3 * dlout_[0]);
+        MOOG_LOOP((dlout_[3] - dlout_[4]) + 2/3 * dlout_[0])
+        break;
     }
 }
 
@@ -307,19 +314,22 @@ void StateVariableFilter2::setCoefficients(float fc, float res) {
         v2 += g3 * v3 + g4 * v1z; \
         v0z = v0; \
         output[i] = x; \
-    } \
-    break
+    }
 
 void StateVariableFilter2::process(float* input, float* output, int samples) {
     switch (type) {
     case LP:
         SVF2_LOOP(v2);
+        break;
     case BP:
         SVF2_LOOP(v1);
+        break;
     case HP:
         SVF2_LOOP(v0 - k * v1 - 2);
+        break;
     case NOTCH:
         SVF2_LOOP(v0 - k * v1);
+        break;
     }
 }
 

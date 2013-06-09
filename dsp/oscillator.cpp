@@ -9,8 +9,35 @@
 #include "tables.h"
 
 #define SIN(x) sin_.linear(x)
+
 #define COS(x) cos_.linear(x)
+
 #define CASE(a,b) case a: b(output, samples); break;
+
+#define PHASE_LOOP(calc) \
+    float inc = freq / sample_rate; \
+    for (int i = 0; i < samples; i++) { \
+        calc \
+        phase = fmod(phase + inc, 1.0f); \
+    }
+
+#define PWIDTH_LOOP(calc) \
+    float inc = freq / sample_rate; \
+    float width = wf; \
+    float w_step = (wt - wf) / (float)samples; \
+    for (int i = 0; i < samples; i++) { \
+        calc \
+        phase = fmod(phase + inc, 1.0f); \
+        width += w_step; \
+    }
+
+#define PMOD_LOOP(calc) \
+    float inc = freq / sample_rate; \
+    for (int i = 0; i < samples; i++) { \
+        calc \
+        phase = fmod(phase + inc, 1.0f); \
+        mod += m_step; \
+    }
 
 namespace dsp {
 
@@ -67,23 +94,19 @@ void Virtual::va_pulse(float* output, int samples) {
 // PD
 
 void Virtual::pd_saw(float* output, int samples) {
-    float inc = freq / sample_rate;
     float mod = 0.5f - wf * 0.5;
     float m_step = 0.5f * (wf - wt) / (float)samples;
 
-    for (int i = 0; i < samples; i++) {
+    PMOD_LOOP(
         output[i] = COS(pd(phase, mod));
-        phase = fmod(phase + inc, 1.0f);
-        mod += m_step;
-    }
+    )
 }
 
 void Virtual::pd_square(float* output, int samples) {
-    float inc = freq / sample_rate;
     float mod = 0.5f - wf * 0.5;
     float m_step = 0.5f * (wf - wt) / (float)samples;
 
-    for (int i = 0; i < samples; i++) {
+    PMOD_LOOP(
         float p2;
         if (phase < mod) {
             p2 = phase * 0.5f / mod;
@@ -95,30 +118,24 @@ void Virtual::pd_square(float* output, int samples) {
             p2 = 1.0f;
         }
         output[i] = COS(p2);
-        phase = fmod(phase + inc, 1.0f);
-        mod += m_step;
-    }
+    )
 }
 
 void Virtual::pd_pulse(float* output, int samples) {
-    float inc = freq / sample_rate;
     float mod = 1.0f - wf;
     float m_step = (wf - wt) / (float)samples;
 
-    for (int i = 0; i < samples; i++) {
+    PMOD_LOOP(
         float p2 = phase < mod ? phase / mod : 1.0f;
         output[i] = COS(p2);
-        phase = fmod(phase + inc, 1.0f);
-        mod += m_step;
-    }
+    )
 }
 
 void Virtual::pd_double_sine(float* output, int samples) {
-    float inc = freq / sample_rate;
     float mod = 1.0f - wf;
     float m_step = (wf - wt) / (float)samples;
 
-    for (int i = 0; i < samples; i++) {
+    PMOD_LOOP(
         float p2 = 0;
         if (phase < 0.5f) {
             p2 = 2.0f * phase;
@@ -127,17 +144,14 @@ void Virtual::pd_double_sine(float* output, int samples) {
             if (p2 < 0) p2 = 0;
         }
         output[i] = COS(p2);
-        phase = fmod(phase + inc, 1.0f);
-        mod += m_step;
-    }
+    )
 }
 
 void Virtual::pd_saw_pulse(float* output, int samples) {
-    float inc = freq / sample_rate;
     float mod = 1.0f - wf;
     float m_step = (wf - wt) / (float)samples;
 
-    for (int i = 0; i < samples; i++) {
+    PMOD_LOOP(
         float p2 = 0;
         if (phase < 0.5f) {
             p2 = phase;
@@ -146,87 +160,57 @@ void Virtual::pd_saw_pulse(float* output, int samples) {
             if (p2 < 0) p2 = 0;
         }
         output[i] = COS(p2);
-        phase = fmod(phase + inc, 1.0f);
-        mod += m_step;
-    }
+    )
 }
 
 void Virtual::pd_res1(float* output, int samples) {
-    float inc = freq / sample_rate;
     float mod = expf(wf * 6.0f * (float)M_LN2);
     float modt = expf(wt * 6.0f * (float)M_LN2);
     float m_step = (modt - mod) / (float)samples;
 
-    for (int i = 0; i < samples; i++) {
+    PMOD_LOOP(
         float p2 = fmod(mod * phase, 1.0f);
         float window = 1.0f - phase;
         output[i] = 1.0f - window * (1.0 - COS(p2));
-        phase = fmod(phase + inc, 1.0f);
-        mod += m_step;
-    }
+    )
 }
 
 void Virtual::pd_res2(float* output, int samples) {
-    float inc = freq / sample_rate;
     float mod = expf(wf * 6.0f * (float)M_LN2);
     float modt = expf(wt * 6.0f * (float)M_LN2);
     float m_step = (modt - mod) / (float)samples;
 
-    for (int i = 0; i < samples; i++) {
+    PMOD_LOOP(
         float p2 = fmod(mod * phase, 1.0f);
         float window = phase < 0.5f ? 2.0f * phase : 2.0f * (1.0f - phase);
         output[i] = 1.0f - window * (1.0 - COS(p2));
-        phase = fmod(phase + inc, 1.0f);
-        mod += m_step;
-    }
+    )
 }
 
 void Virtual::pd_res3(float* output, int samples) {
-    float inc = freq / sample_rate;
     float mod = expf(wf * 6.0f * (float)M_LN2);
     float modt = expf(wt * 6.0f * (float)M_LN2);
     float m_step = (modt - mod) / (float)samples;
 
-    for (int i = 0; i < samples; i++) {
+    PMOD_LOOP(
         float p2 = fmod(mod * phase, 1.0f);
         float window = phase < 0.5f ? 1.0f : 2.0f * (1.0f - phase);
         output[i] = 1.0f - window * (1.0 - COS(p2));
-        phase = fmod(phase + inc, 1.0f);
-        mod += m_step;
-    }
+    )
 }
 
 void Virtual::pd_half_sine(float* output, int samples) {
-    float inc = freq / sample_rate;
     float mod = 0.5f + wf * 0.5;
     float m_step = 0.5f * (wt - wf) / (float)samples;
 
-    for (int i = 0; i < samples; i++) {
+    PMOD_LOOP(
         output[i] = gb(SIN(0.5f * pd(phase, mod)));
         phase = fmod(phase + inc, 1.0f);
         mod += m_step;
-    }
+    )
 }
 
 // EL
-
-
-#define PHASE_LOOP(calc) \
-    float inc = freq / sample_rate; \
-    for (int i = 0; i < samples; i++) { \
-        calc \
-        phase = fmod(phase + inc, 1.0f); \
-    }
-
-#define PWIDTH_LOOP(calc) \
-    float inc = freq / sample_rate; \
-    float width = wf; \
-    float w_step = (wt - wf) / (float)samples; \
-    for (int i = 0; i < samples; i++) { \
-        calc \
-        phase = fmod(phase + inc, 1.0f); \
-        width += w_step; \
-    }
 
 // polyblep
 void Virtual::el_saw(float* output, int samples) {
@@ -293,6 +277,7 @@ void Virtual::el_tri3(float* output, int samples) {
 void Virtual::el_pulse(float* output, int samples) {
     float inc2 = freq / sample_rate;
     bool bl = wf > inc2 && wf < (1.0f - inc2);
+
     PWIDTH_LOOP(
         float p2 = phase < width ? 0.0f : 1.0f;
         float mod = 0.0f;
