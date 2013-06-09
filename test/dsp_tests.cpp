@@ -73,6 +73,7 @@ int main() {
 
     dsp::Noise no;
     no.setSamplerate(SR);
+    no.setFreq(440.0f);
 
     dsp::MoogFilter moog;
     moog.setSamplerate(SR);
@@ -112,6 +113,16 @@ int main() {
         as.process(buffer, SIZE);
 
         sprintf(filename, "wavs/as_%i.wav", i);
+        write_wav(filename, buffer);
+    }
+
+    // noise
+    for (int i = 0; i < 4; i++) {
+        no.reset();
+        no.setType(i);
+        no.process(buffer, SIZE);
+
+        sprintf(filename, "wavs/no_%i.wav", i);
         write_wav(filename, buffer);
     }
 

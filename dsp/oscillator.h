@@ -136,9 +136,16 @@ class Noise : public Oscillator {
 
     enum {WHITE, PINK, LP, BP};
 
+    StateVariableFilter2 filter;
+
     float b0 = 0.0f, b1 = 0.0f, b2 = 0.0f;
 
   public:
+    void setSamplerate(float r) {
+        Oscillator::setSamplerate(r);
+        filter.setSamplerate(r);
+    }
+
     void process(float* output, int samples);
 };
 

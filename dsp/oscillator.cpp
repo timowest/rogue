@@ -4,6 +4,7 @@
  * Copyright (C) 2013 Timo Westkämper
  */
 
+#include "filter.h"
 #include "oscillator.h"
 #include "phase.h"
 #include "tables.h"
@@ -573,8 +574,9 @@ void Noise::process(float* output, int samples) {
         output[i] =  (2.0f * rand() / (RAND_MAX + 1.0f) - 1.0f);
     }
 
-    switch (type) {
-    case PINK:
+    if (type == PINK) {
+        // Paul Kellet's pink noise
+        // http://musicdsp.org/files/pink.txt
         for (int i = 0; i < samples; i++) {
             float white = output[i];
             b0 = 0.99765 * b0 + white * 0.0990460;
@@ -582,13 +584,14 @@ void Noise::process(float* output, int samples) {
             b2 = 0.57000 * b2 + white * 1.0526913;
             output[i] = b0 + b1 + b2 + white * 0.1848;
         }
-        break;
-    case LP:
-        // TODO
-        break;
-    case BP:
-        // TODO
-        break;
+    } else if (type == LP) {
+        filter.setType(0);
+        filter.setCoefficients(freq, wf);
+        filter.process(output, output, samples);
+    } else if (type == BP) {
+        filter.setType(2);
+        filter.setCoefficients(freq, wf);
+        filter.process(output, output, samples);
     }
 }
 
