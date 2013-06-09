@@ -44,78 +44,75 @@ class Oscillator {
     virtual void process(float* output, int samples) = 0;
 };
 
-/**
- * Phase Distortion
- *
- * Implements the waveforms of Casio CZ synths
+/** Virtual
+ *  Analog - Minimoog waveform models
+ *  Phase Distortion - Casio CZ sounds
+ *  Electronic - various
+ *  FM - OPL FM sounds
  */
-class PD : public Oscillator {
 
-    enum {SAW, SQUARE, PULSE, DOUBLE_SINE, SAW_PULSE, RES1, RES2, RES3, HALF_SINE};
-
-  public:
-    void saw(float* output, int samples);
-    void square(float* output, int samples);
-    void pulse(float* output, int samples);
-    void double_sine(float* output, int samples);
-    void saw_pulse(float* output, int samples);
-    void res1(float* output, int samples);
-    void res2(float* output, int samples);
-    void res3(float* output, int samples);
-    void half_sine(float* output, int samples);
-    void process(float* output, int samples);
-
-};
-
-// TODO sync saw, sync square
-
-/**
- * Electronic
- */
-class EL : public Oscillator {
-
-    enum {SAW, DOUBLE_SAW, TRI, TRI2, TRI3, PULSE, PULSE_SAW, SLOPE, ALPHA1, ALPHA2};
-
-  public:
-    void saw(float* output, int samples);
-    void double_saw(float* output, int samples);
-    void tri(float* output, int samples);
-    void tri2(float* output, int samples);
-    void tri3(float* output, int samples);
-    void pulse(float* output, int samples);
-    void pulse_saw(float* output, int samples);
-    void slope(float* output, int samples);
-    void alpha1(float* output, int samples);
-    void alpha2(float* output, int samples);
-    void process(float* output, int samples);
-};
-
-
-// TODO JP8000 tri mod, supersaw
-
-/**
- * Virtual Analog
- */
-class VA : public Oscillator {
-
-    enum {SAW, TRI_SAW, PULSE};
+class Virtual : public Oscillator {
 
     float prev = 0.0f;
-    EL el;
+
+    // 34
+    enum {VA_SAW, VA_TRI_SAW, VA_PULSE,
+          PD_SAW, PD_SQUARE, PD_PULSE, PD_DOUBLE_SINE, PD_SAW_PULSE, PD_RES1, PD_RES2, PD_RES3, PD_HALF_SINE,
+          EL_SAW, EL_DOUBLE_SAW, EL_TRI, EL_TRI2, EL_TRI3, EL_PULSE, EL_PULSE_SAW, EL_SLOPE, EL_ALPHA1, EL_ALPHA2,
+          EL_BETA1, EL_BETA2, EL_PULSE_TRI, EL_EXP,
+          FM1, FM2, FM3, FM4, FM5, FM6, FM7, FM8
+    };
 
   public:
-    void setSamplerate(float r) {
-        Oscillator::setSamplerate(r);
-        el.setSamplerate(r);
-    }
+    // VA
+    void va_highpass(float* output, int samples);
+    void va_saw(float* output, int samples);
+    void va_tri_saw(float* output, int samples);
+    void va_pulse(float* output, int samples);
 
-    void highpass(float* output, int samples);
-    void saw(float* output, int samples);
-    void tri_saw(float* output, int samples);
-    void pulse(float* output, int samples);
+    // PD
+    void pd_saw(float* output, int samples);
+    void pd_square(float* output, int samples);
+    void pd_pulse(float* output, int samples);
+    void pd_double_sine(float* output, int samples);
+    void pd_saw_pulse(float* output, int samples);
+    void pd_res1(float* output, int samples);
+    void pd_res2(float* output, int samples);
+    void pd_res3(float* output, int samples);
+    void pd_half_sine(float* output, int samples);
+
+    // EL
+    void el_saw(float* output, int samples);
+    void el_double_saw(float* output, int samples);
+    void el_tri(float* output, int samples);
+    void el_tri2(float* output, int samples);
+    void el_tri3(float* output, int samples);
+    void el_pulse(float* output, int samples);
+    void el_pulse2(float* output, int samples);
+    void el_pulse_saw(float* output, int samples);
+    void el_slope(float* output, int samples);
+    void el_alpha1(float* output, int samples);
+    void el_alpha2(float* output, int samples);
+    void el_beta1(float* output, int samples);
+    void el_beta2(float* output, int samples);
+    void el_pulse_tri(float* output, int samples);
+    void el_exp(float* output, int samples);
+
+    // FM
+    void fm1(float* output, int samples);
+    void fm2(float* output, int samples);
+    void fm3(float* output, int samples);
+    void fm4(float* output, int samples);
+    void fm5(float* output, int samples);
+    void fm6(float* output, int samples);
+    void fm7(float* output, int samples);
+    void fm8(float* output, int samples);
+
     void process(float* output, int samples);
 
 };
+
+// TODO JP8000 tri mod, supersaw
 
 /**
  * Additive Synthesis
@@ -128,6 +125,7 @@ class AS : public Oscillator {
     void saw(float* output, int samples);
     void square(float* output, int samples);
     void impulse(float* output, int samples);
+
     void process(float* output, int samples);
 };
 

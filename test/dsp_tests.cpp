@@ -63,17 +63,9 @@ int main() {
     float buffer[SIZE];
     float buffer2[SIZE];
 
-    dsp::VA va;
+    dsp::Virtual va;
     va.setSamplerate(SR);
     va.setFreq(440.0f);
-
-    dsp::PD pd;
-    pd.setSamplerate(SR);
-    pd.setFreq(440.0f);
-
-    dsp::EL el;
-    el.setSamplerate(SR);
-    el.setFreq(440.0f);
 
     dsp::AS as;
     as.setSamplerate(SR);
@@ -104,32 +96,12 @@ int main() {
     dsp::AHDSR env;
 
     // va
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 34; i++) {
         va.reset();
         va.setType(i);
         va.process(buffer, SIZE);
 
         sprintf(filename, "wavs/va_%i.wav", i);
-        write_wav(filename, buffer);
-    }
-
-    // pd
-    for (int i = 0; i < 9; i++) {
-        pd.reset();
-        pd.setType(i);
-        pd.process(buffer, SIZE);
-
-        sprintf(filename, "wavs/pd_%i.wav", i);
-        write_wav(filename, buffer);
-    }
-
-    // el
-    for (int i = 0; i < 10; i++) {
-        el.reset();
-        el.setType(i);
-        el.process(buffer, SIZE);
-
-        sprintf(filename, "wavs/el_%i.wav", i);
         write_wav(filename, buffer);
     }
 

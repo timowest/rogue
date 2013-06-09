@@ -14,15 +14,12 @@
 namespace rogue {
 
 struct Osc {
-    dsp::VA va;
-    dsp::PD pd;
-    dsp::EL el;
+    dsp::Virtual virt;
     dsp::AS as;
     dsp::Noise noise;
     float buffer[BUFFER_SIZE];
     float prev_level;
     float width_prev = 0.5f;
-    dsp::Oscillator* oscs[5];
 
     void reset() {
         width_prev = 0.5;
@@ -30,39 +27,27 @@ struct Osc {
     }
 
     void resetPhase() {
-        for (int i = 0; i < 5; i++) {
-            oscs[i]->reset();
-        }
+        virt.reset();
+        as.reset();
+        noise.reset();
     }
 
     void setSamplerate(float r) {
-        oscs[0] = &va;
-        oscs[1] = &pd;
-        oscs[2] = &el;
-        oscs[3] = &as;
-        oscs[4] = &noise;
-
-        for (int i = 0; i < 5; i++) {
-            oscs[i]->setSamplerate(r);
-        }
+        virt.setSamplerate(r);
+        as.setSamplerate(r);
+        noise.setSamplerate(r);
     }
 
     void process(int type, float freq, float t, float wf, float wt, float* buffer, int samples) {
         dsp::Oscillator* osc;
-        if (type < 3) {
-            osc = &va;
-        } else if (type < 12) {
-            osc = &pd;
-            type = type - 3;
-        } else if (type < 23) {
-            osc = &el;
-            type = type - 12;
-        } else if (type < 26) {
+        if (type < 34) {
+            osc = &virt;
+        } else if (type < 37) {
             osc = &as;
-            type = type - 23;
+            type = type - 34;
         } else {
             osc = &noise;
-            type = type - 26;
+            type = type - 37;
         }
         osc->setType(type);
         osc->setFreq(freq);

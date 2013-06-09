@@ -279,7 +279,7 @@ function fm4(x, w, t) {
 
 function fm5(x, w, t) {
   if (x < 0.5)
-    return fm2(2 * x, w, t)
+    return sin2(x)
   else
     return 0;
 }
