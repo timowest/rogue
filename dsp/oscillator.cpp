@@ -233,7 +233,6 @@ void Virtual::el_double_saw(float* output, int samples) {
         if (phase < width) {
             float inc2 = inc / width;
             p2 = phase / width;
-
             if (p2 < inc2) { // start
                 mod = polyblep(p2 / inc2);
             } else if (p2 > (1.0f - inc2)) { // end
@@ -242,7 +241,6 @@ void Virtual::el_double_saw(float* output, int samples) {
         } else {
             float inc2 = inc / (1.0f - width);
             p2 = (phase - width) / (1.0f - width);
-
             if (p2 < inc2) {
                 mod = polyblep(p2 / inc2);
             } else if (p2 > (1.0f - inc2)) {
@@ -281,7 +279,6 @@ void Virtual::el_pulse(float* output, int samples) {
     PWIDTH_LOOP(
         float p2 = phase < width ? 0.0f : 1.0f;
         float mod = 0.0f;
-
         if (bl) {
             if (phase < width) {
                 if (phase < inc) { // start
@@ -329,7 +326,6 @@ void Virtual::el_slope(float* output, int samples) {
     PWIDTH_LOOP(
         float p2 = gvslope(phase, width);
         float mod = 0.0f;
-
         float inc2 = inc / (1.0f - width);
         if (phase < inc) {               // start
             mod = polyblep(phase / inc);
@@ -340,7 +336,6 @@ void Virtual::el_slope(float* output, int samples) {
         } else if (phase > width && p2 < inc2) {
             mod = width * polyblep(p2 / inc2);
         }
-
         output[i] = gb(p2 - mod);
     )
 }
