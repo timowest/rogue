@@ -572,6 +572,24 @@ void Noise::process(float* output, int samples) {
     for (int i = 0; i < samples; i++) {
         output[i] =  (2.0f * rand() / (RAND_MAX + 1.0f) - 1.0f);
     }
+
+    switch (type) {
+    case PINK:
+        for (int i = 0; i < samples; i++) {
+            float white = output[i];
+            b0 = 0.99765 * b0 + white * 0.0990460;
+            b1 = 0.96300 * b1 + white * 0.2965164;
+            b2 = 0.57000 * b2 + white * 1.0526913;
+            output[i] = b0 + b1 + b2 + white * 0.1848;
+        }
+        break;
+    case LP:
+        // TODO
+        break;
+    case BP:
+        // TODO
+        break;
+    }
 }
 
 // TODO pink noise

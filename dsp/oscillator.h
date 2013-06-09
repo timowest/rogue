@@ -53,8 +53,6 @@ class Oscillator {
 
 class Virtual : public Oscillator {
 
-    float prev = 0.0f;
-
     // 34
     enum {VA_SAW, VA_TRI_SAW, VA_PULSE,
           PD_SAW, PD_SQUARE, PD_PULSE, PD_DOUBLE_SINE, PD_SAW_PULSE, PD_RES1, PD_RES2, PD_RES3, PD_HALF_SINE,
@@ -62,6 +60,8 @@ class Virtual : public Oscillator {
           EL_BETA1, EL_BETA2, EL_PULSE_TRI, EL_EXP,
           FM1, FM2, FM3, FM4, FM5, FM6, FM7, FM8
     };
+
+    float prev = 0.0f;
 
   public:
     // VA
@@ -135,6 +135,8 @@ class AS : public Oscillator {
 class Noise : public Oscillator {
 
     enum {WHITE, PINK, LP, BP};
+
+    float b0 = 0.0f, b1 = 0.0f, b2 = 0.0f;
 
   public:
     void process(float* output, int samples);
