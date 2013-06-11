@@ -18,12 +18,21 @@ class Oscillator {
     float tone = 0.5f, wf = 0.5f, wt = 0.5f;
     int type = 0;
 
-    // TODO float* input, float pm, bool sync
+    // audio modulation
+    float* input;
+    float pm;
+    bool sync;
 
   public:
     void setType(int t) { type = t; }
     virtual void setSamplerate(float r) { sample_rate = r; }
     void setFreq(float f) { freq = f; }
+
+    void setModulation(float* _input, float _pm, bool _sync) {
+        input = _input;
+        pm = _pm;
+        sync = _sync;
+    }
 
     void setParams(float _t, float _wf, float _wt) {
         tone = _t;
