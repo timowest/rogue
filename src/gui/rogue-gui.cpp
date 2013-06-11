@@ -76,19 +76,16 @@ class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> >
 
 // checkbox content
 CHARS osc_types[] = {
-        // VA
+        // V
         "VA Saw", "VA Tri Saw", "VA Pulse",
-        // PD
         "PD Saw", "PD Square", "PD Pulse", "PD Double Sine", "PD Saw Pulse", "PD Res 1", "PD Res 2", "PD Res 3", "PD Half Sine",
-        // EL
         "Saw", "Double Saw", "Tri", "Tri 2", "Tri 3", "Pulse", "Pulse Saw", "Slope", "Alpha 1", "Alpha 2",
         "Beta 1", "Beta 2", "Pulse Tri", "Exp",
-        // FM
         "FM 1", "FM 2", "FM 3", "FM 4", "FM 5", "FM 6", "FM 7", "FM 8"
         // AS
         "AS Saw", "AS Square", "AS Impulse",
         // Noise
-        "Noise"};
+        "Noise", "Pink Noise", "LP Noise", "BP Noise"};
 
 CHARS filter_types[] = {"LP 24dB", "LP 18dB", "LP 12dB", "LP 6dB", "HP 24dB",
         "BP 12dB", "BP 18dB", "Notch",
@@ -160,7 +157,7 @@ rogueGUI::rogueGUI(const char* URI) {
         } else if (type != SELECT) {
             std::cout << i << std::endl;
         } else if (i == p_osc1_type || i == p_osc2_type || i == p_osc3_type || i == p_osc4_type) {
-            scales[i] = manage(new SelectBox(osc_types, 26));
+            scales[i] = manage(new SelectBox(osc_types, 34 + 3 + 4));
         } else if (i == p_filter1_type || i == p_filter2_type) {
             scales[i] = manage(new SelectBox(filter_types, 12));
         } else if (i == p_filter1_source) {

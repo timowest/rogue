@@ -151,8 +151,13 @@ def main():
             ["level_b"    , 0, 1.0, 0, 0.01],
             ["level"      , 0, 1.0, 0, 0.01],
             
-            ["vel_to_vol" , 0, 1.0, 0, 0.01]] # TODO via matrix           
-    
+            ["vel_to_vol" , 0, 1.0, 0, 0.01], # TODO via matrix           
+            
+            ["input"      , 0, 2, 0, 1],
+            ["pm"         , 0, 1.0, 0, 0.01],
+            ["sync"       , 0, 1,   0, 1], # toggled
+            ["out_mod"    , 0, 3, 0, 1]]    
+            
     dcfs = [["on"         , 0, 1, 0, 1], # toggled
             ["type"       , 0, 11, 0, 1],
             ["source"     , 0, 2, 0, 1],

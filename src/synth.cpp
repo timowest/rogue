@@ -89,6 +89,11 @@ void rogueSynth::update() {
         data.oscs[i].level       = v(p_osc1_level + off);   // scale
 
         data.oscs[i].vel_to_vol  = v(p_osc1_vel_to_vol + off);
+
+        data.oscs[i].input       = v(p_osc1_input + off);
+        data.oscs[i].pm          = v(p_osc1_pm + off);
+        data.oscs[i].sync        = v(p_osc1_sync + off);
+        data.oscs[i].out_mod     = v(p_osc1_out_mod + off);
     }
 
     // filters
