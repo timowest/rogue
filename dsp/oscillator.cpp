@@ -372,11 +372,37 @@ void Virtual::el_alpha2(float* output, int samples) {
 }
 
 void Virtual::el_beta1(float* output, int samples) {
-    // TODO
+    // pulse
+    float f = freq;
+    float p = phase;
+    freq = 2.0f * freq;
+    el_pulse(output, samples);
+
+    // saw
+    phase = p;
+    freq = f;
+    PHASE_LOOP(
+        float pulse = 0.5f * (output[i] + 1.0f);
+        float phase2 = fmod(phase + tone, 1.0f);
+        output[i] = gb(phase * pulse + phase2 * (1.0f - pulse));
+    )
 }
 
 void Virtual::el_beta2(float* output, int samples) {
-    // TODO
+    // pulse
+    float f = freq;
+    float p = phase;
+    freq = 4.0f * freq;
+    el_pulse(output, samples);
+
+    // saw
+    phase = p;
+    freq = f;
+    PHASE_LOOP(
+        float pulse = 0.5f * (output[i] + 1.0f);
+        float phase2 = fmod(phase + tone, 1.0f);
+        output[i] = gb(phase * pulse + phase2 * (1.0f - pulse));
+    )
 }
 
 void Virtual::el_pulse_tri(float* output, int samples) {

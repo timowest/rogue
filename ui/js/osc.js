@@ -226,7 +226,7 @@ function mix(f1, f2, c, x, w, t) {
   var s1 = f1(x, w, t);
   var s2 = f1((x + t) % 1.0, w, t);
   var p = f2((c * x) % 1.0, w, t);
-  return p * s1 + (1-p) * s2;
+  return s1 * p + s2 * (1-p);
 }
 
 function el_beta1(x, w, t) {

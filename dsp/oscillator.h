@@ -18,6 +18,8 @@ class Oscillator {
     float tone = 0.5f, wf = 0.5f, wt = 0.5f;
     int type = 0;
 
+    // TODO float* input, float pm, bool sync
+
   public:
     void setType(int t) { type = t; }
     virtual void setSamplerate(float r) { sample_rate = r; }
