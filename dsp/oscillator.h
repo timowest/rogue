@@ -20,13 +20,24 @@ class Oscillator {
 
     // audio modulation
     float* input;
-    float pm;
+    float pm = 0.0f;
     bool sync;
 
   public:
     void setType(int t) { type = t; }
     virtual void setSamplerate(float r) { sample_rate = r; }
     void setFreq(float f) { freq = f; }
+
+    /** phase modulation */
+    float pmod(float phase, int i) {
+        float phase2 = phase + pm * input[i];
+        if (phase2 < 0.0f) {
+            phase2 += 1.0f;
+        } else if (phase2 > 1.0f) {
+            phase2 -= 1.0f;
+        }
+        return phase2;
+    }
 
     void setModulation(float* _input, float _pm, bool _sync) {
         input = _input;
