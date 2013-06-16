@@ -1,6 +1,7 @@
 #include <gtkmm/main.h>
 #include "lfo.cpp"
 #include "tables.cpp"
+#include "filter.cpp"
 #include "oscillator.cpp"
 #include "gui/rogue-gui.cpp"
 
