@@ -9,6 +9,8 @@
 
 #include "effects.h"
 #include "tables.h"
+#include <stdlib.h>
+#include <math.h>
 
 #define SIN(x) sin_.linear(x)
 
@@ -31,7 +33,7 @@ float Flanger::output(float in, float delay, float feedb) {
         delta += float(MAX_SIZE);
     }
     // get index
-    int index = uint32_t(delta);
+    int index = int(delta);
     // 4 samples hermite
     float y0 = buffer[(index + 0) & MAX_MASK];
     float y1 = buffer[(index + 1) & MAX_MASK];
@@ -136,8 +138,43 @@ void Phaser::process(float* l, float* r, int samples) {
 
 // Delay
 
+void Delay::reset() {
+    for (int i = 0; i < MAX_SIZE; i++) {
+        buffer_l[i] = 0.0f;
+        buffer_r[i] = 0.0f;
+    }
+    out_l = out_r = 0.0f;
+    frames = 0;
+}
+
 void Delay::process(float* l, float* r, int samples) {
-    // TODO
+    if (wet < 1E-9f) {
+        return;
+    }
+    // calculate delay time
+    float delay_time = delay * sample_rate;
+    if (bpm > 0.0f) {
+        delay_time *= 60.f / bpm;
+    }
+    // set integer delay
+    int ndelay = int(delay_time);
+    // clamp
+    if (ndelay < 256) {
+        ndelay = 256;
+    }
+    if (ndelay > MAX_SIZE) {
+        ndelay = MAX_SIZE;
+    }
+    // delay process
+    for (int i = 0; i < samples; ++i) {
+        int j = (frames++) & MAX_MASK;
+        out_l = buffer_l[(j - ndelay) & MAX_MASK];
+        out_r = buffer_r[(j - ndelay) & MAX_MASK];
+        buffer_l[j] = *l + out_l * feedb;
+        buffer_r[j] = *r + out_r * feedb;
+        *l++ += wet * out_l;
+        *r++ += wet * out_r;
+    }
 }
 
 // Reverb

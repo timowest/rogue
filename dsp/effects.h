@@ -25,8 +25,8 @@ class Effect {
 // Flanger
 
 class Flanger {
-    static const uint32_t MAX_SIZE = 4096;  //= (1 << 12);
-    static const uint32_t MAX_MASK = MAX_SIZE - 1;
+    static const int MAX_SIZE = 4096;  //= (1 << 12);
+    static const int MAX_MASK = MAX_SIZE - 1;
 
     float buffer[MAX_SIZE];
     int frames;
@@ -81,10 +81,21 @@ class Phaser : Effect {
 // Delay
 
 class Delay : Effect {
+    static const int MAX_SIZE = 65536; //= (1 << 16);
+    static const int MAX_MASK = MAX_SIZE - 1;
+
+    float wet, delay, feedb, bpm = 0.0f;
+
+    float sample_rate, out_l, out_r;
+    float buffer_l[MAX_SIZE], buffer_r[MAX_SIZE];
+    int frames;
 
   public:
+    void setSamplerate(float rate) { sample_rate = rate; }
+    void reset();
     void process(float* l, float* r, int samples);
 };
+
 
 // Reverb
 
