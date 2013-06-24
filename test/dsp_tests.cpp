@@ -2,7 +2,6 @@
 #include "oscillator.cpp"
 #include "filter.cpp"
 #include "lfo.cpp"
-#include "effects.cpp"
 #include "envelope.cpp"
 #include "tables.cpp"
 

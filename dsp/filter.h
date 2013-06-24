@@ -43,6 +43,7 @@ class OnePole : Filter {
     void clear();
     void setCoefficients(float b0, float a1);
     void setPole(double p);
+    float process(float input);
     void process(float* input, float* output, int samples);
 
   private:
@@ -61,6 +62,7 @@ class OneZero : Filter {
     void clear();
     void setCoefficients(float b0, float b1);
     void setZero(float z);
+    float process(float input);
     void process(float* input, float* output, int samples);
 
   protected:
@@ -82,6 +84,7 @@ class PoleZero : Filter {
     void setCoefficients(float b0, float b1, float a1);
     void setAllpass(float coefficient);
     void setBlockZero(float thePole = 0.99);
+    float process(float input);
     void process(float* input, float* output, int samples);
 
   private:
@@ -99,6 +102,7 @@ class TwoPole : Filter {
   public:
     void clear();
     void setCoefficients(float b0, float a1, float a2);
+    float process(float input);
     void process(float* input, float* output, int samples);
 
   private:
@@ -116,6 +120,7 @@ class TwoZero : Filter {
   public:
     void clear();
     void setCoefficients(float b0, float b1, float b2);
+    float process(float input);
     void process(float* input, float* output, int samples);
 
   private:
@@ -133,6 +138,7 @@ class BiQuad : Filter {
   public:
     void clear();
     void setCoefficients(float b0, float b1, float b2, float a1, float a2);
+    float process(float input);
     void process(float* input, float* output, int samples);
 
   private:

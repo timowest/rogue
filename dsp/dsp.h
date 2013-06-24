@@ -9,7 +9,6 @@
 
 #include "delay.h"
 #include "envelope.h"
-#include "effects.h"
 #include "filter.h"
 #include "lfo.h"
 #include "oscillator.h"

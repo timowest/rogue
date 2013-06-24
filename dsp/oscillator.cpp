@@ -4,7 +4,6 @@
  * Copyright (C) 2013 Timo Westkämper
  */
 
-#include "filter.h"
 #include "oscillator.h"
 #include "phase.h"
 #include "tables.h"

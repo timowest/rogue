@@ -7,6 +7,8 @@
 #ifndef DSP_OSCILLATOR_H
 #define DSP_OSCILLATOR_H
 
+#include "filter.h"
+
 namespace dsp {
 
 /**

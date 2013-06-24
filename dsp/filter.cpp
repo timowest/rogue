@@ -47,6 +47,11 @@ void OnePole::setPole(double p) {
     a1_ = -p;
 }
 
+float OnePole::process(float input) {
+	last_ = b0_ * input - a1_ * last_;
+	return last_;
+}
+
 void OnePole::process(float* input, float* output, int samples) {
     for (int i = 0; i < samples; i++) {
         last_ = b0_ * input[i] - a1_ * last_;
@@ -68,6 +73,12 @@ void OneZero::setCoefficients(float b0, float b1) {
 void OneZero::setZero(float z) {
     b0_ = (z > 0.0) ? (1.0 + z) : (1.0 - z);
     b1_ = -z * b0_;
+}
+
+float OneZero::process(float input) {
+	last_ = b0_ * input + b1_ * prevIn_;
+	prevIn_ = input;
+	return last_;
 }
 
 void OneZero::process(float* input, float* output, int samples) {
@@ -104,6 +115,12 @@ void PoleZero::setBlockZero(float thePole) {
     a1_ = -thePole;
 }
 
+float PoleZero::process(float input) {
+    last_ = b0_ * input + b1_ * prevIn_ - a1_ * last_;
+    prevIn_ = input;
+    return last_;
+}
+
 void PoleZero::process(float* input, float* output, int samples) {
     for (int i = 0; i < samples; i++) {
         last_ = b0_ * input[i] + b1_ * prevIn_ - a1_ * last_;
@@ -122,6 +139,13 @@ void TwoPole::setCoefficients(float b0, float a1, float a2) {
     b0_ = b0;
     a1_ = a1;
     a2_ = a2;
+}
+
+float TwoPole::process(float input) {
+	float temp = last_;
+	last_ = b0_ * input - a1_ * last_ - a2_ * last__;
+	last__ = temp;
+	return last_;
 }
 
 void TwoPole::process(float* input, float* output, int samples) {
@@ -145,6 +169,13 @@ void TwoZero::setCoefficients(float b0, float b1, float b2) {
     b2_ = b2;
 }
 
+float TwoZero::process(float input) {
+	last_ = b0_ * input + b1_ * prevIn_ + b2_ * prevIn__;
+	prevIn__ = prevIn_;
+	prevIn_ = input;
+	return last_;
+}
+
 void TwoZero::process(float* input, float* output, int samples) {
     for (int i = 0; i < samples; i++) {
         last_ = b0_ * input[i] + b1_ * prevIn_ + b2_ * prevIn__;
@@ -166,6 +197,16 @@ void BiQuad::setCoefficients(float b0, float b1, float b2, float a1, float a2) {
     b2_ = b2;
     a1_ = a1;
     a2_ = a2;
+}
+
+float BiQuad::process(float input) {
+	float temp = last_;
+	last_ = b0_ * input + b1_ * prevIn_ + b2_ * prevIn__;
+	last_ -= a1_ * temp + a2_ * last__;
+	prevIn__ = prevIn_;
+	prevIn_ = input;
+	last__ = temp;
+	return last_;
 }
 
 void BiQuad::process(float* input, float* output, int samples) {
