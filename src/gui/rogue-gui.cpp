@@ -82,7 +82,7 @@ CHARS osc_types[] = {
         "PD Saw", "PD Square", "PD Pulse", "PD Double Sine", "PD Saw Pulse", "PD Res 1", "PD Res 2", "PD Res 3", "PD Half Sine",
         "Saw", "Double Saw", "Tri", "Tri 2", "Tri 3", "Pulse", "Pulse Saw", "Slope", "Alpha 1", "Alpha 2",
         "Beta 1", "Beta 2", "Pulse Tri", "Exp",
-        "FM 1", "FM 2", "FM 3", "FM 4", "FM 5", "FM 6", "FM 7", "FM 8"
+        "FM 1", "FM 2", "FM 3", "FM 4", "FM 5", "FM 6", "FM 7", "FM 8",
         // AS
         "AS Saw", "AS Square", "AS Impulse",
         // Noise
