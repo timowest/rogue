@@ -165,7 +165,7 @@ rogueGUI::rogueGUI(const char* URI) {
         } else if (i == p_filter2_source) {
             scales[i] = manage(new SelectBox(filter2_sources, 3));
         } else if (i == p_lfo1_type || i == p_lfo2_type || i == p_lfo3_type) {
-            scales[i] = manage(new SelectBox(lfo_types, 6));
+            scales[i] = manage(new SelectBox(lfo_types, 5));
         } else if (i == p_lfo1_reset_type || i == p_lfo2_reset_type || i == p_lfo3_reset_type) {
             scales[i] = manage(new SelectBox(lfo_reset_types, 3));
         } else if (i >= p_mod1_src || i <= p_mod20_amount) {
