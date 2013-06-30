@@ -40,6 +40,7 @@ class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> >
     Widget* createLFO(int i);
     Widget* createEnv(int i);
     Widget* createMain();
+    Widget* createEffects();
     Widget* createModulation();
     Widget* smallFrame(const char* label, Table* content);
     Widget* frame(const char* label, int toggle, Table* content);
@@ -247,6 +248,7 @@ rogueGUI::rogueGUI(const char* URI) {
     Table* table = manage(new Table(4, 3));
     // main
     table->attach(*createMain(), 1, 2, 0, 1);
+    table->attach(*createEffects(), 2, 3, 0, 1);
     // oscs
     table->attach(*createOSC(0), 0, 1, 1, 2);
     table->attach(*createOSC(1), 1, 2, 1, 2);
@@ -377,6 +379,46 @@ Widget* rogueGUI::createMain() {
     return table;
 }
 
+Widget* rogueGUI::createEffects() {
+	Notebook* effects = manage(new Notebook());
+    // chorus - t, width, rate, blend, feedfoward, feedback
+	Table* chorus = manage(new Table(2, 6));
+	control(chorus, "T", p_chorus_t, 0, 1);
+	control(chorus, "Width", p_chorus_width, 1, 1);
+	control(chorus, "Rate", p_chorus_rate, 2, 1);
+	control(chorus, "Blend", p_chorus_blend, 3, 1);
+	control(chorus, "Feedfoward", p_chorus_feedforward, 4, 1);
+	control(chorus, "Feedback", p_chorus_feedback, 5, 1);
+	effects->append_page(*frame("Chorus", p_chorus_on, chorus), "Chorus");
+
+	// phaser - rate, depth, spread, resonance
+	Table* phaser = manage(new Table(2, 4));
+	control(phaser, "Rate", p_phaser_rate, 0, 1);
+	control(phaser, "Depth", p_phaser_depth, 1, 1);
+	control(phaser, "Spread", p_phaser_spread, 2, 1);
+	control(phaser, "Resonance", p_phaser_resonance, 3, 1);
+	effects->append_page(*frame("Phaser", p_phaser_on, phaser), "Phaser");
+
+	// delay - bpm, divider, feedback, dry, blend, tune
+	Table* delay = manage(new Table(2, 6));
+	control(delay, "BPM", p_delay_bpm, 0, 1);
+	control(delay, "Divider", p_delay_divider, 1, 1);
+	control(delay, "Feedback", p_delay_feedback, 2, 1);
+	control(delay, "Dry", p_delay_dry, 3, 1);
+	control(delay, "Blend", p_delay_blend, 4, 1);
+	control(delay, "Tune", p_delay_tune, 5, 1);
+	effects->append_page(*frame("Delay", p_delay_on, delay), "Delay");
+
+	// reverb - bandwidth, tail, damping, blend
+	Table* reverb = manage(new Table(2, 4));
+	control(reverb, "Bandwidth", p_reverb_bandwidth, 0, 1);
+	control(reverb, "Tail", p_reverb_tail, 1, 1);
+	control(reverb, "Damping", p_reverb_damping, 2, 1);
+	control(reverb, "Blend", p_reverb_blend, 3, 1);
+	effects->append_page(*frame("Reverb", p_reverb_on, reverb), "Reverb");
+	return effects;
+}
+
 
 Widget* rogueGUI::createModulation() {
     Table* table1 = manage(new Table(5, 6));
@@ -438,7 +480,7 @@ Widget* rogueGUI::frame(const char* label, int toggle, Table* content) {
     content->set_col_spacings(5);
     content->set_spacings(2);
 
-    Panel* panel = manage(new Panel(label, scales[toggle]->get_widget(), content));
+    Panel* panel = manage(new Panel(label, scales[toggle]->get_widget(), align(content)));
 
     Alignment* alignment = manage(new Alignment(0.0, 0.0, 1.0, 0.0));
     alignment->add(*panel);

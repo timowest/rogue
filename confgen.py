@@ -114,11 +114,11 @@ def ttl_control(idx, symbol, name, min, max, default):
 
 def port_meta(symbol, min, max, default, step):
     type = "KNOB"
-    if (min == 0 and max == 1 and isinstance(max, int) and default == 0):
+    if (min == 0 and max == 1 and isinstance(max, int) and default == 0 and step == 1):
         type = "TOGGLE"
     elif "_tracking" in symbol:
         type = "TOGGLE"
-    elif (min == 0 and isinstance(max, int)):
+    elif (min == 0 and isinstance(max, int) and step == 1):
         type = "SELECT"
     elif "_amount" in symbol:
         type = "LABEL"

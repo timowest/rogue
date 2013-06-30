@@ -42,7 +42,7 @@ run:
 	jalv.gtk http://www.github.com/timowest/rogue
 
 clean:
-	rm -rf $(BUNDLE) *.so src/rogue.peg presets.ttl rogue.ttl wavs *.out presets/*
+	rm -rf $(BUNDLE) *.so src/rogue.gen src/gui/config.gen presets.ttl rogue.ttl wavs *.out presets/*
 		
 guitests: src/rogue.gen src/gui/config.gen	
 	$(CXX) -g -std=c++11 src/gui/knob-test.cpp $(GTKMM) -Isrc -o knobtest.out		
