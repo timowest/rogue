@@ -1,10 +1,10 @@
 BUNDLE = lv2-rogue.lv2
 INSTALL_DIR = /usr/local/lib/lv2
 
-SOURCES = dsp/*.cpp src/*.cpp
+SOURCES = dsp/*.cpp src/*.cpp fx/*.cc
 SOURCES_UI = dsp/lfo.cpp dsp/tables.cpp dsp/filter.cpp dsp/oscillator.cpp src/gui/rogue-gui.cpp
 FLAGS = -fPIC -DPIC -std=c++11 
-FAST = -Ofast
+FAST = -Ofast -ffast-math
 LVTK = `pkg-config --cflags --libs lvtk-plugin-1`
 LVTK_UI = `pkg-config --cflags --libs lvtk-ui-1`
 GTKMM = `pkg-config --cflags --libs gtkmm-2.4`
@@ -16,7 +16,7 @@ $(BUNDLE): manifest.ttl rogue.ttl presets.ttl rogue.so rogue-gui.so presets
 	cp -r $^ $(BUNDLE)
 
 rogue.so: $(SOURCES) src/rogue.gen
-	$(CXX) $(FLAGS) $(FAST) -shared $(SOURCES) $(LVTK) -Idsp -Isrc -o $@
+	$(CXX) $(FLAGS) $(FAST) -shared $(SOURCES) $(LVTK) -Idsp -Isrc -Ifx -Ifx/dsp -o $@
 	
 rogue-gui.so: $(SOURCES_UI) src/rogue.gen src/gui/config.gen
 	$(CXX) $(FLAGS) -g -shared $(SOURCES_UI) $(GTKMM) $(LVTK) $(LVTK_UI) -Idsp -Isrc -o $@	

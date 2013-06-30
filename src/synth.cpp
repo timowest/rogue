@@ -22,6 +22,23 @@ rogueSynth::rogueSynth(double rate)
         add_voices(voices[i]);
     }
 
+    ::Plugin* effects[] = {&chorus, &phaser, &delay, &reverb};
+    for (int i = 0; i < 4; i++) {
+    	// instantiate
+    	effects[i]->fs = rate;
+    	effects[i]->over_fs = 1.0/rate;
+    	effects[i]->normal = NOISE_FLOOR;
+    }
+
+    chorus.ports = chorus_ports;
+    chorus.init();
+    phaser.ports = phaser_ports;
+    phaser.init();
+    delay.ports = delay_ports;
+    delay.init();
+    reverb.ports = reverb_ports;
+    reverb.init();
+
     add_audio_outputs(p_left, p_right);
 }
 
@@ -47,7 +64,6 @@ unsigned rogueSynth::find_free_voice(unsigned char key, unsigned char velocity) 
     //TODO: steal quietest note if all voices are used up
     return 0;
 }
-
 
 void rogueSynth::set_volume(float value) {
     for (int v=0; v < NVOICES; v++) {
@@ -158,13 +174,67 @@ void rogueSynth::post_process(uint32_t from, uint32_t to) {
     ldcBlocker.process(left, left, to - from);
     rdcBlocker.process(right, right, to - from);
 
-    // TODO effects
+    if (!effects_activated) {
+        chorus_ports[0] = p(p_chorus_t);
+        chorus_ports[1] = p(p_chorus_width);
+        chorus_ports[2] = p(p_chorus_rate);
+        chorus_ports[3] = p(p_chorus_blend);
+        chorus_ports[4] = p(p_chorus_feedforward);
+        chorus_ports[5] = p(p_chorus_feedback);
+        chorus.activate();
+
+        phaser_ports[2] = p(p_phaser_rate);
+        phaser_ports[3] = p(p_phaser_depth);
+        phaser_ports[4] = p(p_phaser_spread);
+        phaser_ports[5] = p(p_phaser_resonance);
+        phaser.activate();
+
+        delay_ports[1] = p(p_delay_bpm);
+        delay_ports[2] = p(p_delay_divider);
+        delay_ports[3] = p(p_delay_feedback);
+        delay_ports[4] = p(p_delay_dry);
+        delay_ports[5] = p(p_delay_blend);
+        delay_ports[6] = p(p_delay_tune);
+        delay.activate();
+
+        reverb_ports[2] = p(p_reverb_bandwidth);
+        reverb_ports[3] = p(p_reverb_tail);
+        reverb_ports[4] = p(p_reverb_damping);
+        reverb_ports[5] = p(p_reverb_blend);
+        reverb.activate();
+
+    	effects_activated = true;
+    }
 
     // chorus
-
+    if (*p(p_chorus_on) > 0.0) {
+    	chorus_ports[6] = left;
+    	chorus_ports[7] = right;
+    	chorus_ports[8] = left;
+    	chorus_ports[9] = right;
+    	chorus.run(to - from);
+    }
+    // phaser
+    if (*p(p_phaser_on) > 0.0) {
+    	phaser_ports[0] = left;
+    	phaser_ports[1] = right;
+    	phaser_ports[6] = left;
+    	phaser_ports[7] = right;
+    	phaser.run(to - from);
+    }
     // delay
-
+    if (*p(p_delay_on) > 0.0) {
+    	// TODO
+    	//delay.run(to - from);
+    }
     // reverb
+    if (*p(p_reverb_on) > 0.0) {
+    	reverb_ports[0] = left;
+    	reverb_ports[1] = right;
+    	reverb_ports[6] = left;
+    	reverb_ports[7] = right;
+    	reverb.run(to - from);
+    }
 
     // TODO limiter
 }

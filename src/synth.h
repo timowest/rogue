@@ -18,6 +18,14 @@
 #include <lvtk/synth.hpp>
 #include <stdio.h>
 
+// effects
+#include "basics.h"
+#include "Chorus.h"
+#include "Phaser.h"
+#include "Scape.h"
+#include "Reverb.h"
+#include "Descriptor.h"
+
 namespace rogue {
 
 class rogueSynth : public lvtk::Synth<rogueVoice, rogueSynth> {
@@ -47,6 +55,16 @@ class rogueSynth : public lvtk::Synth<rogueVoice, rogueSynth> {
     rogueVoice *voices[NVOICES];
     bool sustain;
     SynthData data;
+
+    StereoChorusII2x2 chorus;
+    float* chorus_ports[10];
+    StereoPhaserII2x2 phaser;
+    float* phaser_ports[8];
+    Scape delay;
+    float* delay_ports[9];
+    Plate2x2 reverb;
+    float* reverb_ports[8];
+    bool effects_activated = false;
 };
 
 }
