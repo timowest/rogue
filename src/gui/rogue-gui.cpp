@@ -248,39 +248,58 @@ rogueGUI::rogueGUI(const char* URI) {
     }
 
     Table* table = manage(new Table(4, 3));
+    table->set_spacings(5);
+
     // main
     table->attach(*createMain(), 1, 2, 0, 1);
+
+    // effects
     table->attach(*createEffects(), 2, 3, 0, 1);
+
     // oscs
-    table->attach(*createOSC(0), 0, 1, 1, 2);
-    table->attach(*createOSC(1), 1, 2, 1, 2);
-    table->attach(*createOSC(2), 0, 1, 2, 3);
-    table->attach(*createOSC(3), 1, 2, 2, 3);
+    Table* oscTable = manage(new Table(2, 2));
+    oscTable->attach(*createOSC(0), 0, 1, 0, 1);
+    oscTable->attach(*createOSC(1), 1, 2, 0, 1);
+    oscTable->attach(*createOSC(2), 0, 1, 1, 2);
+    oscTable->attach(*createOSC(3), 1, 2, 1, 2);
+    Frame* oscFrame = manage(new Frame("Oscillators"));
+    oscFrame->add(*oscTable);
+    table->attach(*oscFrame, 0, 2, 1, 3);
+
     // filters
-    table->attach(*createFilter(0), 2, 3, 1, 2);
-    table->attach(*createFilter(1), 2, 3, 2, 3);
+    Table* filterTable = manage(new Table(2, 1));
+    filterTable->attach(*createFilter(0), 0, 1, 0, 1);
+    filterTable->attach(*createFilter(1), 0, 1, 1, 2);
+    Frame* filterFrame = manage(new Frame("Filters"));
+    filterFrame->add(*filterTable);
+    table->attach(*filterFrame, 2, 3, 1, 3);
+
     // envelopes
     Notebook* envelopes = manage(new Notebook());
     envelopes->set_tab_pos(POS_LEFT);
     for (int i = 0; i < NENV; i++) {
         envelopes->append_page(*createEnv(i), nums[i]);
     }
-    table->attach(*envelopes, 0, 1, 3, 4);
+    Frame* envelopesFrame = manage(new Frame("Envelopes"));
+    envelopesFrame->add(*envelopes);
+    table->attach(*envelopesFrame, 0, 1, 3, 4);
+
     // modulation
     table->attach(*createModulation(), 1, 2, 3, 4);
+
     // lfos
     Notebook* lfos = manage(new Notebook());
     lfos->set_tab_pos(POS_LEFT);
     for (int i = 0; i < NLFO; i++) {
         lfos->append_page(*createLFO(i), nums[i]);
     }
-    table->attach(*lfos, 2, 3, 3, 4);
+    Frame* lfosFrame = manage(new Frame("LFOs"));
+    lfosFrame->add(*lfos);
+    table->attach(*lfosFrame, 2, 3, 3, 4);
 
     mainBox.pack_start(*table);
     mainBox.pack_end(statusbar);
-
     add(*align(&mainBox));
-
     std::cout << "GUI ready" << std::endl;
 }
 
@@ -379,8 +398,11 @@ Widget* rogueGUI::createMain() {
     control(table, "Glide", p_glide_time, 5, 1);
     control(table, "Bend", p_bend_range, 6, 1);
 
+    Frame* mainFrame = manage(new Frame("Main"));
+    mainFrame->add(*align(table));
+
     //return frame(env_labels[i], p_env1_on + off, table);
-    return table;
+    return mainFrame;
 }
 
 Widget* rogueGUI::createEffects() {
@@ -421,7 +443,10 @@ Widget* rogueGUI::createEffects() {
 	control(reverb, "Damping", p_reverb_damping, 2, 1);
 	control(reverb, "Blend", p_reverb_blend, 3, 1);
 	effects->append_page(*frame("Reverb", p_reverb_on, reverb), "R");
-	return effects;
+
+	Frame* effectsFrame = manage(new Frame("Effects"));
+	effectsFrame->add(*effects);
+	return effectsFrame;
 }
 
 
@@ -456,7 +481,10 @@ Widget* rogueGUI::createModulation() {
     mod->set_tab_pos(POS_LEFT);
     mod->append_page(*table1, "1");
     mod->append_page(*table2, "2");
-    return mod;
+
+    Frame* modFrame = manage(new Frame("Modulation"));
+    modFrame->add(*mod);
+    return modFrame;
 }
 
 
