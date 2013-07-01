@@ -102,6 +102,8 @@ CHARS lfo_reset_types[] = {"Poly", "Free", "Mono"};
 
 // labels
 
+CHARS nums[] = {"1", "2", "3", "4", "5", "6"};
+
 CHARS osc_labels[] = {"OSC 1", "OSC 2", "OSC 3", "OSC 4"};
 
 CHARS filter_labels[] = {"Filter 1", "Filter 2"};
@@ -259,16 +261,18 @@ rogueGUI::rogueGUI(const char* URI) {
     table->attach(*createFilter(1), 2, 3, 2, 3);
     // envelopes
     Notebook* envelopes = manage(new Notebook());
+    envelopes->set_tab_pos(POS_LEFT);
     for (int i = 0; i < NENV; i++) {
-        envelopes->append_page(*createEnv(i), env_labels[i]);
+        envelopes->append_page(*createEnv(i), nums[i]);
     }
     table->attach(*envelopes, 0, 1, 3, 4);
     // modulation
     table->attach(*createModulation(), 1, 2, 3, 4);
     // lfos
     Notebook* lfos = manage(new Notebook());
+    lfos->set_tab_pos(POS_LEFT);
     for (int i = 0; i < NLFO; i++) {
-        lfos->append_page(*createLFO(i), lfo_labels[i]);
+        lfos->append_page(*createLFO(i), nums[i]);
     }
     table->attach(*lfos, 2, 3, 3, 4);
 
@@ -381,6 +385,7 @@ Widget* rogueGUI::createMain() {
 
 Widget* rogueGUI::createEffects() {
 	Notebook* effects = manage(new Notebook());
+	effects->set_tab_pos(POS_LEFT);
     // chorus - t, width, rate, blend, feedfoward, feedback
 	Table* chorus = manage(new Table(2, 6));
 	control(chorus, "T", p_chorus_t, 0, 1);
@@ -389,7 +394,7 @@ Widget* rogueGUI::createEffects() {
 	control(chorus, "Blend", p_chorus_blend, 3, 1);
 	control(chorus, "Feedfoward", p_chorus_feedforward, 4, 1);
 	control(chorus, "Feedback", p_chorus_feedback, 5, 1);
-	effects->append_page(*frame("Chorus", p_chorus_on, chorus), "Chorus");
+	effects->append_page(*frame("Chorus", p_chorus_on, chorus), "C");
 
 	// phaser - rate, depth, spread, resonance
 	Table* phaser = manage(new Table(2, 4));
@@ -397,7 +402,7 @@ Widget* rogueGUI::createEffects() {
 	control(phaser, "Depth", p_phaser_depth, 1, 1);
 	control(phaser, "Spread", p_phaser_spread, 2, 1);
 	control(phaser, "Resonance", p_phaser_resonance, 3, 1);
-	effects->append_page(*frame("Phaser", p_phaser_on, phaser), "Phaser");
+	effects->append_page(*frame("Phaser", p_phaser_on, phaser), "P");
 
 	// delay - bpm, divider, feedback, dry, blend, tune
 	Table* delay = manage(new Table(2, 6));
@@ -407,7 +412,7 @@ Widget* rogueGUI::createEffects() {
 	control(delay, "Dry", p_delay_dry, 3, 1);
 	control(delay, "Blend", p_delay_blend, 4, 1);
 	control(delay, "Tune", p_delay_tune, 5, 1);
-	effects->append_page(*frame("Delay", p_delay_on, delay), "Delay");
+	effects->append_page(*frame("Delay", p_delay_on, delay), "D");
 
 	// reverb - bandwidth, tail, damping, blend
 	Table* reverb = manage(new Table(2, 4));
@@ -415,7 +420,7 @@ Widget* rogueGUI::createEffects() {
 	control(reverb, "Tail", p_reverb_tail, 1, 1);
 	control(reverb, "Damping", p_reverb_damping, 2, 1);
 	control(reverb, "Blend", p_reverb_blend, 3, 1);
-	effects->append_page(*frame("Reverb", p_reverb_on, reverb), "Reverb");
+	effects->append_page(*frame("Reverb", p_reverb_on, reverb), "R");
 	return effects;
 }
 
@@ -448,8 +453,9 @@ Widget* rogueGUI::createModulation() {
     }
 
     Notebook* mod = manage(new Notebook());
-    mod->append_page(*table1, "Page 1");
-    mod->append_page(*table2, "Page 2");
+    mod->set_tab_pos(POS_LEFT);
+    mod->append_page(*table1, "1");
+    mod->append_page(*table2, "2");
     return mod;
 }
 
