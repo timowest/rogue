@@ -3,33 +3,48 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QTabWidget>
+#include <QFile>
+#include <QString>
 
-int main(int argc, char *argv[])
-{
+// browser
+
+// main
+
+// effects
+
+void createOscillators(QWidget* parent) {
+	QGridLayout* oscGrid = new QGridLayout(parent);
+	oscGrid->addWidget(new QGroupBox("1"), 1, 1);
+	oscGrid->addWidget(new QGroupBox("2"), 1, 2);
+	oscGrid->addWidget(new QGroupBox("3"), 2, 1);
+	oscGrid->addWidget(new QGroupBox("4"), 2, 2);
+}
+
+void createFilters(QWidget* parent) {
+	QGridLayout* filterGrid = new QGridLayout(parent);
+	filterGrid->addWidget(new QGroupBox("1"), 1, 1);
+	filterGrid->addWidget(new QGroupBox("2"), 2, 1);
+}
+
+// envs
+
+// mod
+
+// lfos
+
+int main(int argc, char *argv[]) {
+	QFile file("src/qt/stylesheet.qss");
+	file.open(QFile::ReadOnly);
+	QString styleSheet = QLatin1String(file.readAll());
     QApplication app(argc, argv);
+    app.setStyleSheet(styleSheet);
+
     QGroupBox browser("Browser"), main("Main"), effects("Effects");
     QGroupBox oscs("Oscillators"), filters("Filters");
     QGroupBox envs("Envelopes"), mod("Modulation"), lfos("LFOs");
 
-    // oscillators
-    QGroupBox osc1("1"), osc2("2"), osc3("3"), osc4("4");
-    QGridLayout oscGrid(&oscs);
-    oscGrid.addWidget(&osc1, 1, 1);
-    oscGrid.addWidget(&osc2, 1, 2);
-    oscGrid.addWidget(&osc3, 2, 1);
-    oscGrid.addWidget(&osc4, 2, 2);
-
-    // filters
-    QGroupBox filter1("1"), filter2("2");
-    QGridLayout filterGrid(&filters);
-    filterGrid.addWidget(&filter1, 1, 1);
-    filterGrid.addWidget(&filter2, 2, 1);
-
-    // tabs
-    QTabWidget effectsTabs(&effects);
-    QTabWidget envsTabs(&envs);
-    QTabWidget modTabs(&mod);
-    QTabWidget lfosTabs(&lfos);
+    createOscillators(&oscs);
+    createFilters(&filters);
 
     // main grid
     QWidget window;
