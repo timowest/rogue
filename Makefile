@@ -8,6 +8,7 @@ FAST = -Ofast -ffast-math
 LVTK = `pkg-config --cflags --libs lvtk-plugin-1`
 LVTK_UI = `pkg-config --cflags --libs lvtk-ui-1`
 GTKMM = `pkg-config --cflags --libs gtkmm-2.4`
+QT = `pkg-config --cflags --libs QtGui` 
 SNDFILE = -lsndfile
 
 $(BUNDLE): manifest.ttl rogue.ttl presets.ttl rogue.so rogue-gui.so presets
@@ -49,6 +50,9 @@ guitests: src/rogue.gen src/gui/config.gen
 	$(CXX) -g -std=c++11 src/gui/label-test.cpp $(GTKMM) -Isrc -o labeltest.out
 	$(CXX) -g -std=c++11 src/gui/wavedraw-test.cpp $(GTKMM) -Isrc -o wavedrawtest.out
 	$(CXX) -g -std=c++11 src/gui/rogue-gui-test.cpp $(GTKMM) $(LVTK_UI) -Idsp -Isrc -o guitest.out	
+	
+qt:
+	$(CXX) -g -std=c++11 src/qt/test.cpp $(QT) -o qttest.out 
 	
 tests: src/rogue.gen
 	$(CXX) -g -std=c++11 test/dsp_tests.cpp $(SNDFILE) $(FAST) -Idsp -o dsp_tests.out
