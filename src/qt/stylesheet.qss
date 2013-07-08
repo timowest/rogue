@@ -4,5 +4,17 @@ QWidget {
 
 QGroupBox {
   background: rgb(240, 240, 240);
+  padding-top: 10px;
   font-weight: bold;
+  spacing: 20;
+  border: 1px solid rgb(240, 240, 240);
+  border-radius: 5px;
+}
+
+QGroupBox::title {
+  padding: 2px;
+}
+
+ QTabWidget::pane {
+  background: rgb(255, 255, 255);
 }
