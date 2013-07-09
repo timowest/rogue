@@ -2,10 +2,42 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QDial>
+#include <QPainter>
 #include <QLabel>
 #include <QTabWidget>
 #include <QFile>
 #include <QString>
+
+// TODO get pen and brush color from stylesheet
+class CustomDial : public QDial {
+    QPainter::RenderHint paintFlags = QPainter::RenderHint(QPainter::Antialiasing
+            | QPainter::SmoothPixmapTransform
+            || QPainter::HighQualityAntialiasing);
+
+  protected:
+    void paintEvent(QPaintEvent *pe) {
+        static const int FULL = 5760;
+        static const int HALF = 2880;
+        float min = minimum();
+        float max = maximum();
+        float pos = (value() - min) / (max - min);
+
+        QPainter painter(this);
+        painter.setRenderHints(paintFlags);
+        int width = this->width();
+        int height = this->height();
+
+        // circle
+        painter.setPen(QPen(QBrush("#ccc"), 1));
+        painter.setBrush(QBrush(QColor("#ccc")));
+        painter.drawEllipse(6, 6, width - 12, height - 12);
+
+        // arc
+        painter.setPen(QPen(QBrush("#666"), 3));
+        painter.drawArc(2, 2, width - 4, height - 4, 1.125 * HALF, -pos * 1.25 * HALF);
+    }
+
+};
 
 class oscDisplay : public QFrame {
   public:
@@ -42,7 +74,10 @@ class envDisplay : public QFrame {
 class rogueGui : public QWidget {
 
     QDial* createDial() {
-        QDial* dial = new QDial();
+        QDial* dial = new CustomDial();
+        dial->setMinimum(-50);
+        dial->setMaximum(50);
+        dial->setValue(0);
         dial->setFixedSize(35, 35);
         return dial;
     }
