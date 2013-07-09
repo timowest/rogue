@@ -1,13 +1,15 @@
-QWidget {
-  background: rgb(200, 200, 200);
+#root {
+  background: rgb(180, 180, 180);
 }
 
+/* groupBox */
+
 QGroupBox {
-  background: rgb(240, 240, 240);
+  background: rgb(220, 220, 220);
   padding-top: 10px;
   font-weight: bold;
   spacing: 20;
-  border: 1px solid rgb(240, 240, 240);
+  border: 1px solid rgb(220, 220, 220);
   border-radius: 5px;
 }
 
@@ -15,6 +17,86 @@ QGroupBox::title {
   padding: 2px;
 }
 
- QTabWidget::pane {
+QGroupBox QGroupBox {
   background: rgb(255, 255, 255);
+  border: 1px solid rgb(255, 255, 255);
+}
+
+QGroupBox::indicator:checked {
+  image: url(src/qt/check_selected.png); 
+}
+
+QGroupBox::indicator:unchecked {
+  image: url(src/qt/check_unselected.png); 
+}
+
+QGroupBox QGroupBox::title {
+  subcontrol-origin: margin;
+  subcontrol-position: top left;
+}
+
+QGroupBox QGroupBox QLabel {
+  qproperty-alignment: AlignCenter;
+}
+
+QGroupBox QGroupBox QFrame{
+  background: rgb(220, 220, 220);
+  border: solid 1px rgb(180, 180, 180);
+}
+
+QGroupBox QGroupBox QLabel {
+  background: transparent;
+}
+
+QDial {
+  padding: 0;
+  margin: 0;
+}
+
+QLabel {
+  background: transparent;
+}
+
+#oscillators > QLabel, #filters >  QLabel {
+  qproperty-alignment: AlignTop;
+  font-weight: bold;  
+}
+
+#oscillators QGroupBox, #filters QGroupBox {
+  padding-top: -5px;
+}
+
+/* tabs */
+
+QTabWidget {
+  background: transparent;
+}
+
+QTabWidget::pane {
+  background: transparent;
+  border: 0;
+}
+
+QTabBar::tab, QLabel {
+  font-size: 12px;
+}
+
+QTabBar {
+  background: transparent;  
+  padding: 0px;
+  margin: 0px;
+}
+
+QTabBar::tab {
+  background: transparent;  
+  padding: 4px;
+  margin: 2x;
+}
+
+QTabBar::tab:selected {
+  font-weight: bold;
+}
+
+#effects QTabWidget {
+  height: 80px;
 }
