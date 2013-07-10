@@ -2,6 +2,10 @@
   background: rgb(180, 180, 180);
 }
 
+QTabBar::tab, QLabel, QComboBox {
+  font-size: 12px;
+}
+
 /* groupBox */
 
 QGroupBox {
@@ -22,16 +26,20 @@ QGroupBox QGroupBox {
   border: 1px solid rgb(255, 255, 255);
 }
 
-QGroupBox::indicator:checked {
+QGroupBox::indicator:checked, QRadioButton:indicator:checked {
   image: url(src/qt/check_selected.png); 
 }
 
-QGroupBox::indicator:unchecked {
+QGroupBox::indicator:unchecked, QRadioButton:indicator:unchecked {
   image: url(src/qt/check_unselected.png); 
 }
 
 QGroupBox QGroupBox::title {
   subcontrol-origin: margin;
+  subcontrol-position: top right;
+}
+
+#effects QGroupBox::title {
   subcontrol-position: top left;
 }
 
@@ -48,22 +56,53 @@ QGroupBox QGroupBox QLabel {
   background: transparent;
 }
 
-QDial {
-  padding: 0;
-  margin: 0;
-}
-
-QLabel {
-  background: transparent;
-}
-
 #oscillators > QLabel, #filters >  QLabel {
   qproperty-alignment: AlignTop;
   font-weight: bold;  
 }
 
-#oscillators QGroupBox, #filters QGroupBox {
+#oscillators QGroupBox, #filters QGroupBox, #lfos QGroupBox {
   padding-top: -5px;
+}
+
+/* labels */
+
+QLabel {
+  background: transparent;
+}
+
+/* dials */
+
+QDial {
+  padding: 0;
+  margin: 0;
+}
+
+/* push button */
+
+QPushButton {
+  background: transparent;
+  border: none;
+}
+
+QPushButton:pressed {
+  font-weight: bold;
+}
+
+/* combobox */
+
+QComboBox {
+  background: transparent;
+  border: none;
+  max-width: 90px;
+}
+
+QComboBox::down-arrow {
+  image: url(src/qt/arrow_down.png);  
+}
+
+QComboBox::drop-down {
+  /*border: none;*/
 }
 
 /* tabs */
@@ -75,10 +114,6 @@ QTabWidget {
 QTabWidget::pane {
   background: transparent;
   border: 0;
-}
-
-QTabBar::tab, QLabel {
-  font-size: 12px;
 }
 
 QTabBar {

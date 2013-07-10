@@ -2,85 +2,61 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QDial>
+#include <QRadioButton>
+#include <QPushButton>
+#include <QComboBox>
 #include <QPainter>
 #include <QLabel>
 #include <QTabWidget>
 #include <QFile>
 #include <QString>
 
-// TODO get pen and brush color from stylesheet
-class CustomDial : public QDial {
-    QPainter::RenderHint paintFlags = QPainter::RenderHint(QPainter::Antialiasing
-            | QPainter::SmoothPixmapTransform
-            || QPainter::HighQualityAntialiasing);
-
-  protected:
-    void paintEvent(QPaintEvent *pe) {
-        static const int FULL = 5760;
-        static const int HALF = 2880;
-        float min = minimum();
-        float max = maximum();
-        float pos = (value() - min) / (max - min);
-
-        QPainter painter(this);
-        painter.setRenderHints(paintFlags);
-        int width = this->width();
-        int height = this->height();
-
-        // circle
-        painter.setPen(QPen(QBrush("#ccc"), 1));
-        painter.setBrush(QBrush(QColor("#ccc")));
-        painter.drawEllipse(6, 6, width - 12, height - 12);
-
-        // arc
-        painter.setPen(QPen(QBrush("#666"), 3));
-        painter.drawArc(2, 2, width - 4, height - 4, 1.125 * HALF, -pos * 1.25 * HALF);
-    }
-
-};
-
-class oscDisplay : public QFrame {
-  public:
-    oscDisplay() {
-        //setProperty("wave", true);
-        setFixedSize(120, 60);
-    }
-};
-
-class filterDisplay : public QFrame {
-  public:
-    filterDisplay() {
-        //setProperty("wave", true);
-        setFixedSize(120, 60);
-    }
-};
-
-class lfoDisplay : public QFrame {
-  public:
-    lfoDisplay() {
-        //setProperty("wave", true);
-        setFixedSize(100, 60);
-    }
-};
-
-class envDisplay : public QFrame {
-  public:
-    envDisplay() {
-        //setProperty("wave", true);
-        setFixedSize(100, 60);
-    }
-};
+#include "common.h"
+#include "rogue.gen"
+#include "gui/config.gen"
+#include "qt/texts.h"
+#include "qt/widgets.h"
 
 class rogueGui : public QWidget {
 
-    QDial* createDial() {
-        QDial* dial = new CustomDial();
-        dial->setMinimum(-50);
-        dial->setMaximum(50);
-        dial->setValue(0);
+    QDial* createDial(int p) {
+        // TODO connect
+        const port_meta_t& port = p_port_meta[p];
+        float min = port.min / port.step;
+        float max = port.max / port.step;
+        float value = port.default_value / port.step;
+        QDial* dial = new CustomDial(min, max, value);
         dial->setFixedSize(35, 35);
         return dial;
     }
+
+    QRadioButton* createToggle(int p) {
+        // TODO connect
+        QRadioButton* button = new QRadioButton();
+        button->setChecked(p_port_meta[p].default_value > 0.0);
+        return button;
+    }
+
+    QPushButton* createToggle(int p, const char* label) {
+        // TODO connect
+        QPushButton* button = new QPushButton(label);
+        button->setCheckable(true);
+        button->setChecked(p_port_meta[p].default_value > 0.0);
+        return button;
+    }
+
+    QComboBox* createSelect(int p, const char** texts, int size) {
+        // TODO connect
+        QComboBox* box = new QComboBox();
+        for (int i = 0; i < size; i++) {
+            box->addItem(texts[i]);
+        }
+        return box;
+    }
+
+    // TODO toggle label
+
+    // TODO dropdown menu
 
     QWidget* createBrowser(QWidget* parent) {
         return parent;
@@ -90,11 +66,11 @@ class rogueGui : public QWidget {
         parent->setObjectName("main");
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(), 0, 0);
-        grid->addWidget(createDial(), 0, 1);
-        grid->addWidget(createDial(), 0, 2);
-        grid->addWidget(createDial(), 0, 3);
-        grid->addWidget(createDial(), 0, 4);
+        grid->addWidget(createDial(p_volume), 0, 0);
+        grid->addWidget(createDial(p_bus_a_level), 0, 1);
+        grid->addWidget(createDial(p_bus_a_pan), 0, 2);
+        grid->addWidget(createDial(p_bus_b_level), 0, 3);
+        grid->addWidget(createDial(p_bus_b_pan), 0, 4);
         // row 2
         grid->addWidget(new QLabel("Vol"),   1, 0);
         grid->addWidget(new QLabel("Vol A"), 1, 1);
@@ -109,12 +85,12 @@ class rogueGui : public QWidget {
         parent->setCheckable(true);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(), 0, 0);
-        grid->addWidget(createDial(), 0, 1);
-        grid->addWidget(createDial(), 0, 2);
-        grid->addWidget(createDial(), 0, 3);
-        grid->addWidget(createDial(), 0, 4);
-        grid->addWidget(createDial(), 0, 5);
+        grid->addWidget(createDial(p_chorus_t), 0, 0);
+        grid->addWidget(createDial(p_chorus_width), 0, 1);
+        grid->addWidget(createDial(p_chorus_rate), 0, 2);
+        grid->addWidget(createDial(p_chorus_blend), 0, 3);
+        grid->addWidget(createDial(p_chorus_feedforward), 0, 4);
+        grid->addWidget(createDial(p_chorus_feedback), 0, 5);
         // row 2
         grid->addWidget(new QLabel("T"), 1, 0);
         grid->addWidget(new QLabel("Width"), 1, 1);
@@ -130,10 +106,10 @@ class rogueGui : public QWidget {
         parent->setCheckable(true);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(), 0, 0);
-        grid->addWidget(createDial(), 0, 1);
-        grid->addWidget(createDial(), 0, 2);
-        grid->addWidget(createDial(), 0, 3);
+        grid->addWidget(createDial(p_phaser_rate), 0, 0);
+        grid->addWidget(createDial(p_phaser_depth), 0, 1);
+        grid->addWidget(createDial(p_phaser_spread), 0, 2);
+        grid->addWidget(createDial(p_phaser_resonance), 0, 3);
         // row 2
         grid->addWidget(new QLabel("Rate"), 1, 0);
         grid->addWidget(new QLabel("Depth"), 1, 1);
@@ -147,12 +123,12 @@ class rogueGui : public QWidget {
         parent->setCheckable(true);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(), 0, 0);
-        grid->addWidget(createDial(), 0, 1);
-        grid->addWidget(createDial(), 0, 2);
-        grid->addWidget(createDial(), 0, 3);
-        grid->addWidget(createDial(), 0, 4);
-        grid->addWidget(createDial(), 0, 5);
+        grid->addWidget(createDial(p_delay_bpm), 0, 0);
+        grid->addWidget(createDial(p_delay_divider), 0, 1);
+        grid->addWidget(createDial(p_delay_feedback), 0, 2);
+        grid->addWidget(createDial(p_delay_dry), 0, 3);
+        grid->addWidget(createDial(p_delay_blend), 0, 4);
+        grid->addWidget(createDial(p_delay_tune), 0, 5);
         // row 2
         grid->addWidget(new QLabel("BPM"), 1, 0);
         grid->addWidget(new QLabel("Divider"), 1, 1);
@@ -168,10 +144,10 @@ class rogueGui : public QWidget {
         parent->setCheckable(true);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(), 0, 0);
-        grid->addWidget(createDial(), 0, 1);
-        grid->addWidget(createDial(), 0, 2);
-        grid->addWidget(createDial(), 0, 3);
+        grid->addWidget(createDial(p_reverb_bandwidth), 0, 0);
+        grid->addWidget(createDial(p_reverb_tail), 0, 1);
+        grid->addWidget(createDial(p_reverb_damping), 0, 2);
+        grid->addWidget(createDial(p_reverb_blend), 0, 3);
         // row 2
         grid->addWidget(new QLabel("Bandwidth"), 1, 0);
         grid->addWidget(new QLabel("Tail"), 1, 1);
@@ -194,33 +170,45 @@ class rogueGui : public QWidget {
     }
 
     QWidget* createOscillator(QGroupBox* parent, int i) {
+        int off = i * OSC_OFF;
         parent->setCheckable(true);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(new QLabel("Type"), 0, 0, 1, 2);
-        grid->addWidget(new QLabel("Inv"), 0, 2);
-        grid->addWidget(new QLabel("Track"), 0, 3);
+        grid->addWidget(createSelect(p_osc1_type + off, osc_types, 34 + 3 + 4), 0, 0, 1, 2);
+        grid->addWidget(createToggle(p_osc1_inv + off, "Inv"), 0, 2);
+        grid->addWidget(createToggle(p_osc1_tracking + off, "Track"), 0, 3);
+        grid->addWidget(createToggle(p_osc1_sync + off, "Sync"), 0, 4);
         // row 2
-        grid->addWidget(createDial(), 1, 0);
-        grid->addWidget(createDial(), 1, 1);
-        grid->addWidget(createDial(), 1, 2);
-        grid->addWidget(createDial(), 1, 3);
-        grid->addWidget(new oscDisplay(), 1, 4, 2, 3);
+        grid->addWidget(createDial(p_osc1_coarse + off), 1, 0);
+        grid->addWidget(createDial(p_osc1_fine + off), 1, 1);
+        grid->addWidget(createDial(p_osc1_ratio + off), 1, 2);
+        grid->addWidget(createDial(p_osc1_level + off), 1, 3);
+        grid->addWidget(new WaveDisplay(120, 60), 1, 4, 2, 3);
         // row 3
         grid->addWidget(new QLabel("Coarse"), 2, 0);
         grid->addWidget(new QLabel("Fine"), 2, 1);
         grid->addWidget(new QLabel("Ratio"), 2, 2);
         grid->addWidget(new QLabel("Level"), 2, 3);
         // row 4
-        grid->addWidget(createDial(), 3, 0);
-        grid->addWidget(createDial(), 3, 1);
-        grid->addWidget(createDial(), 3, 2);
-        grid->addWidget(createDial(), 3, 3);
+        grid->addWidget(createDial(p_osc1_tone + off), 3, 0);
+        grid->addWidget(createDial(p_osc1_width + off), 3, 1);
+        grid->addWidget(createDial(p_osc1_level_a + off), 3, 2);
+        grid->addWidget(createDial(p_osc1_level_b + off), 3, 3);
+        if (i > 0) {
+            grid->addWidget(createSelect(p_osc1_input + off, nums, i + 1), 3, 4);
+            grid->addWidget(createSelect(p_osc1_out_mod + off, out_mod, 4), 3, 5);
+            grid->addWidget(createDial(p_osc1_pm + off), 3, 6);
+        }
         // row 5
         grid->addWidget(new QLabel("Tone"), 4, 0);
         grid->addWidget(new QLabel("Width"), 4, 1);
         grid->addWidget(new QLabel("Vol A"), 4, 2);
         grid->addWidget(new QLabel("Vol B"), 4, 3);
+        if (i > 0) {
+            grid->addWidget(new QLabel("Input"), 4, 4);
+            grid->addWidget(new QLabel("Mod"), 4, 5);
+            grid->addWidget(new QLabel("PM"), 4, 6);
+        }
         return parent;
     }
 
@@ -243,26 +231,27 @@ class rogueGui : public QWidget {
     }
 
     QWidget* createFilter(QGroupBox* parent, int i) {
+        int off = i * DCF_OFF;
         parent->setCheckable(true);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(new QLabel("Type"), 0, 0, 1, 2);
-        grid->addWidget(new QLabel("Source"), 0, 2, 1, 2);
+        grid->addWidget(createSelect(p_filter1_type + off, filter_types, 12), 0, 0, 1, 2);
+        grid->addWidget(createSelect(p_filter1_source + off, filter_sources, 2 + i), 0, 2, 1, 2);
         // row 2
-        grid->addWidget(createDial(), 1, 0);
-        grid->addWidget(createDial(), 1, 1);
-        grid->addWidget(createDial(), 1, 2);
-        grid->addWidget(createDial(), 1, 3);
-        grid->addWidget(new filterDisplay(), 1, 4, 2, 3);
+        grid->addWidget(createDial(p_filter1_freq + off), 1, 0);
+        grid->addWidget(createDial(p_filter1_q + off), 1, 1);
+        grid->addWidget(createDial(p_filter1_level + off), 1, 2);
+        grid->addWidget(createDial(p_filter1_pan + off), 1, 3);
+        grid->addWidget(new WaveDisplay(120, 60), 1, 4, 2, 3);
         // row 3
         grid->addWidget(new QLabel("Freq"), 2, 0);
         grid->addWidget(new QLabel("Res"), 2, 1);
         grid->addWidget(new QLabel("Vol"), 2, 2);
         grid->addWidget(new QLabel("Pan"), 2, 3);
         // row 4
-        grid->addWidget(createDial(), 3, 0);
-        grid->addWidget(createDial(), 3, 1);
-        grid->addWidget(createDial(), 3, 2);
+        grid->addWidget(createDial(p_filter1_distortion + off), 3, 0);
+        grid->addWidget(createDial(p_filter1_key_to_f + off), 3, 1);
+        grid->addWidget(createDial(p_filter1_vel_to_f + off), 3, 2);
         // row 5
         grid->addWidget(new QLabel("Dist"), 4, 0);
         grid->addWidget(new QLabel("K > F"), 4, 1);
@@ -285,24 +274,25 @@ class rogueGui : public QWidget {
     }
 
     QWidget* createEnv(QGroupBox* parent, int i) {
+        int off = i * ENV_OFF;
         parent->setCheckable(true);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(), 0, 0);
-        grid->addWidget(createDial(), 0, 1);
-        grid->addWidget(createDial(), 0, 2);
-        grid->addWidget(createDial(), 0, 3);
-        grid->addWidget(new envDisplay(), 0, 4, 2, 3);
+        grid->addWidget(createDial(p_env1_attack + off), 0, 0);
+        grid->addWidget(createDial(p_env1_decay + off), 0, 1);
+        grid->addWidget(createDial(p_env1_sustain + off), 0, 2);
+        grid->addWidget(createDial(p_env1_release + off), 0, 3);
+        grid->addWidget(new WaveDisplay(100, 60), 0, 4, 2, 3);
         // row 2
         grid->addWidget(new QLabel("A"), 1, 0);
         grid->addWidget(new QLabel("D"), 1, 1);
         grid->addWidget(new QLabel("S"), 1, 2);
         grid->addWidget(new QLabel("R"), 1, 3);
         // row 3
-        grid->addWidget(createDial(), 2, 0);
-        grid->addWidget(createDial(), 2, 1);
-        grid->addWidget(createDial(), 2, 2);
-        grid->addWidget(createDial(), 2, 3);
+        grid->addWidget(createDial(p_env1_hold + off), 2, 0);
+        grid->addWidget(createDial(p_env1_pre_delay + off), 2, 1);
+        grid->addWidget(createDial(p_env1_curve + off), 2, 2);
+        grid->addWidget(createToggle(p_env1_retrigger + off), 2, 3);
         // row 4
         grid->addWidget(new QLabel("Hold"), 3, 0);
         grid->addWidget(new QLabel("Pre"), 3, 1);
@@ -325,36 +315,51 @@ class rogueGui : public QWidget {
         return parent;
     }
 
+    QWidget* createMod(QWidget* parent, int i) {
+        int off = i * (p_mod11_src - p_mod1_src);
+        QGridLayout* grid = new QGridLayout(parent);
+        for (int j = 0; j < 5; j++) {
+            // col 1
+            grid->addWidget(createSelect(p_mod1_src + off, mod_src_labels, M_SIZE), j, 0);
+            grid->addWidget(createSelect(p_mod1_target + off, mod_target_labels, M_TARGET_SIZE), j, 1);
+            grid->addWidget(new QLabel("c"), j, 2); // TODO control
+            // col 2
+            grid->addWidget(createSelect(p_mod1_src + off, mod_src_labels, M_SIZE), j, 3);
+            grid->addWidget(createSelect(p_mod1_target + off, mod_target_labels, M_TARGET_SIZE), j, 4);
+            grid->addWidget(new QLabel("c"), j, 5); // TODO control
+            off += 3;
+        }
+        return parent;
+    }
+
     QWidget* createMod(QWidget* parent) {
         parent->setObjectName("mod");
         QHBoxLayout* layout = new QHBoxLayout();
         QTabWidget* tabs = new QTabWidget();
         tabs->setTabPosition(QTabWidget::West);
-        tabs->addTab(new QGroupBox(), "1");
-        tabs->addTab(new QGroupBox(), "2");
+        tabs->addTab(createMod(new QGroupBox(), 0), "1");
+        tabs->addTab(createMod(new QGroupBox(), 1), "2");
         layout->addWidget(tabs);
         parent->setLayout(layout);
         return parent;
     }
 
     QWidget* createLfo(QGroupBox* parent, int i) {
+        int off = i * LFO_OFF;
         parent->setCheckable(true);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(), 0, 0);
-        grid->addWidget(createDial(), 0, 1);
-        grid->addWidget(createDial(), 0, 2);
-        grid->addWidget(createDial(), 0, 3);
-        grid->addWidget(new lfoDisplay(), 0, 4, 2, 3);
+        grid->addWidget(createSelect(p_lfo1_type + off, lfo_types, 5), 0, 0, 1, 2);
+        grid->addWidget(createSelect(p_lfo1_reset_type + off, lfo_reset_types, 3), 0, 2, 1, 2);
         // row 2
-        grid->addWidget(new QLabel("Type"), 1, 0);
-        grid->addWidget(new QLabel("Reset"), 1, 1);
-        grid->addWidget(new QLabel("Freq"), 1, 2);
-        grid->addWidget(new QLabel("Width"), 1, 3);
+        grid->addWidget(createDial(p_lfo1_freq + off), 1, 0);
+        grid->addWidget(createDial(p_lfo1_width + off), 1, 1);
+        grid->addWidget(createDial(p_lfo1_humanize + off), 1, 2);
+        grid->addWidget(new WaveDisplay(100, 60), 1, 3, 2, 3);
         // row 3
-        grid->addWidget(createDial(), 2, 0);
-        // row 4
-        grid->addWidget(new QLabel("Rand"), 3, 0);
+        grid->addWidget(new QLabel("Freq"), 2, 0);
+        grid->addWidget(new QLabel("Width"), 2, 1);
+        grid->addWidget(new QLabel("Rand"), 2, 2);
         return parent;
     }
 

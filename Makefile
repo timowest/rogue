@@ -52,7 +52,7 @@ guitests: src/rogue.gen src/gui/config.gen
 	$(CXX) -g -std=c++11 src/gui/rogue-gui-test.cpp $(GTKMM) $(LVTK_UI) -Idsp -Isrc -o guitest.out	
 	
 qt:
-	$(CXX) -g -std=c++11 src/qt/test.cpp $(QT) -o qttest.out 
+	$(CXX) -g -std=c++11 src/qt/test.cpp $(QT) $(LVTK_UI) -Idsp -Isrc -o qttest.out 
 	
 tests: src/rogue.gen
 	$(CXX) -g -std=c++11 test/dsp_tests.cpp $(SNDFILE) $(FAST) -Idsp -o dsp_tests.out
