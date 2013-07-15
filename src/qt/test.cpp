@@ -19,14 +19,15 @@
 
 class rogueGui : public QWidget {
 
-    QDial* createDial(int p) {
+    QDial* createDial(int p, bool big = false) {
         // TODO connect
+        int size = big ? 45 : 35;
         const port_meta_t& port = p_port_meta[p];
         float min = port.min / port.step;
         float max = port.max / port.step;
         float value = port.default_value / port.step;
         QDial* dial = new CustomDial(min, max, value);
-        dial->setFixedSize(35, 35);
+        dial->setFixedSize(size, size);
         return dial;
     }
 
@@ -54,10 +55,6 @@ class rogueGui : public QWidget {
         return box;
     }
 
-    // TODO toggle label
-
-    // TODO dropdown menu
-
     QWidget* createBrowser(QWidget* parent) {
         return parent;
     }
@@ -77,6 +74,8 @@ class rogueGui : public QWidget {
         grid->addWidget(new QLabel("Pan A"), 1, 2);
         grid->addWidget(new QLabel("Vol B"), 1, 3);
         grid->addWidget(new QLabel("Pan B"), 1, 4);
+        grid->setColumnStretch(5, 1);
+        grid->setRowStretch(2, 1);
         return parent;
     }
 
@@ -98,6 +97,7 @@ class rogueGui : public QWidget {
         grid->addWidget(new QLabel("Blend"), 1, 3);
         grid->addWidget(new QLabel("Feedforward"), 1, 4);
         grid->addWidget(new QLabel("Feedback"), 1, 5);
+        grid->setColumnStretch(6, 1);
         return parent;
     }
 
@@ -115,6 +115,7 @@ class rogueGui : public QWidget {
         grid->addWidget(new QLabel("Depth"), 1, 1);
         grid->addWidget(new QLabel("Spread"), 1, 2);
         grid->addWidget(new QLabel("Resonance"), 1, 3);
+        grid->setColumnStretch(4, 1);
         return parent;
     }
 
@@ -136,6 +137,7 @@ class rogueGui : public QWidget {
         grid->addWidget(new QLabel("Dry"), 1, 3);
         grid->addWidget(new QLabel("Blend"), 1, 4);
         grid->addWidget(new QLabel("Tune"), 1, 5);
+        grid->setColumnStretch(6, 1);
         return parent;
     }
 
@@ -153,6 +155,7 @@ class rogueGui : public QWidget {
         grid->addWidget(new QLabel("Tail"), 1, 1);
         grid->addWidget(new QLabel("Damping"), 1, 2);
         grid->addWidget(new QLabel("Blend"), 1, 3);
+        grid->setColumnStretch(4, 1);
         return parent;
     }
 
@@ -195,7 +198,7 @@ class rogueGui : public QWidget {
         grid->addWidget(createDial(p_osc1_level_a + off), 3, 2);
         grid->addWidget(createDial(p_osc1_level_b + off), 3, 3);
         if (i > 0) {
-            grid->addWidget(createSelect(p_osc1_input + off, nums, i + 1), 3, 4);
+            grid->addWidget(createSelect(p_osc1_input + off, nums, i), 3, 4);
             grid->addWidget(createSelect(p_osc1_out_mod + off, out_mod, 4), 3, 5);
             grid->addWidget(createDial(p_osc1_pm + off), 3, 6);
         }
@@ -360,6 +363,7 @@ class rogueGui : public QWidget {
         grid->addWidget(new QLabel("Freq"), 2, 0);
         grid->addWidget(new QLabel("Width"), 2, 1);
         grid->addWidget(new QLabel("Rand"), 2, 2);
+        grid->setRowStretch(3, 1);
         return parent;
     }
 
