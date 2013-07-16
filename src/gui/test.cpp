@@ -1,3 +1,7 @@
+#include "lfo.cpp"
+#include "tables.cpp"
+#include "filter.cpp"
+#include "oscillator.cpp"
 #include "gui/rogue-gui.cpp"
 
 int main(int argc, char *argv[]) {

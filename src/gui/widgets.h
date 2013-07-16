@@ -17,13 +17,13 @@ class Widget {
 // TODO get pen and brush color from stylesheet
 // TODO use different colors if passivated
 class CustomDial : public QDial, public Widget {
-    static const int FULL = 5760;
-    static const int HALF = 2880;
 
     static const QPainter::RenderHint paintFlags = QPainter::RenderHint(QPainter::Antialiasing
-            | QPainter::SmoothPixmapTransform
-            || QPainter::HighQualityAntialiasing);
+                | QPainter::SmoothPixmapTransform
+                || QPainter::HighQualityAntialiasing);
 
+    static const int FULL = 5760;
+    static const int HALF = 2880;
     float min, max, pos0, step;
 
   protected:
@@ -139,9 +139,39 @@ class GroupBoxAdapter : public Widget {
 // WaveDisplay
 
 class WaveDisplay : public QFrame {
+    static const QPainter::RenderHint paintFlags = QPainter::RenderHint(QPainter::Antialiasing
+                | QPainter::SmoothPixmapTransform
+                || QPainter::HighQualityAntialiasing);
+
+    float* samples;
+
+  protected:
+    void paintEvent(QPaintEvent *pe) {
+        int width = this->width();
+        int height = this->height();
+        QPainter painter(this);
+        painter.setRenderHints(paintFlags);
+        painter.setPen(QPen(QBrush("#000"), 1));
+        for (int i = 1; i < width; i++) {
+            painter.drawLine(i-1, (-0.45 * samples[i-1] + 0.5) * height,
+                             i,   (-0.45 * samples[i] + 0.5) * height);
+
+        }
+    }
+
   public:
     WaveDisplay(int w, int h) {
         setFixedSize(w, h);
+        samples = new float[w];
+        for (int i = 0; i < w; i++) samples[i] = 0;
+    }
+
+    ~WaveDisplay() {
+        delete samples;
+    }
+
+    float* getSamples() {
+        return samples;
     }
 
 };

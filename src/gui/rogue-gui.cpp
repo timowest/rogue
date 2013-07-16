@@ -14,6 +14,8 @@
 
 #include "common.h"
 #include "rogue.gen"
+#include "wrappers.h"
+
 #include "qtui.h"
 #include "gui/config.gen"
 #include "gui/texts.h"
@@ -25,7 +27,15 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
     Widget* widgets[p_n_ports];
 
-    QSignalMapper mapper;
+    QSignalMapper mapper, oscMapper, filterMapper, envMapper, lfoMapper;
+
+    rogue::Osc osc;
+    dsp::LFO lfo;
+
+    WaveDisplay* osc_wd[4];
+    WaveDisplay* filter_wd[2];
+    WaveDisplay* env_wd[5];
+    WaveDisplay* lfo_wd[3];
 
     QDial* createDial(int p, bool big = false) {
         int size = big ? 45 : 35;
@@ -210,12 +220,16 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     }
 
     QWidget* createOscillator(QGroupBox* parent, int i) {
+        // TODO simplify oscMapper connections
         int off = i * OSC_OFF;
         parent->setCheckable(true);
         connectBox(p_osc1_on + off, parent);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createSelect(p_osc1_type + off, osc_types, 34 + 3 + 4), 0, 0, 1, 2);
+        QComboBox* typeBox = createSelect(p_osc1_type + off, osc_types, 34 + 3 + 4);
+        oscMapper.setMapping(typeBox, i);
+        connect(typeBox, SIGNAL(currentIndexChanged(int)), &oscMapper, SLOT(map()));
+        grid->addWidget(typeBox, 0, 0, 1, 2);
         grid->addWidget(createToggle(p_osc1_inv + off, "Inv"), 0, 2);
         grid->addWidget(createToggle(p_osc1_tracking + off, "Track"), 0, 3);
         grid->addWidget(createToggle(p_osc1_sync + off, "Sync"), 0, 4);
@@ -224,7 +238,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createDial(p_osc1_fine + off), 1, 1);
         grid->addWidget(createDial(p_osc1_ratio + off), 1, 2);
         grid->addWidget(createDial(p_osc1_level + off), 1, 3);
-        grid->addWidget(new WaveDisplay(120, 60), 1, 4, 2, 3);
+        grid->addWidget(osc_wd[i] = new WaveDisplay(120, 60), 1, 4, 2, 3);
         // row 3
         grid->addWidget(new QLabel("Coarse"), 2, 0);
         grid->addWidget(new QLabel("Fine"), 2, 1);
@@ -232,7 +246,10 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(new QLabel("Level"), 2, 3);
         // row 4
         grid->addWidget(createDial(p_osc1_tone + off), 3, 0);
-        grid->addWidget(createDial(p_osc1_width + off), 3, 1);
+        QDial* widthDial = createDial(p_osc1_width + off);
+        oscMapper.setMapping(widthDial, i);
+        connect(widthDial, SIGNAL(valueChanged(int)), &oscMapper, SLOT(map()));
+        grid->addWidget(widthDial, 3, 1);
         grid->addWidget(createDial(p_osc1_level_a + off), 3, 2);
         grid->addWidget(createDial(p_osc1_level_b + off), 3, 3);
         if (i > 0) {
@@ -285,7 +302,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createDial(p_filter1_q + off), 1, 1);
         grid->addWidget(createDial(p_filter1_level + off), 1, 2);
         grid->addWidget(createDial(p_filter1_pan + off), 1, 3);
-        grid->addWidget(new WaveDisplay(120, 60), 1, 4, 2, 3);
+        grid->addWidget(filter_wd[i] = new WaveDisplay(120, 60), 1, 4, 2, 3);
         // row 3
         grid->addWidget(new QLabel("Freq"), 2, 0);
         grid->addWidget(new QLabel("Res"), 2, 1);
@@ -327,7 +344,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createDial(p_env1_decay + off), 0, 1);
         grid->addWidget(createDial(p_env1_sustain + off), 0, 2);
         grid->addWidget(createDial(p_env1_release + off), 0, 3);
-        grid->addWidget(new WaveDisplay(100, 60), 0, 4, 2, 3);
+        grid->addWidget(env_wd[i] = new WaveDisplay(100, 60), 0, 4, 2, 3);
         // row 2
         grid->addWidget(new QLabel("A"), 1, 0);
         grid->addWidget(new QLabel("D"), 1, 1);
@@ -389,18 +406,25 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     }
 
     QWidget* createLfo(QGroupBox* parent, int i) {
+        // TODO simplify lfoMapper connections
         int off = i * LFO_OFF;
         parent->setCheckable(true);
         connectBox(p_lfo1_on + off, parent);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createSelect(p_lfo1_type + off, lfo_types, 5), 0, 0, 1, 2);
+        QComboBox* typeBox = createSelect(p_lfo1_type + off, lfo_types, 5);
+        lfoMapper.setMapping(typeBox, i);
+        connect(typeBox, SIGNAL(currentIndexChanged(int)), &lfoMapper, SLOT(map()));
+        grid->addWidget(typeBox, 0, 0, 1, 2);
         grid->addWidget(createSelect(p_lfo1_reset_type + off, lfo_reset_types, 3), 0, 2, 1, 2);
         // row 2
         grid->addWidget(createDial(p_lfo1_freq + off), 1, 0);
-        grid->addWidget(createDial(p_lfo1_width + off), 1, 1);
+        QDial* widthDial = createDial(p_lfo1_width + off);
+        lfoMapper.setMapping(widthDial, i);
+        connect(widthDial, SIGNAL(valueChanged(int)), &lfoMapper, SLOT(map()));
+        grid->addWidget(widthDial, 1, 1);
         grid->addWidget(createDial(p_lfo1_humanize + off), 1, 2);
-        grid->addWidget(new WaveDisplay(100, 60), 1, 3, 2, 3);
+        grid->addWidget(lfo_wd[i] = new WaveDisplay(100, 60), 1, 3, 2, 3);
         // row 3
         grid->addWidget(new QLabel("Freq"), 2, 0);
         grid->addWidget(new QLabel("Width"), 2, 1);
@@ -433,6 +457,38 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         //writeControl(p, widgets[p]->get_value());
     }
 
+    Q_SLOT void updateOsc(int i) {
+        int type = (int)widgets[p_osc1_type + i * OSC_OFF]->get_value();
+        float t = widgets[p_osc1_tone + i * OSC_OFF]->get_value();
+        float w = widgets[p_osc1_width + i * OSC_OFF]->get_value();
+
+        osc.process(type, 1.0f, t, w, w, osc_wd[i]->getSamples(), osc_wd[i]->width());
+        osc_wd[i]->repaint();
+    }
+
+    Q_SLOT void updateFilter(int i) {
+        // TODO
+    }
+
+    Q_SLOT void updateEnv(int i) {
+        // TODO
+    }
+
+    Q_SLOT void updateLfo(int i) {
+        int type = (int)widgets[p_lfo1_type + i * LFO_OFF]->get_value();
+        float w = widgets[p_lfo1_width + i * LFO_OFF]->get_value();
+
+        lfo.setType(type);
+        lfo.setWidth(w);
+        lfo.reset();
+        float* buffer = lfo_wd[i]->getSamples();
+        int width = lfo_wd[i]->width();
+        for (int j = 0; j < width; j++) {
+            buffer[j] = lfo.tick();
+        }
+        lfo_wd[i]->repaint();
+    }
+
   public:
 
     rogueGUI() {
@@ -450,7 +506,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         QGridLayout* grid = new QGridLayout(&container());
         grid->addWidget(browser, 0, 0);
         grid->addWidget(main, 0, 1);
-        grid->addWidget(effects, 0, 2); // FIXME
+        grid->addWidget(effects, 0, 2);
         grid->addWidget(oscs, 1, 0, 2, 2);
         grid->addWidget(filters, 1, 2, 2, 1);
         grid->addWidget(envs, 3, 0);
@@ -459,13 +515,22 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->setRowStretch(1, 1);
         grid->setRowStretch(2, 1);
 
+        // connect
         connect(&mapper, SIGNAL(mapped(int)), SLOT(portChange(int)));
+        connect(&oscMapper, SIGNAL(mapped(int)), SLOT(updateOsc(int)));
+        connect(&filterMapper, SIGNAL(mapped(int)), SLOT(updateFilter(int)));
+        connect(&envMapper, SIGNAL(mapped(int)), SLOT(updateEnv(int)));
+        connect(&lfoMapper, SIGNAL(mapped(int)), SLOT(updateLfo(int)));
 
         // styles
         QFile file("styles/stylesheet.qss");
         file.open(QFile::ReadOnly);
         QString styleSheet = QLatin1String(file.readAll());
         container().setStyleSheet(styleSheet);
+
+        osc.setSamplerate(120);
+        lfo.setFreq(1.0);
+        lfo.setSamplerate(100);
     }
 
     ~rogueGUI() {
