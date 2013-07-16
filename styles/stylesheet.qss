@@ -27,11 +27,11 @@ QGroupBox QGroupBox {
 }
 
 QGroupBox::indicator:checked, QRadioButton:indicator:checked {
-  image: url(src/qt/check_selected.png); 
+  image: url(styles/check_selected.png); 
 }
 
 QGroupBox::indicator:unchecked, QRadioButton:indicator:unchecked {
-  image: url(src/qt/check_unselected.png); 
+  image: url(styles/check_unselected.png); 
 }
 
 QGroupBox QGroupBox::title {
@@ -102,7 +102,7 @@ QComboBox {
 }
 
 QComboBox::down-arrow {
-  image: url(src/qt/arrow_down.png);  
+  image: url(styles/arrow_down.png);  
 }
 
 QComboBox::drop-down {

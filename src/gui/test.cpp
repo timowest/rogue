@@ -1,0 +1,10 @@
+#include "gui/rogue-gui.cpp"
+
+int main(int argc, char *argv[]) {
+    QApplication app(argc, argv);
+    rogueGUI gui;
+    //window.resize(900, 500);
+    gui.container().setWindowTitle("rogue");
+    gui.container().show();
+    return app.exec();
+}

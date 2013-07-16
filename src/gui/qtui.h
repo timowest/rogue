@@ -20,18 +20,18 @@ namespace lvtk {
                 return true;
             }
 
-        protected:
-
             QWidget& container() {
-                return widget;
+                return _widget;
             }
 
+        protected:
+
             LV2UI_Widget* widget() {
-                return widget_cast (&widget);
+                return widget_cast (&_widget);
             }
 
         private:
-            QWidget widget;
+            QWidget _widget;
 
         };
     };

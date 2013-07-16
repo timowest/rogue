@@ -15,7 +15,7 @@ PREFIX = """@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
 <http://www.github.com/timowest/rogue/out> a pg:StereoGroup.
 
 <http://www.github.com/timowest/rogue/ui>
-  a ui:GtkUI ;
+  a ui:Qt4UI ;
   ui:binary <rogue-gui.so>;
   lv2:requiredFeature urid:map .
 

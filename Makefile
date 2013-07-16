@@ -7,11 +7,10 @@ FLAGS = -fPIC -DPIC -std=c++11
 FAST = -Ofast -ffast-math
 LVTK = `pkg-config --cflags --libs lvtk-plugin-1`
 LVTK_UI = `pkg-config --cflags --libs lvtk-ui-1`
-GTKMM = `pkg-config --cflags --libs gtkmm-2.4`
 QT = `pkg-config --cflags --libs QtGui` 
 SNDFILE = -lsndfile
 
-$(BUNDLE): manifest.ttl rogue.ttl presets.ttl rogue.so rogue-gui.so presets
+$(BUNDLE): manifest.ttl rogue.ttl presets.ttl rogue.so rogue-gui.so presets styles
 	rm -rf $(BUNDLE)
 	mkdir $(BUNDLE)
 	cp -r $^ $(BUNDLE)
@@ -20,7 +19,7 @@ rogue.so: $(SOURCES) src/rogue.gen
 	$(CXX) $(FLAGS) $(FAST) -shared $(SOURCES) $(LVTK) -Idsp -Isrc -Ifx -Ifx/dsp -o $@
 	
 rogue-gui.so: $(SOURCES_UI) src/rogue.gen src/gui/config.gen
-	$(CXX) $(FLAGS) -g -shared $(SOURCES_UI) $(GTKMM) $(LVTK) $(LVTK_UI) -Idsp -Isrc -o $@	
+	$(CXX) $(FLAGS) -g -shared $(SOURCES_UI) $(QT) $(LVTK) $(LVTK_UI) -Idsp -Isrc -o $@	
 
 src/rogue.gen: rogue.ttl
 	ttl2c $^ src/rogue.gen
@@ -41,20 +40,14 @@ install: $(BUNDLE)
 	cp -R $(BUNDLE) $(INSTALL_DIR)
 
 run:
-	jalv.gtk http://www.github.com/timowest/rogue
+	jalv.qt http://www.github.com/timowest/rogue
 
 clean:
 	rm -rf $(BUNDLE) *.so src/rogue.gen src/gui/config.gen presets.ttl rogue.ttl wavs *.out presets/*
-		
-guitests: src/rogue.gen src/gui/config.gen	
-	$(CXX) -g -std=c++11 src/gui/knob-test.cpp $(GTKMM) -Isrc -o knobtest.out		
-	$(CXX) -g -std=c++11 src/gui/label-test.cpp $(GTKMM) -Isrc -o labeltest.out
-	$(CXX) -g -std=c++11 src/gui/wavedraw-test.cpp $(GTKMM) -Isrc -o wavedrawtest.out
-	$(CXX) -g -std=c++11 src/gui/rogue-gui-test.cpp $(GTKMM) $(LVTK_UI) -Idsp -Isrc -o guitest.out	
 
-qt:
-	moc src/qt/rogue-gui.cpp > src/qt/rogue-gui.mcpp
-	$(CXX) -g -std=c++11 src/qt/test.cpp $(QT) $(LVTK_UI) -Idsp -Isrc -o qttest.out 
+gui: src/rogue.gen src/gui/config.gen
+	moc src/gui/rogue-gui.cpp > src/gui/rogue-gui.mcpp
+	$(CXX) -g -std=c++11 src/gui/test.cpp $(QT) $(LVTK_UI) -Idsp -Isrc -o qttest.out 
 	
 tests: src/rogue.gen
 	$(CXX) -g -std=c++11 test/dsp_tests.cpp $(SNDFILE) $(FAST) -Idsp -o dsp_tests.out

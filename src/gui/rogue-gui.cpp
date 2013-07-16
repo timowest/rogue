@@ -1,568 +1,478 @@
-/*
- * rogue - multimode synth
- *
- * Copyright (C) 2013 Timo Westkämper
- */
-
-#include <stdio.h>
-#include <string.h>
-#include <gtkmm.h>
-#include <lvtk/gtkui.hpp>
+#include <QApplication>
+#include <QComboBox>
+#include <QDial>
+#include <QFile>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPainter>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QSignalMapper>
+#include <QString>
+#include <QTabWidget>
 
 #include "common.h"
 #include "rogue.gen"
+#include "qtui.h"
 #include "gui/config.gen"
-#include "gui/knob.h"
-#include "gui/label.h"
-#include "gui/panel.h"
-#include "gui/select.h"
-#include "gui/toggle.h"
-#include "gui/wavedraw.h"
+#include "gui/texts.h"
+#include "gui/widgets.h"
 
-#include "wrappers.h"
+class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvtk::URID<true> > {
 
-#define OSC_DRAW_WIDTH 140
-#define LFO_DRAW_WIDTH 105
-#define ENV_DRAW_WIDTH 105
+    Q_OBJECT
 
-#define DRAW_HEIGHT 60
+    Widget* widgets[p_n_ports];
 
-using namespace sigc;
-using namespace Gtk;
+    QSignalMapper mapper;
 
-namespace rogue {
+    QDial* createDial(int p, bool big = false) {
+        int size = big ? 45 : 35;
+        const port_meta_t& port = p_port_meta[p];
+        CustomDial* dial = new CustomDial(port.min, port.max, port.step, port.default_value);
+        dial->setFixedSize(size, size);
+        mapper.setMapping(dial, p);
+        connect(dial, SIGNAL(valueChanged(int)), &mapper, SLOT(map()));
+        widgets[p] = dial;
+        return dial;
+    }
 
-class rogueGUI : public lvtk::UI<rogueGUI, lvtk::GtkUI<true>, lvtk::URID<true> > {
+    QComboBox* createSelect(int p, const char** texts, int size) {
+        CustomComboBox* box = new CustomComboBox();
+        for (int i = 0; i < size; i++) {
+            box->addItem(texts[i]);
+        }
+        mapper.setMapping(box, p);
+        connect(box, SIGNAL(currentIndexChanged(int)), &mapper, SLOT(map()));
+        widgets[p] = box;
+        return box;
+    }
+
+    QDoubleSpinBox* createSpin(int p) {
+        const port_meta_t& port = p_port_meta[p];
+        CustomSpinBox* spin = new CustomSpinBox();
+        spin->setMinimum(port.min);
+        spin->setMaximum(port.max);
+        spin->setValue(port.default_value);
+        spin->setSingleStep(port.step);
+        mapper.setMapping(spin, p);
+        connect(spin, SIGNAL(valueChanged(double)), &mapper, SLOT(map()));
+        widgets[p] = spin;
+        return spin;
+    }
+
+    QRadioButton* createToggle(int p) {
+        CustomRadioButton* button = new CustomRadioButton();
+        button->setChecked(p_port_meta[p].default_value > 0.0);
+        mapper.setMapping(button, p);
+        connect(button, SIGNAL(toggled(bool)), &mapper, SLOT(map()));
+        widgets[p] = button;
+        return button;
+    }
+
+    QPushButton* createToggle(int p, const char* label) {
+        CustomPushButton* button = new CustomPushButton();
+        button->setText(label);
+        button->setCheckable(true);
+        button->setChecked(p_port_meta[p].default_value > 0.0);
+        mapper.setMapping(button, p);
+        connect(button, SIGNAL(toggled(bool)), &mapper, SLOT(map()));
+        widgets[p] = button;
+        return button;
+    }
+
+    void connectBox(int p, QGroupBox* box) {
+        mapper.setMapping(box, p);
+        connect(box, SIGNAL(toggled(bool)), &mapper, SLOT(map()));
+        widgets[p] = new GroupBoxAdapter(box);
+    }
+
+    QWidget* createBrowser(QWidget* parent) {
+        return parent;
+    }
+
+    QWidget* createMain(QWidget* parent) {
+        parent->setObjectName("main");
+        QGridLayout* grid = new QGridLayout(parent);
+        // row 1
+        grid->addWidget(createDial(p_volume), 0, 0);
+        grid->addWidget(createDial(p_bus_a_level), 0, 1);
+        grid->addWidget(createDial(p_bus_a_pan), 0, 2);
+        grid->addWidget(createDial(p_bus_b_level), 0, 3);
+        grid->addWidget(createDial(p_bus_b_pan), 0, 4);
+        // row 2
+        grid->addWidget(new QLabel("Vol"),   1, 0);
+        grid->addWidget(new QLabel("Vol A"), 1, 1);
+        grid->addWidget(new QLabel("Pan A"), 1, 2);
+        grid->addWidget(new QLabel("Vol B"), 1, 3);
+        grid->addWidget(new QLabel("Pan B"), 1, 4);
+        grid->setColumnStretch(5, 1);
+        grid->setRowStretch(2, 1);
+        return parent;
+    }
+
+    QWidget* createChorus(QGroupBox* parent) {
+        parent->setObjectName("chorus");
+        parent->setCheckable(true);
+        connectBox(p_chorus_on, parent);
+        QGridLayout* grid = new QGridLayout(parent);
+        // row 1
+        grid->addWidget(createDial(p_chorus_t), 0, 0);
+        grid->addWidget(createDial(p_chorus_width), 0, 1);
+        grid->addWidget(createDial(p_chorus_rate), 0, 2);
+        grid->addWidget(createDial(p_chorus_blend), 0, 3);
+        grid->addWidget(createDial(p_chorus_feedforward), 0, 4);
+        grid->addWidget(createDial(p_chorus_feedback), 0, 5);
+        // row 2
+        grid->addWidget(new QLabel("T"), 1, 0);
+        grid->addWidget(new QLabel("Width"), 1, 1);
+        grid->addWidget(new QLabel("Rate"), 1, 2);
+        grid->addWidget(new QLabel("Blend"), 1, 3);
+        grid->addWidget(new QLabel("Feedforward"), 1, 4);
+        grid->addWidget(new QLabel("Feedback"), 1, 5);
+        grid->setColumnStretch(6, 1);
+        return parent;
+    }
+
+    QWidget* createPhaser(QGroupBox* parent) {
+        parent->setObjectName("phaser");
+        parent->setCheckable(true);
+        connectBox(p_phaser_on, parent);
+        QGridLayout* grid = new QGridLayout(parent);
+        // row 1
+        grid->addWidget(createDial(p_phaser_rate), 0, 0);
+        grid->addWidget(createDial(p_phaser_depth), 0, 1);
+        grid->addWidget(createDial(p_phaser_spread), 0, 2);
+        grid->addWidget(createDial(p_phaser_resonance), 0, 3);
+        // row 2
+        grid->addWidget(new QLabel("Rate"), 1, 0);
+        grid->addWidget(new QLabel("Depth"), 1, 1);
+        grid->addWidget(new QLabel("Spread"), 1, 2);
+        grid->addWidget(new QLabel("Resonance"), 1, 3);
+        grid->setColumnStretch(4, 1);
+        return parent;
+    }
+
+    QWidget* createDelay(QGroupBox* parent) {
+        parent->setObjectName("delay");
+        parent->setCheckable(true);
+        connectBox(p_delay_on, parent);
+        QGridLayout* grid = new QGridLayout(parent);
+        // row 1
+        grid->addWidget(createDial(p_delay_bpm), 0, 0);
+        grid->addWidget(createDial(p_delay_divider), 0, 1);
+        grid->addWidget(createDial(p_delay_feedback), 0, 2);
+        grid->addWidget(createDial(p_delay_dry), 0, 3);
+        grid->addWidget(createDial(p_delay_blend), 0, 4);
+        grid->addWidget(createDial(p_delay_tune), 0, 5);
+        // row 2
+        grid->addWidget(new QLabel("BPM"), 1, 0);
+        grid->addWidget(new QLabel("Divider"), 1, 1);
+        grid->addWidget(new QLabel("Feedback"), 1, 2);
+        grid->addWidget(new QLabel("Dry"), 1, 3);
+        grid->addWidget(new QLabel("Blend"), 1, 4);
+        grid->addWidget(new QLabel("Tune"), 1, 5);
+        grid->setColumnStretch(6, 1);
+        return parent;
+    }
+
+    QWidget* createReverb(QGroupBox* parent) {
+        parent->setObjectName("reverb");
+        parent->setCheckable(true);
+        connectBox(p_reverb_on, parent);
+        QGridLayout* grid = new QGridLayout(parent);
+        // row 1
+        grid->addWidget(createDial(p_reverb_bandwidth), 0, 0);
+        grid->addWidget(createDial(p_reverb_tail), 0, 1);
+        grid->addWidget(createDial(p_reverb_damping), 0, 2);
+        grid->addWidget(createDial(p_reverb_blend), 0, 3);
+        // row 2
+        grid->addWidget(new QLabel("Bandwidth"), 1, 0);
+        grid->addWidget(new QLabel("Tail"), 1, 1);
+        grid->addWidget(new QLabel("Damping"), 1, 2);
+        grid->addWidget(new QLabel("Blend"), 1, 3);
+        grid->setColumnStretch(4, 1);
+        return parent;
+    }
+
+    QWidget* createEffects(QGroupBox* parent) {
+        parent->setObjectName("effects");
+        QHBoxLayout* layout = new QHBoxLayout(parent);
+        QTabWidget* tabs = new QTabWidget();
+        tabs->setTabPosition(QTabWidget::West);
+        tabs->addTab(createChorus(new QGroupBox("Chorus")), "C");
+        tabs->addTab(createPhaser(new QGroupBox("Phaser")), "P");
+        tabs->addTab(createDelay(new QGroupBox("Delay")), "D");
+        tabs->addTab(createReverb(new QGroupBox("Reverb")), "R");
+        layout->addWidget(tabs);
+        return parent;
+    }
+
+    QWidget* createOscillator(QGroupBox* parent, int i) {
+        int off = i * OSC_OFF;
+        parent->setCheckable(true);
+        connectBox(p_osc1_on + off, parent);
+        QGridLayout* grid = new QGridLayout(parent);
+        // row 1
+        grid->addWidget(createSelect(p_osc1_type + off, osc_types, 34 + 3 + 4), 0, 0, 1, 2);
+        grid->addWidget(createToggle(p_osc1_inv + off, "Inv"), 0, 2);
+        grid->addWidget(createToggle(p_osc1_tracking + off, "Track"), 0, 3);
+        grid->addWidget(createToggle(p_osc1_sync + off, "Sync"), 0, 4);
+        // row 2
+        grid->addWidget(createDial(p_osc1_coarse + off), 1, 0);
+        grid->addWidget(createDial(p_osc1_fine + off), 1, 1);
+        grid->addWidget(createDial(p_osc1_ratio + off), 1, 2);
+        grid->addWidget(createDial(p_osc1_level + off), 1, 3);
+        grid->addWidget(new WaveDisplay(120, 60), 1, 4, 2, 3);
+        // row 3
+        grid->addWidget(new QLabel("Coarse"), 2, 0);
+        grid->addWidget(new QLabel("Fine"), 2, 1);
+        grid->addWidget(new QLabel("Ratio"), 2, 2);
+        grid->addWidget(new QLabel("Level"), 2, 3);
+        // row 4
+        grid->addWidget(createDial(p_osc1_tone + off), 3, 0);
+        grid->addWidget(createDial(p_osc1_width + off), 3, 1);
+        grid->addWidget(createDial(p_osc1_level_a + off), 3, 2);
+        grid->addWidget(createDial(p_osc1_level_b + off), 3, 3);
+        if (i > 0) {
+            grid->addWidget(createSelect(p_osc1_input + off, nums, i), 3, 4);
+            grid->addWidget(createSelect(p_osc1_out_mod + off, out_mod, 4), 3, 5);
+            grid->addWidget(createDial(p_osc1_pm + off), 3, 6);
+        }
+        // row 5
+        grid->addWidget(new QLabel("Tone"), 4, 0);
+        grid->addWidget(new QLabel("Width"), 4, 1);
+        grid->addWidget(new QLabel("Vol A"), 4, 2);
+        grid->addWidget(new QLabel("Vol B"), 4, 3);
+        if (i > 0) {
+            grid->addWidget(new QLabel("Input"), 4, 4);
+            grid->addWidget(new QLabel("Mod"), 4, 5);
+            grid->addWidget(new QLabel("PM"), 4, 6);
+        }
+        grid->setRowStretch(5, 1);
+        return parent;
+    }
+
+    QWidget* createOscillators(QWidget* parent) {
+        parent->setObjectName("oscillators");
+        QGridLayout* grid = new QGridLayout(parent);
+        // row 1
+        grid->addWidget(new QLabel("1"), 0, 0);
+        grid->addWidget(createOscillator(new QGroupBox(), 0), 0, 1);
+        grid->addWidget(createOscillator(new QGroupBox(), 1), 0, 2);
+        grid->addWidget(new QLabel("2"), 0, 3);
+        // row 2
+        grid->addWidget(new QLabel("3"), 1, 0);
+        grid->addWidget(createOscillator(new QGroupBox(), 2), 1, 1);
+        grid->addWidget(createOscillator(new QGroupBox(), 3), 1, 2);
+        grid->addWidget(new QLabel("4"), 1, 3);
+        grid->setColumnStretch(1, 1);
+        grid->setColumnStretch(2, 1);
+        return parent;
+    }
+
+    QWidget* createFilter(QGroupBox* parent, int i) {
+        int off = i * DCF_OFF;
+        parent->setCheckable(true);
+        connectBox(p_filter1_on + off, parent);
+        QGridLayout* grid = new QGridLayout(parent);
+        // row 1
+        grid->addWidget(createSelect(p_filter1_type + off, filter_types, 12), 0, 0, 1, 2);
+        grid->addWidget(createSelect(p_filter1_source + off, filter_sources, 2 + i), 0, 2, 1, 2);
+        // row 2
+        grid->addWidget(createDial(p_filter1_freq + off), 1, 0);
+        grid->addWidget(createDial(p_filter1_q + off), 1, 1);
+        grid->addWidget(createDial(p_filter1_level + off), 1, 2);
+        grid->addWidget(createDial(p_filter1_pan + off), 1, 3);
+        grid->addWidget(new WaveDisplay(120, 60), 1, 4, 2, 3);
+        // row 3
+        grid->addWidget(new QLabel("Freq"), 2, 0);
+        grid->addWidget(new QLabel("Res"), 2, 1);
+        grid->addWidget(new QLabel("Vol"), 2, 2);
+        grid->addWidget(new QLabel("Pan"), 2, 3);
+        // row 4
+        grid->addWidget(createDial(p_filter1_distortion + off), 3, 0);
+        grid->addWidget(createDial(p_filter1_key_to_f + off), 3, 1);
+        grid->addWidget(createDial(p_filter1_vel_to_f + off), 3, 2);
+        // row 5
+        grid->addWidget(new QLabel("Dist"), 4, 0);
+        grid->addWidget(new QLabel("K > F"), 4, 1);
+        grid->addWidget(new QLabel("V > F"), 4, 2);
+        grid->setRowStretch(5, 1);
+        return parent;
+    }
+
+    QWidget* createFilters(QWidget* parent) {
+        parent->setObjectName("filters");
+        QGridLayout* grid = new QGridLayout();
+        // row 1
+        grid->addWidget(new QLabel("1"), 0, 0);
+        grid->addWidget(createFilter(new QGroupBox(), 0), 0, 1);
+        // row 2
+        grid->addWidget(new QLabel("2"), 1, 0);
+        grid->addWidget(createFilter(new QGroupBox(), 1), 1, 1);
+        grid->setColumnStretch(1, 1);
+        parent->setLayout(grid);
+        return parent;
+    }
+
+    QWidget* createEnv(QGroupBox* parent, int i) {
+        int off = i * ENV_OFF;
+        parent->setCheckable(true);
+        connectBox(p_env1_on + off, parent);
+        QGridLayout* grid = new QGridLayout(parent);
+        // row 1
+        grid->addWidget(createDial(p_env1_attack + off), 0, 0);
+        grid->addWidget(createDial(p_env1_decay + off), 0, 1);
+        grid->addWidget(createDial(p_env1_sustain + off), 0, 2);
+        grid->addWidget(createDial(p_env1_release + off), 0, 3);
+        grid->addWidget(new WaveDisplay(100, 60), 0, 4, 2, 3);
+        // row 2
+        grid->addWidget(new QLabel("A"), 1, 0);
+        grid->addWidget(new QLabel("D"), 1, 1);
+        grid->addWidget(new QLabel("S"), 1, 2);
+        grid->addWidget(new QLabel("R"), 1, 3);
+        // row 3
+        grid->addWidget(createDial(p_env1_hold + off), 2, 0);
+        grid->addWidget(createDial(p_env1_pre_delay + off), 2, 1);
+        grid->addWidget(createDial(p_env1_curve + off), 2, 2);
+        grid->addWidget(createToggle(p_env1_retrigger + off), 2, 3);
+        // row 4
+        grid->addWidget(new QLabel("Hold"), 3, 0);
+        grid->addWidget(new QLabel("Pre"), 3, 1);
+        grid->addWidget(new QLabel("Curve"), 3, 2);
+        grid->addWidget(new QLabel("Retr"), 3, 3);
+        grid->setRowStretch(4, 1);
+        return parent;
+    }
+
+    QWidget* createEnvs(QWidget* parent) {
+        parent->setObjectName("envs");
+        QHBoxLayout* layout = new QHBoxLayout(parent);
+        QTabWidget* tabs = new QTabWidget();
+        tabs->setTabPosition(QTabWidget::West);
+        tabs->addTab(createEnv(new QGroupBox(), 0), "1");
+        tabs->addTab(createEnv(new QGroupBox(), 1), "2");
+        tabs->addTab(createEnv(new QGroupBox(), 2), "3");
+        tabs->addTab(createEnv(new QGroupBox(), 3), "4");
+        tabs->addTab(createEnv(new QGroupBox(), 4), "5");
+        layout->addWidget(tabs);
+        return parent;
+    }
+
+    QWidget* createMod(QWidget* parent, int i) {
+        int off = i * (p_mod6_src - p_mod1_src);
+        QGridLayout* grid = new QGridLayout(parent);
+        for (int j = 0; j < 5; j++) {
+            grid->addWidget(createSelect(p_mod1_src + off, mod_src_labels, M_SIZE), 0, j);
+            grid->addWidget(createSelect(p_mod1_target + off, mod_target_labels, M_TARGET_SIZE), 1, j);
+            grid->addWidget(createSpin(p_mod1_amount + off), 2, j);
+            off += 3;
+        }
+        grid->setRowStretch(3, 1);
+        return parent;
+    }
+
+    QWidget* createMod(QWidget* parent) {
+        parent->setObjectName("mod");
+        QHBoxLayout* layout = new QHBoxLayout();
+        QTabWidget* tabs = new QTabWidget();
+        tabs->setTabPosition(QTabWidget::West);
+        tabs->addTab(createMod(new QGroupBox(), 0), "1");
+        tabs->addTab(createMod(new QGroupBox(), 1), "2");
+        tabs->addTab(createMod(new QGroupBox(), 2), "3");
+        tabs->addTab(createMod(new QGroupBox(), 3), "4");
+        layout->addWidget(tabs);
+        parent->setLayout(layout);
+        return parent;
+    }
+
+    QWidget* createLfo(QGroupBox* parent, int i) {
+        int off = i * LFO_OFF;
+        parent->setCheckable(true);
+        connectBox(p_lfo1_on + off, parent);
+        QGridLayout* grid = new QGridLayout(parent);
+        // row 1
+        grid->addWidget(createSelect(p_lfo1_type + off, lfo_types, 5), 0, 0, 1, 2);
+        grid->addWidget(createSelect(p_lfo1_reset_type + off, lfo_reset_types, 3), 0, 2, 1, 2);
+        // row 2
+        grid->addWidget(createDial(p_lfo1_freq + off), 1, 0);
+        grid->addWidget(createDial(p_lfo1_width + off), 1, 1);
+        grid->addWidget(createDial(p_lfo1_humanize + off), 1, 2);
+        grid->addWidget(new WaveDisplay(100, 60), 1, 3, 2, 3);
+        // row 3
+        grid->addWidget(new QLabel("Freq"), 2, 0);
+        grid->addWidget(new QLabel("Width"), 2, 1);
+        grid->addWidget(new QLabel("Rand"), 2, 2);
+        grid->setRowStretch(3, 1);
+        return parent;
+    }
+
+    QWidget* createLfos(QWidget* parent) {
+        parent->setObjectName("lfos");
+        QHBoxLayout* layout = new QHBoxLayout(parent);
+        QTabWidget* tabs = new QTabWidget();
+        tabs->setTabPosition(QTabWidget::West);
+        tabs->addTab(createLfo(new QGroupBox(), 0), "1");
+        tabs->addTab(createLfo(new QGroupBox(), 1), "2");
+        tabs->addTab(createLfo(new QGroupBox(), 2), "3");
+        layout->addWidget(tabs);
+        return parent;
+    }
+
+    // host to UI
+    void port_event(uint32_t port, uint32_t buffer_size, uint32_t format, const void* buffer) {
+        if (port > 2) {
+            widgets[port]->set_value(*static_cast<const float*>(buffer));
+        }
+    }
+
+    // UI to host
+    Q_SLOT void portChange(int p) {
+        //writeControl(p, widgets[p]->get_value());
+    }
+
   public:
-    rogueGUI(const char* URI);
-    Widget* createOSC(int i);
-    Widget* createFilter(int i);
-    Widget* createLFO(int i);
-    Widget* createEnv(int i);
-    Widget* createMain();
-    Widget* createEffects();
-    Widget* createModulation();
-    Widget* smallFrame(const char* label, Table* content);
-    Widget* frame(const char* label, int toggle, Table* content);
-    Alignment* align(Widget* widget);
-    void control(Table* table, const char* label, int port_index, int left, int top);
-    void port_event(uint32_t port, uint32_t buffer_size, uint32_t format, const void* buffer);
-    void change_status_bar(uint32_t port, float value);
-    void update_osc(int i, float value);
-    void update_lfo(int i, float value);
-    Widget& get_widget() { return container(); }
 
-  protected:
-    VBox mainBox;
-    Statusbar statusbar;
-    char statusBarText[100];
-    Changeable* scales[p_n_ports];
+    rogueGUI() {
+        container().setObjectName("root");
+        QWidget* browser = createBrowser(new QGroupBox("Browser"));
+        QWidget* main = createMain(new QGroupBox("Main"));
+        QWidget* effects = createEffects(new QGroupBox("Effects"));
+        QWidget* oscs = createOscillators(new QGroupBox("Oscillators"));
+        QWidget* filters = createFilters(new QGroupBox("Filters"));
+        QWidget* envs = createEnvs(new QGroupBox("Envelopes"));
+        QWidget* mod = createMod(new QGroupBox("Modulation"));
+        QWidget* lfos = createLfos(new QGroupBox("LFOs"));
 
-    Wavedraw* oscWaves[NOSC];
-    Wavedraw* lfoWaves[NLFO];
-    Wavedraw* envWaves[NENV];
+        // main grid
+        QGridLayout* grid = new QGridLayout(&container());
+        grid->addWidget(browser, 0, 0);
+        grid->addWidget(main, 0, 1);
+        grid->addWidget(effects, 0, 2); // FIXME
+        grid->addWidget(oscs, 1, 0, 2, 2);
+        grid->addWidget(filters, 1, 2, 2, 1);
+        grid->addWidget(envs, 3, 0);
+        grid->addWidget(mod, 3, 1);
+        grid->addWidget(lfos, 3, 2);
+        grid->setRowStretch(1, 1);
+        grid->setRowStretch(2, 1);
 
-    float oscBuffers[NOSC][OSC_DRAW_WIDTH];
-    float lfoBuffers[NLFO][LFO_DRAW_WIDTH];
-    float envBuffers[NENV][ENV_DRAW_WIDTH];
+        connect(&mapper, SIGNAL(mapped(int)), SLOT(portChange(int)));
 
-    Osc osc;
-    dsp::LFO lfo;
+        // styles
+        QFile file("styles/stylesheet.qss");
+        file.open(QFile::ReadOnly);
+        QString styleSheet = QLatin1String(file.readAll());
+        container().setStyleSheet(styleSheet);
+    }
+
+    ~rogueGUI() {
+        for (int i = 0; i < p_n_ports; i++) {
+            delete widgets[i];
+        }
+    }
 };
 
-// implementation
-
-// TODO replace with vectors
-#define CHARS static const char*
-
-// checkbox content
-CHARS osc_types[] = {
-        // V
-        "VA Saw", "VA Tri Saw", "VA Pulse",
-        "PD Saw", "PD Square", "PD Pulse", "PD Double Sine", "PD Saw Pulse", "PD Res 1", "PD Res 2", "PD Res 3", "PD Half Sine",
-        "Saw", "Double Saw", "Tri", "Tri 2", "Tri 3", "Pulse", "Pulse Saw", "Slope", "Alpha 1", "Alpha 2",
-        "Beta 1", "Beta 2", "Pulse Tri", "Exp",
-        "FM 1", "FM 2", "FM 3", "FM 4", "FM 5", "FM 6", "FM 7", "FM 8",
-        // AS
-        "AS Saw", "AS Square", "AS Impulse",
-        // Noise
-        "Noise", "Pink Noise", "LP Noise", "BP Noise"};
-
-CHARS filter_types[] = {"LP 24dB", "LP 18dB", "LP 12dB", "LP 6dB", "HP 24dB",
-        "BP 12dB", "BP 18dB", "Notch",
-        "SVF LP", "SVF HP", "SVF BP", "SVF Notch"};
-
-CHARS filter1_sources[] = {"Bus A", "Bus B"};
-
-CHARS filter2_sources[] = {"Bus A", "Bus B", "Filter1"};
-
-CHARS lfo_types[] = {"Sin", "Tri", "Saw", "Square", "S/H"};
-
-CHARS lfo_reset_types[] = {"Poly", "Free", "Mono"};
-
-// labels
-
-CHARS nums[] = {"1", "2", "3", "4", "5", "6"};
-
-CHARS osc_labels[] = {"OSC 1", "OSC 2", "OSC 3", "OSC 4"};
-
-CHARS filter_labels[] = {"Filter 1", "Filter 2"};
-
-CHARS lfo_labels[] = {"LFO 1", "LFO 2", "LFO 3"};
-
-CHARS env_labels[] = {"Env 1", "Env 2", "Env 3", "Env 4", "Env 5"};
-
-CHARS mod_src_labels[] = {
-        "--   ",
-        "Mod", "Pressure", "Key", "Velocity",
-        "LFO 0", "LFO 0+", "LFO 1", "LFO 1+", "LFO 2", "LFO 2+", "LFO 3", "LFO 3+",
-        "Env 1", "Env 2", "Env 3", "Env 4", "Env 5"};
-
-CHARS mod_target_labels[]  = {
-        "--   ",
-        // osc
-        "OSC 1 Pitch", "OSC 1 Mod", "OSC 1 PWM", "OSC 1 Amp",
-        "OSC 2 Pitch", "OSC 2 Mod", "OSC 2 PWM", "OSC 2 Amp",
-        "OSC 3 Pitch", "OSC 3 Mod", "OSC 3 PWM", "OSC 3 Amp",
-        "OSC 4 Pitch", "OSC 4 Mod", "OSC 4 PWM", "OSC 4 Amp",
-        // dcf
-        "Filter 1 Freq", "Filter 1 Q", "Filter 1 Pan", "Filter 1 Amp",
-        "Filter 2 Freq", "Filter 2 Q", "Filter 2 Pan", "Filter 2 Amp",
-        // lfo
-        "LFO 1 Speed", "LFO 1 Amp",
-        "LFO 2 Speed", "LFO 2 Amp",
-        "LFO 3 Speed", "LFO 3 Amp",
-        // env
-        "Env 1 Speed", "Env 1 Amp",
-        "Env 2 Speed", "Env 2 Amp",
-        "Env 3 Speed", "Env 3 Amp",
-        "Env 4 Speed", "Env 4 Amp",
-        "Env 5 Speed", "Env 5 Amp",
-        // bus
-        "Bus A Pan", "Bus B Pan"};
-
-
-rogueGUI::rogueGUI(const char* URI) {
-    std::cout << "starting GUI" << std::endl;
-
-    // initialize sliders
-    for (int i = 3; i < p_n_ports; i++) {
-        uint32_t type = p_port_meta[i].type;
-        if (type == KNOB) {
-            Knob* knob = new Knob(p_port_meta[i].min, p_port_meta[i].max, p_port_meta[i].step);
-            knob->set_radius(12.0);
-            knob->set_size(38);
-            scales[i] = manage(knob);
-        } else if (type == LABEL) {
-            scales[i] = manage(new LabelBox(p_port_meta[i].min, p_port_meta[i].max, p_port_meta[i].step));
-        } else if (type == TOGGLE) {
-            scales[i] = manage(new Toggle());
-        } else if (type != SELECT) {
-            std::cout << i << std::endl;
-        } else if (i == p_osc1_type || i == p_osc2_type || i == p_osc3_type || i == p_osc4_type) {
-            scales[i] = manage(new SelectBox(osc_types, 34 + 3 + 4));
-        } else if (i == p_filter1_type || i == p_filter2_type) {
-            scales[i] = manage(new SelectBox(filter_types, 12));
-        } else if (i == p_filter1_source) {
-            scales[i] = manage(new SelectBox(filter1_sources, 2));
-        } else if (i == p_filter2_source) {
-            scales[i] = manage(new SelectBox(filter2_sources, 3));
-        } else if (i == p_lfo1_type || i == p_lfo2_type || i == p_lfo3_type) {
-            scales[i] = manage(new SelectBox(lfo_types, 5));
-        } else if (i == p_lfo1_reset_type || i == p_lfo2_reset_type || i == p_lfo3_reset_type) {
-            scales[i] = manage(new SelectBox(lfo_reset_types, 3));
-        } else if (i >= p_mod1_src || i <= p_mod20_amount) {
-            if ((i - p_mod1_src) % 3 == 0) {
-                scales[i] = manage(new SelectBox(mod_src_labels, M_SIZE));
-            } else {
-                scales[i] = manage(new SelectBox(mod_target_labels, M_TARGET_SIZE));
-            }
-        } else {
-            std::cout << i << std::endl;
-        }
-    }
-
-    // connect widgets to ports
-    for (int i = 3; i < p_n_ports; i++) {
-        slot<void> slot1 = compose(bind<0>(mem_fun(*this, &rogueGUI::write_control), i),
-            mem_fun(*scales[i], &Changeable::get_value));
-        scales[i]->connect(slot1);
-        int type = p_port_meta[i].type;
-        // connect knobs to statusbar
-        if (type == KNOB) {
-            slot<void> slot2 = compose(bind<0>(mem_fun(*this, &rogueGUI::change_status_bar), i),
-                mem_fun(*scales[i], &Changeable::get_value));
-            scales[i]->connect(slot2);
-        }
-    }
-
-    //osc.setFreq(1.0f);
-    osc.setSamplerate(OSC_DRAW_WIDTH);
-
-    lfo.setFreq(1.0);
-    lfo.setSamplerate(LFO_DRAW_WIDTH);
-
-    // clear buffers
-    for (int i = 0; i < NOSC; i++) {
-        std::memset(oscBuffers[i], 0, sizeof(float) * OSC_DRAW_WIDTH);
-    }
-    for (int i = 0; i < NLFO; i++) {
-        std::memset(lfoBuffers[i], 0, sizeof(float) * LFO_DRAW_WIDTH);
-    }
-    for (int i = 0; i < NENV; i++) {
-        std::memset(envBuffers[i], 0, sizeof(float) * ENV_DRAW_WIDTH);
-    }
-
-    // osc visualizations
-    for (int i = 0; i < NOSC; i++) {
-        Wavedraw* draw = manage(new Wavedraw(OSC_DRAW_WIDTH, DRAW_HEIGHT, oscBuffers[i], OSC_DRAW_WIDTH));
-        oscWaves[i] = draw;
-
-        // connect type, inv, width, param1, param2
-        slot<void> slot1 = compose(bind<0>(mem_fun(*this, &rogueGUI::update_osc), i),
-                    mem_fun(*scales[p_osc1_type + i * OSC_OFF], &Changeable::get_value));
-        scales[p_osc1_type + i * OSC_OFF]->connect(slot1);
-        scales[p_osc1_width + i * OSC_OFF]->connect(slot1);
-        update_osc(i, 0.0);
-    }
-
-    // lfo visualizations
-    for (int i = 0; i < NLFO; i++) {
-        Wavedraw* draw = manage(new Wavedraw(LFO_DRAW_WIDTH, DRAW_HEIGHT, lfoBuffers[i], LFO_DRAW_WIDTH));
-        lfoWaves[i] = draw;
-
-        // connect type, inv, width, param1, param2
-        slot<void> slot1 = compose(bind<0>(mem_fun(*this, &rogueGUI::update_lfo), i),
-                    mem_fun(*scales[p_lfo1_type + i * LFO_OFF], &Changeable::get_value));
-        scales[p_lfo1_type + i * LFO_OFF]->connect(slot1);
-        scales[p_lfo1_width + i * LFO_OFF]->connect(slot1);
-        update_lfo(i, 0.0);
-    }
-
-    // env visualizations
-    for (int i = 0; i < NENV; i++) {
-        Wavedraw* draw = manage(new Wavedraw(ENV_DRAW_WIDTH, DRAW_HEIGHT, envBuffers[i], ENV_DRAW_WIDTH));
-        envWaves[i] = draw;
-
-        // TODO connect and update
-    }
-
-    Table* table = manage(new Table(4, 3));
-    table->set_spacings(5);
-
-    // main
-    table->attach(*createMain(), 1, 2, 0, 1);
-
-    // effects
-    table->attach(*createEffects(), 2, 3, 0, 1);
-
-    // oscs
-    Table* oscTable = manage(new Table(2, 2));
-    oscTable->attach(*createOSC(0), 0, 1, 0, 1);
-    oscTable->attach(*createOSC(1), 1, 2, 0, 1);
-    oscTable->attach(*createOSC(2), 0, 1, 1, 2);
-    oscTable->attach(*createOSC(3), 1, 2, 1, 2);
-    Frame* oscFrame = manage(new Frame("Oscillators"));
-    oscFrame->add(*oscTable);
-    table->attach(*oscFrame, 0, 2, 1, 3);
-
-    // filters
-    Table* filterTable = manage(new Table(2, 1));
-    filterTable->attach(*createFilter(0), 0, 1, 0, 1);
-    filterTable->attach(*createFilter(1), 0, 1, 1, 2);
-    Frame* filterFrame = manage(new Frame("Filters"));
-    filterFrame->add(*filterTable);
-    table->attach(*filterFrame, 2, 3, 1, 3);
-
-    // envelopes
-    Notebook* envelopes = manage(new Notebook());
-    envelopes->set_tab_pos(POS_LEFT);
-    for (int i = 0; i < NENV; i++) {
-        envelopes->append_page(*createEnv(i), nums[i]);
-    }
-    Frame* envelopesFrame = manage(new Frame("Envelopes"));
-    envelopesFrame->add(*envelopes);
-    table->attach(*envelopesFrame, 0, 1, 3, 4);
-
-    // modulation
-    table->attach(*createModulation(), 1, 2, 3, 4);
-
-    // lfos
-    Notebook* lfos = manage(new Notebook());
-    lfos->set_tab_pos(POS_LEFT);
-    for (int i = 0; i < NLFO; i++) {
-        lfos->append_page(*createLFO(i), nums[i]);
-    }
-    Frame* lfosFrame = manage(new Frame("LFOs"));
-    lfosFrame->add(*lfos);
-    table->attach(*lfosFrame, 2, 3, 3, 4);
-
-    mainBox.pack_start(*table);
-    mainBox.pack_end(statusbar);
-    add(*align(&mainBox));
-    std::cout << "GUI ready" << std::endl;
-}
-
-Widget* rogueGUI::createOSC(int i) {
-    int off = i * OSC_OFF;
-    Table* table = manage(new Table(4, 8));
-    // row 1
-    control(table, "Type", p_osc1_type + off, 0, 1);
-    control(table, "Inv", p_osc1_inv + off, 1, 1);
-    control(table, "Track", p_osc1_tracking + off, 2, 1);
-    control(table, "Level", p_osc1_level + off, 3, 1);
-
-    table->attach(*oscWaves[i], 4, 8, 1, 3);
-
-    // row 2
-    control(table, "Coarse", p_osc1_coarse + off, 0, 3);
-    control(table, "Fine", p_osc1_fine + off, 1, 3);
-    control(table, "Ratio", p_osc1_ratio + off, 2, 3);
-    control(table, "Tone", p_osc1_tone + off, 3, 3);
-    control(table, "Width", p_osc1_width + off, 4, 3);
-    control(table, "Vol A", p_osc1_level_a + off, 5, 3);
-    control(table, "Vol B", p_osc1_level_b + off, 6, 3);
-
-    // TODO
-    //control(table, "Free", p_osc1_free + off, 2, 1);
-
-    return frame(osc_labels[i], p_osc1_on + off, table);
-}
-
-Widget* rogueGUI::createFilter(int i) {
-    int off = i * DCF_OFF;
-    Table* table = manage(new Table(4,6));
-    // row 1
-    control(table, "Type", p_filter1_type + off, 0, 1);
-    control(table, "Source", p_filter1_source + off, 1, 1);
-    control(table, "Freq", p_filter1_freq + off, 2, 1);
-    control(table, "Res", p_filter1_q + off, 3, 1);
-    control(table, "Vol", p_filter1_level + off, 4, 1);
-
-    // row 2
-    control(table, "Dist", p_filter1_distortion + off, 0, 3);
-    control(table, "Key>F", p_filter1_key_to_f + off, 1, 3);
-    control(table, "Vel>F", p_filter1_vel_to_f + off, 2, 3);
-    // empty
-    control(table, "Pan", p_filter1_pan + off, 4, 3);
-
-    return frame(filter_labels[i], p_filter1_on + off, table);
-}
-
-Widget* rogueGUI::createLFO(int i) {
-    int off = i * LFO_OFF;
-    Table* table = manage(new Table(4, 7));
-    // row 1
-    control(table, "Type", p_lfo1_type + off, 0, 1);
-    control(table, "Reset", p_lfo1_reset_type + off, 1, 1);
-    control(table, "Freq", p_lfo1_freq + off, 2, 1);
-    control(table, "Width", p_lfo1_width + off, 3, 1);
-
-    table->attach(*lfoWaves[i], 4, 7, 1, 3);
-
-    // row 2
-    control(table, "Rand", p_lfo1_humanize + off, 0, 3);
-
-    return frame(lfo_labels[i], p_lfo1_on + off, table);
-}
-
-Widget* rogueGUI::createEnv(int i) {
-    int off = i * ENV_OFF;
-    Table* table = manage(new Table(4, 7));
-    // row 1
-    control(table, "A", p_env1_attack + off, 0, 1);
-    control(table, "D", p_env1_decay + off, 1, 1);
-    control(table, "S", p_env1_sustain + off, 2, 1);
-    control(table, "R", p_env1_release + off, 3, 1);
-
-    table->attach(*envWaves[i], 4, 7, 1, 3);
-
-    // row 2
-    control(table, "Hold", p_env1_hold + off, 0, 3);
-    control(table, "Pre", p_env1_pre_delay + off, 1, 3);
-    control(table, "Curve", p_env1_curve + off, 2, 3);
-    control(table, "Retr", p_env1_retrigger + off, 3, 3);
-
-    return frame(env_labels[i], p_env1_on + off, table);
-}
-
-Widget* rogueGUI::createMain() {
-    Table* table = manage(new Table(2, 7));
-    table->set_spacings(5);
-    // row 1
-    control(table, "Volume", p_volume, 0, 1);
-    control(table, "Vol A", p_bus_a_level, 1, 1);
-    control(table, "Pan A", p_bus_a_pan, 2, 1);
-    control(table, "Vol B", p_bus_b_level, 3, 1);
-    control(table, "Pan B", p_bus_b_pan, 4, 1);
-    control(table, "Glide", p_glide_time, 5, 1);
-    control(table, "Bend", p_bend_range, 6, 1);
-
-    Frame* mainFrame = manage(new Frame("Main"));
-    mainFrame->add(*align(table));
-
-    //return frame(env_labels[i], p_env1_on + off, table);
-    return mainFrame;
-}
-
-Widget* rogueGUI::createEffects() {
-	Notebook* effects = manage(new Notebook());
-	effects->set_tab_pos(POS_LEFT);
-    // chorus - t, width, rate, blend, feedfoward, feedback
-	Table* chorus = manage(new Table(2, 6));
-	control(chorus, "T", p_chorus_t, 0, 1);
-	control(chorus, "Width", p_chorus_width, 1, 1);
-	control(chorus, "Rate", p_chorus_rate, 2, 1);
-	control(chorus, "Blend", p_chorus_blend, 3, 1);
-	control(chorus, "Feedfoward", p_chorus_feedforward, 4, 1);
-	control(chorus, "Feedback", p_chorus_feedback, 5, 1);
-	effects->append_page(*frame("Chorus", p_chorus_on, chorus), "C");
-
-	// phaser - rate, depth, spread, resonance
-	Table* phaser = manage(new Table(2, 4));
-	control(phaser, "Rate", p_phaser_rate, 0, 1);
-	control(phaser, "Depth", p_phaser_depth, 1, 1);
-	control(phaser, "Spread", p_phaser_spread, 2, 1);
-	control(phaser, "Resonance", p_phaser_resonance, 3, 1);
-	effects->append_page(*frame("Phaser", p_phaser_on, phaser), "P");
-
-	// delay - bpm, divider, feedback, dry, blend, tune
-	Table* delay = manage(new Table(2, 6));
-	control(delay, "BPM", p_delay_bpm, 0, 1);
-	control(delay, "Divider", p_delay_divider, 1, 1);
-	control(delay, "Feedback", p_delay_feedback, 2, 1);
-	control(delay, "Dry", p_delay_dry, 3, 1);
-	control(delay, "Blend", p_delay_blend, 4, 1);
-	control(delay, "Tune", p_delay_tune, 5, 1);
-	effects->append_page(*frame("Delay", p_delay_on, delay), "D");
-
-	// reverb - bandwidth, tail, damping, blend
-	Table* reverb = manage(new Table(2, 4));
-	control(reverb, "Bandwidth", p_reverb_bandwidth, 0, 1);
-	control(reverb, "Tail", p_reverb_tail, 1, 1);
-	control(reverb, "Damping", p_reverb_damping, 2, 1);
-	control(reverb, "Blend", p_reverb_blend, 3, 1);
-	effects->append_page(*frame("Reverb", p_reverb_on, reverb), "R");
-
-	Frame* effectsFrame = manage(new Frame("Effects"));
-	effectsFrame->add(*effects);
-	return effectsFrame;
-}
-
-
-Widget* rogueGUI::createModulation() {
-    Table* table1 = manage(new Table(5, 6));
-    Table* table2 = manage(new Table(5, 6));
-    //table->set_spacings(5);
-    for (int i = 0; i < 5; i++) {
-        int off = i * 3;
-        // table 1
-        // col 1
-        table1->attach(*scales[p_mod1_src + off]->get_widget(), 0, 1, i + 1, i + 2);
-        table1->attach(*scales[p_mod1_target + off]->get_widget(), 1, 2, i + 1, i + 2);
-        table1->attach(*scales[p_mod1_amount + off]->get_widget(), 2, 3, i + 1, i + 2);
-        // col 2
-        table1->attach(*scales[p_mod6_src + off]->get_widget(), 3, 4, i + 1, i + 2);
-        table1->attach(*scales[p_mod6_target + off]->get_widget(), 4, 5, i + 1, i + 2);
-        table1->attach(*scales[p_mod6_amount + off]->get_widget(), 5, 6, i + 1, i + 2);
-
-        // table 2
-        // col 1
-        table2->attach(*scales[p_mod11_src + off]->get_widget(), 0, 1, i + 1, i + 2);
-        table2->attach(*scales[p_mod11_target + off]->get_widget(), 1, 2, i + 1, i + 2);
-        table2->attach(*scales[p_mod11_amount + off]->get_widget(), 2, 3, i + 1, i + 2);
-        // col 2
-        table2->attach(*scales[p_mod16_src + off]->get_widget(), 3, 4, i + 1, i + 2);
-        table2->attach(*scales[p_mod16_target + off]->get_widget(), 4, 5, i + 1, i + 2);
-        table2->attach(*scales[p_mod16_amount + off]->get_widget(), 5, 6, i + 1, i + 2);
-    }
-
-    Notebook* mod = manage(new Notebook());
-    mod->set_tab_pos(POS_LEFT);
-    mod->append_page(*table1, "1");
-    mod->append_page(*table2, "2");
-
-    Frame* modFrame = manage(new Frame("Modulation"));
-    modFrame->add(*mod);
-    return modFrame;
-}
-
-
-void rogueGUI::control(Table* table, const char* label, int port_index, int left, int top) {
-    table->attach(*scales[port_index]->get_widget(), left, left + 1, top, top + 1);
-    table->attach(*manage(new Label(label)), left, left + 1, top + 1, top + 2);
-}
-
-Widget* rogueGUI::smallFrame(const char* label, Table* content) {
-    content->set_border_width(2);
-    content->set_col_spacings(2);
-    content->set_spacings(2);
-
-    Frame* frame = manage(new Frame());
-    frame->set_label_align(0.0f, 0.0f);
-    frame->set_border_width(5);
-    frame->set_label(label);
-    frame->add(*content);
-
-    Alignment* alignment = manage(new Alignment(0.0, 0.0, 1.0, 0.0));
-    alignment->add(*frame);
-    return alignment;
-}
-
-Widget* rogueGUI::frame(const char* label, int toggle, Table* content) {
-    content->set_border_width(2);
-    content->set_col_spacings(5);
-    content->set_spacings(2);
-
-    Panel* panel = manage(new Panel(label, scales[toggle]->get_widget(), align(content)));
-
-    Alignment* alignment = manage(new Alignment(0.0, 0.0, 1.0, 0.0));
-    alignment->add(*panel);
-    return alignment;
-}
-
-Alignment* rogueGUI::align(Widget* widget) {
-    Alignment* alignment = manage(new Alignment(0.0, 0.0, 0.0, 0.0));
-    alignment->add(*widget);
-    return alignment;
-}
-
-void rogueGUI::port_event(uint32_t port, uint32_t buffer_size, uint32_t format, const void* buffer) {
-    if (port > 2) {
-        scales[port]->set_value(*static_cast<const float*>(buffer));
-    }
-}
-
-void rogueGUI::change_status_bar(uint32_t port, float value) {
-   //if (p_port_meta[port-3].step >= 1.0f) {
-   //    sprintf(statusBarText, "%s = %3.0f", p_port_meta[port].symbol, value);
-   //} else {
-       sprintf(statusBarText, "%s = %3.3f", p_port_meta[port].symbol, value);
-   //}
-   statusbar.remove_all_messages();
-   statusbar.push(statusBarText);
-}
-
-void rogueGUI::update_osc(int i, float value) {
-    float t = scales[p_osc1_tone + i * OSC_OFF]->get_value();
-    float w = scales[p_osc1_width + i * OSC_OFF]->get_value();
-    osc.process((int)value, 1.0f, t, w, w, oscBuffers[i], OSC_DRAW_WIDTH);
-    oscWaves[i]->refresh();
-}
-
-void rogueGUI::update_lfo(int i, float value) {
-    float w = scales[p_lfo1_width + i * LFO_OFF]->get_value();
-
-    lfo.setType((int)value);
-    lfo.setWidth(w);
-    lfo.reset();
-    float* buffer = lfoBuffers[i];
-    for (int j = 0; j < LFO_DRAW_WIDTH; j++) {
-        buffer[j] = lfo.tick();
-    }
-
-    lfoWaves[i]->refresh();
-}
-
-static int _ = rogueGUI::register_class("http://www.github.com/timowest/rogue/ui");
-}
+#include "gui/rogue-gui.mcpp"
