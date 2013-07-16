@@ -2,8 +2,9 @@
 #define QTWIDGETS_HPP
 
 #include <QDial>
-#include <QPainter>
+#include <QDoubleSpinBox>
 #include <QFrame>
+#include <QPainter>
 
 class Widget {
   public:
@@ -102,6 +103,17 @@ class CustomComboBox : public QComboBox, public Widget {
 
     void set_value(float v) {
         setCurrentIndex((int)v);
+    }
+};
+
+class CustomSpinBox : public QDoubleSpinBox, public Widget {
+
+    float get_value() {
+        return value();
+    }
+
+    void set_value(float v) {
+        setValue(v);
     }
 };
 

@@ -2,7 +2,7 @@
   background: rgb(180, 180, 180);
 }
 
-QTabBar::tab, QLabel, QComboBox {
+QTabBar::tab, QLabel, QComboBox, QDoubleSpinBox {
   font-size: 12px;
 }
 
@@ -94,7 +94,11 @@ QPushButton:pressed {
 QComboBox {
   background: transparent;
   border: none;
-  max-width: 90px;
+  max-width: 80px;
+}
+
+#mod QComboBox {
+  max-width: 50px;
 }
 
 QComboBox::down-arrow {
@@ -103,6 +107,13 @@ QComboBox::down-arrow {
 
 QComboBox::drop-down {
   /*border: none;*/
+}
+
+/* spinbox */
+
+QDoubleSpinBox {
+  background: transparent;
+  max-width: 50px;
 }
 
 /* tabs */

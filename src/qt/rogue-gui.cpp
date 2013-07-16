@@ -37,6 +37,30 @@ class rogueGui : public QWidget {
         return dial;
     }
 
+    QComboBox* createSelect(int p, const char** texts, int size) {
+        CustomComboBox* box = new CustomComboBox();
+        for (int i = 0; i < size; i++) {
+            box->addItem(texts[i]);
+        }
+        mapper.setMapping(box, p);
+        connect(box, SIGNAL(currentIndexChanged(int)), &mapper, SLOT(map()));
+        widgets[p] = box;
+        return box;
+    }
+
+    QDoubleSpinBox* createSpin(int p) {
+        const port_meta_t& port = p_port_meta[p];
+        CustomSpinBox* spin = new CustomSpinBox();
+        spin->setMinimum(port.min);
+        spin->setMaximum(port.max);
+        spin->setValue(port.default_value);
+        spin->setSingleStep(port.step);
+        mapper.setMapping(spin, p);
+        connect(spin, SIGNAL(valueChanged(double)), &mapper, SLOT(map()));
+        widgets[p] = spin;
+        return spin;
+    }
+
     QRadioButton* createToggle(int p) {
         CustomRadioButton* button = new CustomRadioButton();
         button->setChecked(p_port_meta[p].default_value > 0.0);
@@ -55,17 +79,6 @@ class rogueGui : public QWidget {
         connect(button, SIGNAL(toggled(bool)), &mapper, SLOT(map()));
         widgets[p] = button;
         return button;
-    }
-
-    QComboBox* createSelect(int p, const char** texts, int size) {
-        CustomComboBox* box = new CustomComboBox();
-        for (int i = 0; i < size; i++) {
-            box->addItem(texts[i]);
-        }
-        mapper.setMapping(box, p);
-        connect(box, SIGNAL(currentIndexChanged(int)), &mapper, SLOT(map()));
-        widgets[p] = box;
-        return box;
     }
 
     void connectBox(int p, QGroupBox* box) {
@@ -236,6 +249,7 @@ class rogueGui : public QWidget {
             grid->addWidget(new QLabel("Mod"), 4, 5);
             grid->addWidget(new QLabel("PM"), 4, 6);
         }
+        grid->setRowStretch(5, 1);
         return parent;
     }
 
@@ -284,6 +298,7 @@ class rogueGui : public QWidget {
         grid->addWidget(new QLabel("Dist"), 4, 0);
         grid->addWidget(new QLabel("K > F"), 4, 1);
         grid->addWidget(new QLabel("V > F"), 4, 2);
+        grid->setRowStretch(5, 1);
         return parent;
     }
 
@@ -327,6 +342,7 @@ class rogueGui : public QWidget {
         grid->addWidget(new QLabel("Pre"), 3, 1);
         grid->addWidget(new QLabel("Curve"), 3, 2);
         grid->addWidget(new QLabel("Retr"), 3, 3);
+        grid->setRowStretch(4, 1);
         return parent;
     }
 
@@ -345,19 +361,15 @@ class rogueGui : public QWidget {
     }
 
     QWidget* createMod(QWidget* parent, int i) {
-        int off = i * (p_mod11_src - p_mod1_src);
+        int off = i * (p_mod6_src - p_mod1_src);
         QGridLayout* grid = new QGridLayout(parent);
         for (int j = 0; j < 5; j++) {
-            // col 1
-            grid->addWidget(createSelect(p_mod1_src + off, mod_src_labels, M_SIZE), j, 0);
-            grid->addWidget(createSelect(p_mod1_target + off, mod_target_labels, M_TARGET_SIZE), j, 1);
-            grid->addWidget(new QLabel("c"), j, 2); // TODO control
-            // col 2
-            grid->addWidget(createSelect(p_mod1_src + off, mod_src_labels, M_SIZE), j, 3);
-            grid->addWidget(createSelect(p_mod1_target + off, mod_target_labels, M_TARGET_SIZE), j, 4);
-            grid->addWidget(new QLabel("c"), j, 5); // TODO control
+            grid->addWidget(createSelect(p_mod1_src + off, mod_src_labels, M_SIZE), 0, j);
+            grid->addWidget(createSelect(p_mod1_target + off, mod_target_labels, M_TARGET_SIZE), 1, j);
+            grid->addWidget(createSpin(p_mod1_amount + off), 2, j);
             off += 3;
         }
+        grid->setRowStretch(3, 1);
         return parent;
     }
 
@@ -368,6 +380,8 @@ class rogueGui : public QWidget {
         tabs->setTabPosition(QTabWidget::West);
         tabs->addTab(createMod(new QGroupBox(), 0), "1");
         tabs->addTab(createMod(new QGroupBox(), 1), "2");
+        tabs->addTab(createMod(new QGroupBox(), 2), "3");
+        tabs->addTab(createMod(new QGroupBox(), 3), "4");
         layout->addWidget(tabs);
         parent->setLayout(layout);
         return parent;
