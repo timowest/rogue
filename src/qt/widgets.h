@@ -105,6 +105,25 @@ class CustomComboBox : public QComboBox, public Widget {
     }
 };
 
+class GroupBoxAdapter : public Widget {
+
+    QGroupBox* box;
+
+  public:
+    GroupBoxAdapter(QGroupBox* _box) {
+        box = box;
+    }
+
+    float get_value() {
+        return box->isChecked() ? 1.0f : 0.0f;
+    }
+
+    void set_value(float v) {
+        box->setChecked(v > 0.0f);
+    }
+
+};
+
 // WaveDisplay
 
 class WaveDisplay : public QFrame {

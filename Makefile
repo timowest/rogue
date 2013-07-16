@@ -53,7 +53,7 @@ guitests: src/rogue.gen src/gui/config.gen
 	$(CXX) -g -std=c++11 src/gui/rogue-gui-test.cpp $(GTKMM) $(LVTK_UI) -Idsp -Isrc -o guitest.out	
 
 qt:
-	moc src/qt/test.cpp > src/qt/test.mcpp
+	moc src/qt/rogue-gui.cpp > src/qt/rogue-gui.mcpp
 	$(CXX) -g -std=c++11 src/qt/test.cpp $(QT) $(LVTK_UI) -Idsp -Isrc -o qttest.out 
 	
 tests: src/rogue.gen
