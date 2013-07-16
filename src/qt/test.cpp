@@ -1,15 +1,16 @@
 #include <QApplication>
+#include <QComboBox>
+#include <QDial>
+#include <QFile>
 #include <QGridLayout>
 #include <QGroupBox>
-#include <QDial>
-#include <QRadioButton>
-#include <QPushButton>
-#include <QComboBox>
-#include <QPainter>
 #include <QLabel>
-#include <QTabWidget>
-#include <QFile>
+#include <QPainter>
+#include <QPushButton>
+#include <QRadioButton>
+#include <QSignalMapper>
 #include <QString>
+#include <QTabWidget>
 
 #include "common.h"
 #include "rogue.gen"
@@ -19,39 +20,51 @@
 
 class rogueGui : public QWidget {
 
+    Q_OBJECT
+
+    Widget* widgets[p_n_ports];
+
+    QSignalMapper mapper;
+
     QDial* createDial(int p, bool big = false) {
-        // TODO connect
         int size = big ? 45 : 35;
         const port_meta_t& port = p_port_meta[p];
-        float min = port.min / port.step;
-        float max = port.max / port.step;
-        float value = port.default_value / port.step;
-        QDial* dial = new CustomDial(min, max, value);
+        CustomDial* dial = new CustomDial(port.min, port.max, port.step, port.default_value);
         dial->setFixedSize(size, size);
+        mapper.setMapping(dial, p);
+        connect(dial, SIGNAL(valueChanged(int)), &mapper, SLOT(map()));
+        widgets[p] = dial;
         return dial;
     }
 
     QRadioButton* createToggle(int p) {
-        // TODO connect
-        QRadioButton* button = new QRadioButton();
+        CustomRadioButton* button = new CustomRadioButton();
         button->setChecked(p_port_meta[p].default_value > 0.0);
+        mapper.setMapping(button, p);
+        connect(button, SIGNAL(toggled(bool)), &mapper, SLOT(map()));
+        widgets[p] = button;
         return button;
     }
 
     QPushButton* createToggle(int p, const char* label) {
-        // TODO connect
-        QPushButton* button = new QPushButton(label);
+        CustomPushButton* button = new CustomPushButton();
+        button->setText(label);
         button->setCheckable(true);
         button->setChecked(p_port_meta[p].default_value > 0.0);
+        mapper.setMapping(button, p);
+        connect(button, SIGNAL(toggled(bool)), &mapper, SLOT(map()));
+        widgets[p] = button;
         return button;
     }
 
     QComboBox* createSelect(int p, const char** texts, int size) {
-        // TODO connect
-        QComboBox* box = new QComboBox();
+        CustomComboBox* box = new CustomComboBox();
         for (int i = 0; i < size; i++) {
             box->addItem(texts[i]);
         }
+        mapper.setMapping(box, p);
+        connect(box, SIGNAL(currentIndexChanged(int)), &mapper, SLOT(map()));
+        widgets[p] = box;
         return box;
     }
 
@@ -379,7 +392,17 @@ class rogueGui : public QWidget {
         return parent;
     }
 
+    void port_event(uint32_t port, uint32_t buffer_size, uint32_t format, const void* buffer) {
+        if (port > 2) {
+            widgets[port]->set_value(*static_cast<const float*>(buffer));
+        }
+    }
+
   public:
+
+    Q_SLOT void portChange(int p) {
+        //writeControl(p, widgets[p]->get_value());
+    }
 
     rogueGui(QWidget* parent = 0) : QWidget(parent) {
         setObjectName("root");
@@ -404,9 +427,18 @@ class rogueGui : public QWidget {
         grid->addWidget(lfos, 3, 2);
         grid->setRowStretch(1, 1);
         grid->setRowStretch(2, 1);
+
+        connect(&mapper, SIGNAL(mapped(int)), SLOT(portChange(int)));
     }
 
+    ~rogueGui() {
+        for (int i = 0; i < p_n_ports; i++) {
+            delete widgets[i];
+        }
+    }
 };
+
+#include "qt/test.mcpp"
 
 
 int main(int argc, char *argv[]) {

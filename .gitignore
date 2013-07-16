@@ -1,3 +1,4 @@
+*.mcpp
 *.gen
 *.gch
 *.so

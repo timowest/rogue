@@ -29,6 +29,7 @@ rogue.ttl:
 	./confgen.py     
 
 presets.ttl:
+	mkdir -p presets
 	./presetgen.py	
 	
 src/gui/config.gen:
@@ -50,8 +51,9 @@ guitests: src/rogue.gen src/gui/config.gen
 	$(CXX) -g -std=c++11 src/gui/label-test.cpp $(GTKMM) -Isrc -o labeltest.out
 	$(CXX) -g -std=c++11 src/gui/wavedraw-test.cpp $(GTKMM) -Isrc -o wavedrawtest.out
 	$(CXX) -g -std=c++11 src/gui/rogue-gui-test.cpp $(GTKMM) $(LVTK_UI) -Idsp -Isrc -o guitest.out	
-	
+
 qt:
+	moc src/qt/test.cpp > src/qt/test.mcpp
 	$(CXX) -g -std=c++11 src/qt/test.cpp $(QT) $(LVTK_UI) -Idsp -Isrc -o qttest.out 
 	
 tests: src/rogue.gen

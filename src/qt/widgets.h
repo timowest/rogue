@@ -5,11 +5,17 @@
 #include <QPainter>
 #include <QFrame>
 
+class Widget {
+  public:
+    virtual float get_value() = 0;
+    virtual void set_value(float val) = 0;
+};
+
 // CustomDial
 
 // TODO get pen and brush color from stylesheet
 // TODO use different colors if passivated
-class CustomDial : public QDial {
+class CustomDial : public QDial, public Widget {
     static const int FULL = 5760;
     static const int HALF = 2880;
 
@@ -17,7 +23,7 @@ class CustomDial : public QDial {
             | QPainter::SmoothPixmapTransform
             || QPainter::HighQualityAntialiasing);
 
-    float min, max, pos0;
+    float min, max, pos0, step;
 
   protected:
     void paintEvent(QPaintEvent *pe) {
@@ -42,26 +48,65 @@ class CustomDial : public QDial {
         double angle = (0.75 + pos * 1.5) * M_PI;
         painter.setPen(QPen(QBrush("#fff"), 2));
         painter.drawLine(
-            width/2 + 0.2 * radius * cos(angle), height/2 + 0.2 * radius * sin(angle),
-            width/2 + 0.8 * radius * cos(angle), height/2 + 0.8 * radius * sin(angle));
+            width/2.0 + 0.2 * radius * cos(angle), height/2.0 + 0.2 * radius * sin(angle),
+            width/2.0 + 0.8 * radius * cos(angle), height/2.0 + 0.8 * radius * sin(angle));
     }
 
   public:
-    CustomDial(int _min, int _max, int _value) : QDial() {
-        setMinimum(_min);
-        setMaximum(_max);
-        setValue(_value);
-
-        min = _min;
-        max = _max;
+    CustomDial(float _min, float _max, float _step, float _value) : QDial() {
+        min = _min / _step;
+        max = _max / _step;
+        step = _step;
         pos0 = -min / (max - min);
+        setRange(min, max);
+        setValue(_value / _step);
+    }
+
+    float get_value() {
+        return value() * step;
+    }
+
+    void set_value(float v) {
+        setValue(v / step);
     }
 
 };
 
+class CustomRadioButton : public QRadioButton, public Widget {
+
+    float get_value() {
+        return isChecked() ? 1.0f : 0.0f;
+    }
+
+    void set_value(float v) {
+        setChecked(v > 0.0f);
+    }
+};
+
+class CustomPushButton : public QPushButton, public Widget {
+
+    float get_value() {
+        return isChecked() ? 1.0f : 0.0f;
+    }
+
+    void set_value(float v) {
+        setChecked(v > 0.0f);
+    }
+};
+
+class CustomComboBox : public QComboBox, public Widget {
+
+    float get_value() {
+        return currentIndex();
+    }
+
+    void set_value(float v) {
+        setCurrentIndex((int)v);
+    }
+};
+
 // WaveDisplay
 
-// 120/60, 100/60
 class WaveDisplay : public QFrame {
   public:
     WaveDisplay(int w, int h) {
