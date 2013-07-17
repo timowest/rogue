@@ -82,22 +82,23 @@ template <yield_func_t F>
 void
 Scape::cycle (int frames)
 {
-	sample_t * s = ports[0];
+	sample_t * sl = ports[0];
+	sample_t * sr = ports[1];
 
 	/* delay times */
-	double t1 = fs * 60. / getport(1);
-	int div = (int) getport(2);
+	double t1 = fs * 60. / getport(2);
+	int div = (int) getport(3);
 	double t2 = t1 * dividers[div];
 
-	fb = .94*getport(3);
+	fb = .94*getport(4);
 
-	double dry = getport(4);
+	double dry = getport(5);
 	dry = dry * dry;
-	double blend = getport(5);
-	float tune = getport(6);
+	double blend = getport(6);
+	float tune = getport(7);
 
-	sample_t * dl = ports[7];
-	sample_t * dr = ports[8];
+	sample_t * dl = ports[8];
+	sample_t * dr = ports[9];
 
 	DSP::FPTruncateMode truncate;
 
@@ -121,13 +122,16 @@ Scape::cycle (int frames)
 		int n = min ((int) period, frames);
 		for (int i=0; i < n; ++i)
 		{
-			sample_t x = s[i] + normal;
+		        sample_t xl = sl[i];
+		        sample_t xr = sr[i];
+			sample_t x = 0.5 * (xl + xr) + normal;
 
 			sample_t x1 = delay.get_at (t1);
 			sample_t x2 = delay.get_at (t2);
 
 			delay.put (x + fb*x1);
-			x = dry*x + .2*svf[0].process (x) + .6*svf[3].process(x);
+			//x = dry*x + .2*svf[0].process (x) + .6*svf[3].process(x);
+			x = .2*svf[0].process (x) + .6*svf[3].process(x);
 
 			x1 = svf[1].process (x1 - normal);
 			x2 = svf[2].process (x2 - normal);
@@ -141,13 +145,14 @@ Scape::cycle (int frames)
 			x2r = fabs (lfo[1].lp.process(lfo[1].lorenz.get()));
 			x2l = 1 - x2r;
 
-			F (dl, i, x + blend * (x1 * x1l + x2 * x2l), adding_gain);
-			F (dr, i, x + blend * (x2 * x2r + x1 * x1r), adding_gain);
+			F (dl, i, dry*xl + x + blend * (x1 * x1l + x2 * x2l), adding_gain);
+			F (dr, i, dry*xr + x + blend * (x2 * x2r + x1 * x1r), adding_gain);
 		}
 
 		frames -= n;
 		period -= n;
-		s += n;
+		sl += n;
+		sr += n;
 		dl += n;
 		dr += n;
 	}

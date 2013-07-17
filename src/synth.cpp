@@ -189,12 +189,12 @@ void rogueSynth::post_process(uint32_t from, uint32_t to) {
         phaser_ports[5] = p(p_phaser_resonance);
         phaser.activate();
 
-        delay_ports[1] = p(p_delay_bpm);
-        delay_ports[2] = p(p_delay_divider);
-        delay_ports[3] = p(p_delay_feedback);
-        delay_ports[4] = p(p_delay_dry);
-        delay_ports[5] = p(p_delay_blend);
-        delay_ports[6] = p(p_delay_tune);
+        delay_ports[2] = p(p_delay_bpm);
+        delay_ports[3] = p(p_delay_divider);
+        delay_ports[4] = p(p_delay_feedback);
+        delay_ports[5] = p(p_delay_dry);
+        delay_ports[6] = p(p_delay_blend);
+        delay_ports[7] = p(p_delay_tune);
         delay.activate();
 
         reverb_ports[2] = p(p_reverb_bandwidth);
@@ -224,8 +224,11 @@ void rogueSynth::post_process(uint32_t from, uint32_t to) {
     }
     // delay
     if (*p(p_delay_on) > 0.0) {
-    	// TODO
-    	//delay.run(to - from);
+        delay_ports[0] = left;
+        delay_ports[1] = right;
+        delay_ports[8] = left;
+        delay_ports[9] = right;
+        delay.run(to - from);
     }
     // reverb
     if (*p(p_reverb_on) > 0.0) {
