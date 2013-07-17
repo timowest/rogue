@@ -61,7 +61,7 @@ QGroupBox QGroupBox QLabel {
   font-weight: bold;  
 }
 
-#oscillators QGroupBox, #filters QGroupBox, #lfos QGroupBox {
+#oscillators QGroupBox, #filters QGroupBox, #mod QGroupBox, #envs QGroupBox, #lfos QGroupBox {
   padding-top: -5px;
 }
 

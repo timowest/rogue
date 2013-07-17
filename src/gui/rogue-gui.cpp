@@ -341,26 +341,26 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         connectBox(p_env1_on + off, parent);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(p_env1_attack + off), 0, 0);
-        grid->addWidget(createDial(p_env1_decay + off), 0, 1);
-        grid->addWidget(createDial(p_env1_sustain + off), 0, 2);
-        grid->addWidget(createDial(p_env1_release + off), 0, 3);
-        grid->addWidget(env_wd[i] = new WaveDisplay(100, 60), 0, 4, 2, 3);
+        grid->addWidget(createToggle(p_env1_retrigger + off, "Retr"), 0, 0);
         // row 2
-        grid->addWidget(new QLabel("A"), 1, 0);
-        grid->addWidget(new QLabel("D"), 1, 1);
-        grid->addWidget(new QLabel("S"), 1, 2);
-        grid->addWidget(new QLabel("R"), 1, 3);
+        grid->addWidget(createDial(p_env1_attack + off), 1, 0);
+        grid->addWidget(createDial(p_env1_decay + off), 1, 1);
+        grid->addWidget(createDial(p_env1_sustain + off), 1, 2);
+        grid->addWidget(createDial(p_env1_release + off), 1, 3);
+        grid->addWidget(env_wd[i] = new WaveDisplay(100, 60), 1, 4, 2, 3);
         // row 3
-        grid->addWidget(createDial(p_env1_hold + off), 2, 0);
-        grid->addWidget(createDial(p_env1_pre_delay + off), 2, 1);
-        grid->addWidget(createDial(p_env1_curve + off), 2, 2);
-        grid->addWidget(createToggle(p_env1_retrigger + off), 2, 3);
+        grid->addWidget(new QLabel("A"), 2, 0);
+        grid->addWidget(new QLabel("D"), 2, 1);
+        grid->addWidget(new QLabel("S"), 2, 2);
+        grid->addWidget(new QLabel("R"), 2, 3);
         // row 4
-        grid->addWidget(new QLabel("Hold"), 3, 0);
-        grid->addWidget(new QLabel("Pre"), 3, 1);
-        grid->addWidget(new QLabel("Curve"), 3, 2);
-        grid->addWidget(new QLabel("Retr"), 3, 3);
+        grid->addWidget(createDial(p_env1_hold + off), 3, 0);
+        grid->addWidget(createDial(p_env1_pre_delay + off), 3, 1);
+        grid->addWidget(createDial(p_env1_curve + off), 3, 2);
+        // row 5
+        grid->addWidget(new QLabel("Hold"), 4, 0);
+        grid->addWidget(new QLabel("Pre"), 4, 1);
+        grid->addWidget(new QLabel("Curve"), 4, 2);
         grid->setRowStretch(4, 1);
         return parent;
     }
