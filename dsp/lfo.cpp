@@ -15,14 +15,14 @@ namespace dsp {
 
 void LFO::clear() {
     type = 0;
-    phase = 0.0;
-    prev_phase = 0.0;
+    phase = start;
+    prev_phase = start;
     value = 0.0;
 }
 
 void LFO::reset() {
-    phase = 0.0;
-    prev_phase = 0.0;
+    phase = start;
+    prev_phase = start;
     value = 0.0;
 }
 

@@ -1,5 +1,5 @@
 #root {
-  background: rgb(180, 180, 180);
+  background: rgb(130, 130, 130);
 }
 
 QTabBar::tab, QLabel, QComboBox, QDoubleSpinBox {
@@ -39,15 +39,11 @@ QGroupBox QGroupBox::title {
   subcontrol-position: top right;
 }
 
-#effects QGroupBox::title {
-  subcontrol-position: top left;
-}
-
 QGroupBox QGroupBox QLabel {
   qproperty-alignment: AlignCenter;
 }
 
-QGroupBox QGroupBox QFrame{
+QGroupBox QGroupBox QFrame {
   background: rgb(220, 220, 220);
   border: solid 1px rgb(180, 180, 180);
 }
@@ -61,8 +57,12 @@ QGroupBox QGroupBox QLabel {
   font-weight: bold;  
 }
 
-#oscillators QGroupBox, #filters QGroupBox, #mod QGroupBox, #envs QGroupBox, #lfos QGroupBox {
+QGroupBox QGroupBox {
   padding-top: -5px;
+}
+
+#effects {
+  padding-top: -10px;
 }
 
 /* labels */
@@ -151,3 +151,20 @@ QTabBar::tab:selected {
 #effects QTabWidget {
   height: 80px;
 }
+
+/* DARK theme */
+
+/*#root {
+  background: rgb(80, 80, 80);
+  color: rgb(120, 120, 120);
+}
+
+QGroupBox {
+  background: rgb(60, 60, 60);
+  border: 1px solid rgb(60, 60, 60);
+}
+
+QGroupBox QGroupBox {
+  background: rgb(30, 30, 30);
+  border: 1px solid rgb(30, 30, 30);
+}*/

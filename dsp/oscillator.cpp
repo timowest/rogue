@@ -438,7 +438,7 @@ void Virtual::el_beta1(float* output, int samples) {
     freq = f;
     PHASE_LOOP_PM(
         float pulse = 0.5f * (output[i] + 1.0f);
-        float phase2 = fmod(phase + tone, 1.0f);
+        float phase2 = fmod(phase + 0.5, 1.0f);
         output[i] = gb(phase * pulse + phase2 * (1.0f - pulse));
     )
 }
@@ -455,7 +455,7 @@ void Virtual::el_beta2(float* output, int samples) {
     freq = f;
     PHASE_LOOP_PM(
         float pulse = 0.5f * (output[i] + 1.0f);
-        float phase2 = fmod(phase + tone, 1.0f);
+        float phase2 = fmod(phase + 0.5, 1.0f);
         output[i] = gb(phase * pulse + phase2 * (1.0f - pulse));
     )
 }
@@ -468,7 +468,7 @@ void Virtual::el_pulse_tri(float* output, int samples) {
     // tri
     phase = p;
     PWIDTH_LOOP_PM(
-        output[i] = tone * output[i] + (1.0 - tone) * gb(gtri(phase, 0.5f));
+        output[i] = 0.5 * (output[i] + gb(gtri(phase, 0.5f)));
     )
 }
 
@@ -597,7 +597,7 @@ void Virtual::process(float* output, int samples) {
 void AS::saw(float* output, int samples) {
     float inc = freq / sample_rate;
     // TODO take sr into account
-    float max = 20.0f * tone;
+    float max = 20.0f * wt;
 
     for (int i = 0.; i < samples; i++) {
         float y = 0.0f;
@@ -612,7 +612,7 @@ void AS::saw(float* output, int samples) {
 void AS::square(float* output, int samples) {
     float inc = freq / sample_rate;
     // TODO take sr into account
-    float max = 40.0f * tone;
+    float max = 40.0f * wt;
 
     for (int i = 0; i < samples; i++) {
         float y = 0.0f;
@@ -627,7 +627,7 @@ void AS::square(float* output, int samples) {
 void AS::impulse(float* output, int samples) {
     float inc = freq / sample_rate;
     // TODO take sr into account
-    float max = 20.0f * tone;
+    float max = 20.0f * wt;
 
     for (int i = 0; i < samples; i++) {
         float y = 0.0f;

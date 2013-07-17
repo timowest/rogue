@@ -26,6 +26,12 @@ struct Osc {
         prev_level = 0.0f;
     }
 
+    void setStart(float s) {
+        virt.setStart(s);
+        as.setStart(s);
+        noise.setStart(s);
+    }
+
     void resetPhase() {
         virt.reset();
         as.reset();
@@ -38,7 +44,7 @@ struct Osc {
         noise.setSamplerate(r);
     }
 
-    void process(int type, float freq, float t, float wf, float wt, float* buffer, int samples) {
+    void process(int type, float freq, float start, float wf, float wt, float* buffer, int samples) {
         dsp::Oscillator* osc;
         if (type < 34) {
             osc = &virt;
@@ -51,7 +57,8 @@ struct Osc {
         }
         osc->setType(type);
         osc->setFreq(freq);
-        osc->setParams(t, wf, wt);
+        osc->setStart(start);
+        osc->setWidth(wf, wt);
         osc->process(buffer, samples);
     }
 };

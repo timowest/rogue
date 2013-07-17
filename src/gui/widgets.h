@@ -14,8 +14,6 @@ class Widget {
 
 // CustomDial
 
-// TODO get pen and brush color from stylesheet
-// TODO use different colors if passivated
 class CustomDial : public QDial, public Widget {
 
     static const QPainter::RenderHint paintFlags = QPainter::RenderHint(QPainter::Antialiasing

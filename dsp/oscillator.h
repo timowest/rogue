@@ -17,7 +17,7 @@ namespace dsp {
 class Oscillator {
   protected:
     float freq = 440.0f, sample_rate, phase = 0.0f;
-    float tone = 0.5f, wf = 0.5f, wt = 0.5f;
+    float start = 0.0f, wf = 0.5f, wt = 0.5f;
     int type = 0;
 
     // audio modulation
@@ -47,22 +47,25 @@ class Oscillator {
         sync = _sync;
     }
 
-    void setParams(float _t, float _wf, float _wt) {
-        tone = _t;
+    void setStart(float _s) {
+        start = _s;
+    }
+
+    void setWidth(float _wf, float _wt) {
         wf = _wf;
         wt = _wt;
     }
 
     void clear() {
-        phase = 0.0f;
+        phase = start;
         freq = 440.0f;
         type = 0;
 
-        tone = wf = wt = 0.5;
+        wf = wt = 0.5;
     }
 
     void reset() {
-        phase = 0;
+        phase = start;
     }
 
     virtual void process(float* output, int samples) = 0;

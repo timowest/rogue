@@ -17,6 +17,7 @@ class LFO {
     void clear ();
     void reset ();
     void setType(int t) { type = t; }
+    void setStart(float s) { start = s; }
     void setFreq(float f) { freq = f; }
     void setSamplerate(float r) { sample_rate = r; }
     void setWidth(float w) { width = w; }
@@ -26,7 +27,7 @@ class LFO {
 
   private:
     int type = 0;
-    float phase = 0.0, freq, width = 0.5;
+    float phase = 0.0, start = 0.0, freq, width = 0.5;
     float prev_phase, value;
     float sample_rate;
 };
