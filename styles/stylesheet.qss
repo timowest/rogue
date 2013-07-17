@@ -82,11 +82,12 @@ QDial {
 
 QPushButton {
   background: transparent;
-  border: none;
+  border: none;  
+  color: rgb(128,128,128);
 }
 
-QPushButton:pressed {
-  font-weight: bold;
+QPushButton:checked {
+  color: rgb(0,0,0);
 }
 
 /* combobox */
@@ -101,7 +102,11 @@ QComboBox {
   max-width: 50px;
 }
 
-QComboBox::down-arrow {
+#mod QComboBox::drop-down {
+  background: none;
+}
+
+QComboBox::down-arrow {  
   image: url(styles/arrow_down.png);  
 }
 

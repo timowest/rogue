@@ -40,9 +40,8 @@ class CustomDial : public QDial, public Widget {
         painter.drawEllipse(6, 6, width - 12, height - 12);
 
         // arc
-        painter.setPen(QPen(QBrush("#666"), 3));
+        painter.setPen(QPen(isEnabled() ? QBrush("#666") : QBrush("#bbb"), 3));
         painter.drawArc(2, 2, width - 4, height - 4, (1.125 - pos0 * 1.25) * HALF, -(pos - pos0) * 1.25 * HALF);
-        //painter.drawArc(2, 2, width - 4, height - 4, 1.125 * HALF, -pos * 1.25 * HALF);
 
         // line
         int radius = 0.5 * width - 6;
@@ -58,7 +57,7 @@ class CustomDial : public QDial, public Widget {
         min = _min / _step;
         max = _max / _step;
         step = _step;
-        pos0 = -min / (max - min);
+        pos0 = ((min > 0.0 ? min : 0.0) - min) / (max - min);
         setRange(min, max);
         setValue(_value / _step);
     }
@@ -147,6 +146,9 @@ class WaveDisplay : public QFrame {
 
   protected:
     void paintEvent(QPaintEvent *pe) {
+        if (!isEnabled()) {
+            return;
+        }
         int width = this->width();
         int height = this->height();
         QPainter painter(this);

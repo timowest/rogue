@@ -478,7 +478,7 @@ void Virtual::el_exp(float* output, int samples) {
         if (phase > 0.5f) {
             output[i] = -1.0 + 8.0 * (1.0 - phase) * (1.0 - phase);
         } else {
-            output[i] -1.0 + 8.0 * phase * phase;
+            output[i] = -1.0 + 8.0 * phase * phase;
         }
     )
 }

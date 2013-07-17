@@ -139,8 +139,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(new QLabel("Width"), 1, 1);
         grid->addWidget(new QLabel("Rate"), 1, 2);
         grid->addWidget(new QLabel("Blend"), 1, 3);
-        grid->addWidget(new QLabel("Feedforward"), 1, 4);
-        grid->addWidget(new QLabel("Feedback"), 1, 5);
+        grid->addWidget(new QLabel("Feedf"), 1, 4);
+        grid->addWidget(new QLabel("Feedb"), 1, 5);
         grid->setColumnStretch(6, 1);
         return parent;
     }
@@ -159,7 +159,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(new QLabel("Rate"), 1, 0);
         grid->addWidget(new QLabel("Depth"), 1, 1);
         grid->addWidget(new QLabel("Spread"), 1, 2);
-        grid->addWidget(new QLabel("Resonance"), 1, 3);
+        grid->addWidget(new QLabel("Res"), 1, 3);
         grid->setColumnStretch(4, 1);
         return parent;
     }
@@ -179,7 +179,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         // row 2
         grid->addWidget(new QLabel("BPM"), 1, 0);
         grid->addWidget(new QLabel("Divider"), 1, 1);
-        grid->addWidget(new QLabel("Feedback"), 1, 2);
+        grid->addWidget(new QLabel("Feedb"), 1, 2);
         grid->addWidget(new QLabel("Dry"), 1, 3);
         grid->addWidget(new QLabel("Blend"), 1, 4);
         grid->addWidget(new QLabel("Tune"), 1, 5);
@@ -198,9 +198,9 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createDial(p_reverb_damping), 0, 2);
         grid->addWidget(createDial(p_reverb_blend), 0, 3);
         // row 2
-        grid->addWidget(new QLabel("Bandwidth"), 1, 0);
+        grid->addWidget(new QLabel("Bandw"), 1, 0);
         grid->addWidget(new QLabel("Tail"), 1, 1);
-        grid->addWidget(new QLabel("Damping"), 1, 2);
+        grid->addWidget(new QLabel("Damp"), 1, 2);
         grid->addWidget(new QLabel("Blend"), 1, 3);
         grid->setColumnStretch(4, 1);
         return parent;
@@ -233,6 +233,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createToggle(p_osc1_inv + off, "Inv"), 0, 2);
         grid->addWidget(createToggle(p_osc1_tracking + off, "Track"), 0, 3);
         grid->addWidget(createToggle(p_osc1_sync + off, "Sync"), 0, 4);
+        grid->addWidget(createToggle(p_osc1_free + off, "Free"), 0, 5);
         // row 2
         grid->addWidget(createDial(p_osc1_coarse + off), 1, 0);
         grid->addWidget(createDial(p_osc1_fine + off), 1, 1);
@@ -417,6 +418,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         connect(typeBox, SIGNAL(currentIndexChanged(int)), &lfoMapper, SLOT(map()));
         grid->addWidget(typeBox, 0, 0, 1, 2);
         grid->addWidget(createSelect(p_lfo1_reset_type + off, lfo_reset_types, 3), 0, 2, 1, 2);
+        grid->addWidget(createToggle(p_lfo1_inv + off, "Inv"), 0, 4);
         // row 2
         grid->addWidget(createDial(p_lfo1_freq + off), 1, 0);
         QDial* widthDial = createDial(p_lfo1_width + off);
