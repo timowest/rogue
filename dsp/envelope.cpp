@@ -36,18 +36,25 @@ void AHDSR::setAHDSR(float _a, float _h, float _d, float _s, float _r) {
 
 float AHDSR::innerTick() {
     if (state_ == PRE) {      // pre-delay
-        if (--counter <= 0) {
+        if (--counter == 0) {
             state_ = A;
         }
     } else if (state_ == A) { // attack
         last += attackRate;
         if (last >= 1.0f) {
-            state_ = H;
-            counter = holdSamples;
-            last = 1.0f;
+            if (holdSamples > 0.0f) {
+                state_ = H;
+                counter = holdSamples;
+                last = 1.0f;
+            } else {
+                state_ = D;
+                scale = sustain - attackTarget;
+                offset = attackTarget;
+                last = 0.0f;
+            }
         }
     } else if (state_ == H) { // hold
-        if (--counter <= 0) {
+        if (--counter == 0) {
             state_ = D;
             scale = sustain - attackTarget;
             offset = attackTarget;
