@@ -31,6 +31,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
     rogue::Osc osc;
     dsp::LFO lfo;
+    dsp::AHDSR env;
 
     WaveDisplay* osc_wd[4];
     WaveDisplay* filter_wd[2];
@@ -338,6 +339,12 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return parent;
     }
 
+    QDial* connectToEnv(QDial* dial, int i) {
+        envMapper.setMapping(dial, i);
+        connect(dial, SIGNAL(valueChanged(int)), &envMapper, SLOT(map()));
+        return dial;
+    }
+
     QWidget* createEnv(QGroupBox* parent, int i) {
         int off = i * ENV_OFF;
         parent->setCheckable(true);
@@ -346,10 +353,10 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         // row 1
         grid->addWidget(createToggle(p_env1_retrigger + off, "Retr"), 0, 0);
         // row 2
-        grid->addWidget(createDial(p_env1_attack + off), 1, 0);
-        grid->addWidget(createDial(p_env1_decay + off), 1, 1);
-        grid->addWidget(createDial(p_env1_sustain + off), 1, 2);
-        grid->addWidget(createDial(p_env1_release + off), 1, 3);
+        grid->addWidget(connectToEnv(createDial(p_env1_attack + off), i), 1, 0);
+        grid->addWidget(connectToEnv(createDial(p_env1_decay + off), i), 1, 1);
+        grid->addWidget(connectToEnv(createDial(p_env1_sustain + off), i), 1, 2);
+        grid->addWidget(connectToEnv(createDial(p_env1_release + off), i), 1, 3);
         grid->addWidget(env_wd[i] = new WaveDisplay(100, 60), 1, 4, 2, 3);
         // row 3
         grid->addWidget(new QLabel("A"), 2, 0);
@@ -357,9 +364,9 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(new QLabel("S"), 2, 2);
         grid->addWidget(new QLabel("R"), 2, 3);
         // row 4
-        grid->addWidget(createDial(p_env1_hold + off), 3, 0);
-        grid->addWidget(createDial(p_env1_pre_delay + off), 3, 1);
-        grid->addWidget(createDial(p_env1_curve + off), 3, 2);
+        grid->addWidget(connectToEnv(createDial(p_env1_hold + off), i), 3, 0);
+        grid->addWidget(connectToEnv(createDial(p_env1_pre_delay + off), i), 3, 1);
+        grid->addWidget(connectToEnv(createDial(p_env1_curve + off), i), 3, 2);
         // row 5
         grid->addWidget(new QLabel("Hold"), 4, 0);
         grid->addWidget(new QLabel("Pre"), 4, 1);
@@ -483,7 +490,30 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     }
 
     Q_SLOT void updateEnv(int i) {
-        // TODO
+        float pre = widgets[p_env1_pre_delay + i * ENV_OFF]->get_value();
+        float a = widgets[p_env1_attack + i * ENV_OFF]->get_value();
+        float h = widgets[p_env1_hold + i * ENV_OFF]->get_value();
+        float d = widgets[p_env1_decay + i * ENV_OFF]->get_value();
+        float s = widgets[p_env1_sustain + i * ENV_OFF]->get_value();
+        float r = widgets[p_env1_release + i * ENV_OFF]->get_value();
+
+        float curve = widgets[p_env1_curve + i * ENV_OFF]->get_value();
+
+        int width = env_wd[i]->width();
+        float scale = ((float)width) / (pre + a + h + d + r);
+        env.setPredelay(scale * pre);
+        env.setAHDSR(scale * a, scale * h, scale * d, s, scale * r);
+        env.setCurve(curve);
+        env.on();
+        float* buffer = env_wd[i]->getSamples();
+        for (int j = 0; j < width; j++) {
+            if (env.state() == 4) {
+                env.off();
+            }
+            buffer[j] = env.tick() * 2.0 - 1.0;
+        }
+        env.off();
+        env_wd[i]->repaint();
     }
 
     Q_SLOT void updateLfo(int i) {
