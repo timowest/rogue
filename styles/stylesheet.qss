@@ -98,14 +98,6 @@ QComboBox {
   max-width: 80px;
 }
 
-#mod QComboBox {
-  max-width: 50px;
-}
-
-#mod QComboBox::drop-down {
-  background: none;
-}
-
 QComboBox::down-arrow {  
   image: url(styles/arrow_down.png);  
 }
@@ -119,6 +111,7 @@ QComboBox::drop-down {
 QDoubleSpinBox {
   background: transparent;
   max-width: 50px;
+  max-height: 30px;
 }
 
 /* tabs */

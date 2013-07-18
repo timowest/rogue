@@ -393,12 +393,14 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         int off = i * (p_mod6_src - p_mod1_src);
         QGridLayout* grid = new QGridLayout(parent);
         for (int j = 0; j < 5; j++) {
-            grid->addWidget(createSelect(p_mod1_src + off, mod_src_labels, M_SIZE), 0, j);
-            grid->addWidget(createSelect(p_mod1_target + off, mod_target_labels, M_TARGET_SIZE), 1, j);
-            grid->addWidget(createSpin(p_mod1_amount + off), 2, j);
+            grid->addWidget(createSelect(p_mod1_src + off, mod_src_labels, M_SIZE), j, 0);
+            grid->addWidget(createSelect(p_mod1_target + off, mod_target_labels, M_TARGET_SIZE), j, 1);
+            grid->addWidget(createSpin(p_mod1_amount + off), j, 2);
             off += 3;
         }
-        grid->setRowStretch(3, 1);
+        grid->setSpacing(2);
+        grid->setColumnStretch(1, 1);
+        grid->setRowStretch(5, 1);
         return parent;
     }
 
