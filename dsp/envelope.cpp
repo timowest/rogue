@@ -71,9 +71,13 @@ float AHDSR::innerTick() {
     } else if (state_ == R) { // release
         last += releaseRate;
         if (last >= 1.0f) {
-            state_ = IDLE;
-            scale = offset = 0.0f;
-            last = 0.0f;
+            if (retrigger) {
+                on();
+            } else {
+                state_ = IDLE;
+                scale = offset = 0.0f;
+                last = 0.0f;
+            }
         }
     }
     return last;

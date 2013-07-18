@@ -21,6 +21,7 @@ class AHDSR {
   public:
     void on();
     void off();
+    void setRetrigger(bool r) { retrigger = r; }
     void setPredelay(float _pre) { preDelaySamples = _pre; }
     void setAHDSR(float _a, float _h, float _d, float _s, float _r);
     void setCurve(float t) { a = 1.0f - 1.0f/t; }
@@ -40,6 +41,7 @@ class AHDSR {
     float scale, offset;
     int state_ = IDLE;
     int counter;
+    bool retrigger = false;
 };
 
 }

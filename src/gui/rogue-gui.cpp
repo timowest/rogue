@@ -226,6 +226,12 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return dial;
     }
 
+    QPushButton* connectToOsc(QPushButton* button, int i) {
+        oscMapper.setMapping(button, i);
+        connect(button, SIGNAL(toggled(bool)), &oscMapper, SLOT(map()));
+        return button;
+    }
+
     QWidget* createOscillator(QGroupBox* parent, int i) {
         // TODO simplify oscMapper connections
         int off = i * OSC_OFF;
@@ -237,7 +243,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         oscMapper.setMapping(typeBox, i);
         connect(typeBox, SIGNAL(currentIndexChanged(int)), &oscMapper, SLOT(map()));
         grid->addWidget(typeBox, 0, 0, 1, 2);
-        grid->addWidget(createToggle(p_osc1_inv + off, "Inv"), 0, 2);
+        grid->addWidget(connectToOsc(createToggle(p_osc1_inv + off, "Inv"), i), 0, 2);
         grid->addWidget(createToggle(p_osc1_tracking + off, "Track"), 0, 3);
         grid->addWidget(createToggle(p_osc1_sync + off, "Sync"), 0, 4);
         grid->addWidget(createToggle(p_osc1_free + off, "Free"), 0, 5);
@@ -424,6 +430,12 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return dial;
     }
 
+    QPushButton* connectToLfo(QPushButton* button, int i) {
+        lfoMapper.setMapping(button, i);
+        connect(button, SIGNAL(toggled(bool)), &lfoMapper, SLOT(map()));
+        return button;
+    }
+
     QWidget* createLfo(QGroupBox* parent, int i) {
         // TODO simplify lfoMapper connections
         int off = i * LFO_OFF;
@@ -436,7 +448,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         connect(typeBox, SIGNAL(currentIndexChanged(int)), &lfoMapper, SLOT(map()));
         grid->addWidget(typeBox, 0, 0, 1, 2);
         grid->addWidget(createSelect(p_lfo1_reset_type + off, lfo_reset_types, 3), 0, 2, 1, 2);
-        grid->addWidget(createToggle(p_lfo1_inv + off, "Inv"), 0, 4);
+        grid->addWidget(connectToLfo(createToggle(p_lfo1_inv + off, "Inv"), i), 0, 4);
         // row 2
         grid->addWidget(createDial(p_lfo1_freq + off), 1, 0);
         grid->addWidget(connectToLfo(createDial(p_lfo1_start + off), i), 1, 1);
@@ -480,10 +492,16 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         int type = (int)widgets[p_osc1_type + i * OSC_OFF]->get_value();
         float s = widgets[p_osc1_start + i * OSC_OFF]->get_value();
         float w = widgets[p_osc1_width + i * OSC_OFF]->get_value();
+        bool inv = widgets[p_osc1_inv + i * OSC_OFF]->get_value() > 0.0f;
 
         osc.setStart(s);
         osc.resetPhase();
-        osc.process(type, 1.0f, s, w, w, osc_wd[i]->getSamples(), osc_wd[i]->width());
+        float* buffer = osc_wd[i]->getSamples();
+        int width = osc_wd[i]->width();
+        osc.process(type, 1.0f, s, w, w, buffer, width);
+        if (inv) {
+            for (int j = 0; j < width; j++) buffer[j] *= -1.0;
+        }
         osc_wd[i]->repaint();
     }
 
@@ -522,6 +540,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         int type = (int)widgets[p_lfo1_type + i * LFO_OFF]->get_value();
         float s = widgets[p_lfo1_start + i * LFO_OFF]->get_value();
         float w = widgets[p_lfo1_width + i * LFO_OFF]->get_value();
+        bool inv = widgets[p_lfo1_inv + i * LFO_OFF]->get_value() > 0.0f;
 
         lfo.setType(type);
         lfo.setStart(s);
@@ -529,8 +548,9 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         lfo.reset();
         float* buffer = lfo_wd[i]->getSamples();
         int width = lfo_wd[i]->width();
+        float scale = inv ? -1.0 : 1.0;
         for (int j = 0; j < width; j++) {
-            buffer[j] = lfo.tick();
+            buffer[j] = scale * lfo.tick();
         }
         lfo_wd[i]->repaint();
     }
@@ -580,8 +600,10 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     }
 
     ~rogueGUI() {
-        for (int i = 0; i < p_n_ports; i++) {
-            delete widgets[i];
+        for (int i = 3; i < p_n_ports; i++) {
+            if (widgets[i] && dynamic_cast<GroupBoxAdapter*>(widgets[i])) {
+                delete widgets[i];
+            }
         }
     }
 };
