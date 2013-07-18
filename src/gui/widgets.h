@@ -16,10 +16,6 @@ class Widget {
 
 class CustomDial : public QDial, public Widget {
 
-    static const QPainter::RenderHint paintFlags = QPainter::RenderHint(QPainter::Antialiasing
-                | QPainter::SmoothPixmapTransform
-                || QPainter::HighQualityAntialiasing);
-
     static const int FULL = 5760;
     static const int HALF = 2880;
     float min, max, pos0, step;
@@ -30,7 +26,7 @@ class CustomDial : public QDial, public Widget {
         int height = this->height();
         float pos = (value() - min) / (max - min);
         QPainter painter(this);
-        painter.setRenderHints(paintFlags);
+        painter.setRenderHint(QPainter::Antialiasing, true);
 
         // circle
         painter.setPen(QPen(QBrush("#bbb"), 1));
@@ -136,9 +132,6 @@ class GroupBoxAdapter : public Widget {
 // WaveDisplay
 
 class WaveDisplay : public QFrame {
-    static const QPainter::RenderHint paintFlags = QPainter::RenderHint(QPainter::Antialiasing
-                | QPainter::SmoothPixmapTransform
-                || QPainter::HighQualityAntialiasing);
 
     float* samples;
 
@@ -150,8 +143,8 @@ class WaveDisplay : public QFrame {
         int width = this->width();
         int height = this->height();
         QPainter painter(this);
-        painter.setRenderHints(paintFlags);
-        painter.setPen(QPen(QBrush("#000"), 1));
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        //painter.setPen(QPen(QBrush("#000"), 1));
         for (int i = 1; i < width; i++) {
             painter.drawLine(i-1, (-0.45 * samples[i-1] + 0.5) * height,
                              i,   (-0.45 * samples[i] + 0.5) * height);
