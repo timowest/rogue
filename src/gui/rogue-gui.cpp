@@ -28,6 +28,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     Q_OBJECT
 
     Widget* widgets[p_n_ports];
+    QLabel* labels[p_n_ports];
 
     QSignalMapper mapper, oscMapper, filterMapper, envMapper, lfoMapper;
 
@@ -55,6 +56,13 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         connect(dial, SIGNAL(valueChanged(int)), &mapper, SLOT(map()));
         widgets[p] = dial;
         return dial;
+    }
+
+    QLabel* createLabel(int p) {
+        QLabel* label = new QLabel();
+        label->setNum(p_port_meta[p].default_value);
+        labels[p] = label;
+        return label;
     }
 
     QComboBox* createSelect(int p, const char** texts, int size) {
@@ -126,8 +134,15 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(new QLabel("Pan A"), 1, 2);
         grid->addWidget(new QLabel("Vol B"), 1, 3);
         grid->addWidget(new QLabel("Pan B"), 1, 4);
+        // row 3
+        grid->addWidget(createLabel(p_volume), 2, 0);
+        grid->addWidget(createLabel(p_bus_a_level), 2, 1);
+        grid->addWidget(createLabel(p_bus_a_pan), 2, 2);
+        grid->addWidget(createLabel(p_bus_b_level), 2, 3);
+        grid->addWidget(createLabel(p_bus_b_pan), 2, 4);
+        grid->setSpacing(2);
         grid->setColumnStretch(5, 1);
-        grid->setRowStretch(2, 1);
+        grid->setRowStretch(3, 1);
         return parent;
     }
 
@@ -150,6 +165,14 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(new QLabel("Blend"), 1, 3);
         grid->addWidget(new QLabel("Feedf"), 1, 4);
         grid->addWidget(new QLabel("Feedb"), 1, 5);
+        // row 3
+        grid->addWidget(createLabel(p_chorus_t), 2, 0);
+        grid->addWidget(createLabel(p_chorus_width), 2, 1);
+        grid->addWidget(createLabel(p_chorus_rate), 2, 2);
+        grid->addWidget(createLabel(p_chorus_blend), 2, 3);
+        grid->addWidget(createLabel(p_chorus_feedforward), 2, 4);
+        grid->addWidget(createLabel(p_chorus_feedback), 2, 5);
+        grid->setSpacing(2);
         grid->setColumnStretch(6, 1);
         return parent;
     }
@@ -169,6 +192,12 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(new QLabel("Depth"), 1, 1);
         grid->addWidget(new QLabel("Spread"), 1, 2);
         grid->addWidget(new QLabel("Res"), 1, 3);
+        // row 3
+        grid->addWidget(createLabel(p_phaser_rate), 2, 0);
+        grid->addWidget(createLabel(p_phaser_depth), 2, 1);
+        grid->addWidget(createLabel(p_phaser_spread), 2, 2);
+        grid->addWidget(createLabel(p_phaser_resonance), 2, 3);
+        grid->setSpacing(2);
         grid->setColumnStretch(4, 1);
         return parent;
     }
@@ -192,6 +221,14 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(new QLabel("Dry"), 1, 3);
         grid->addWidget(new QLabel("Blend"), 1, 4);
         grid->addWidget(new QLabel("Tune"), 1, 5);
+        // row 3
+        grid->addWidget(createLabel(p_delay_bpm), 2, 0);
+        grid->addWidget(createLabel(p_delay_divider), 2, 1);
+        grid->addWidget(createLabel(p_delay_feedback), 2, 2);
+        grid->addWidget(createLabel(p_delay_dry), 2, 3);
+        grid->addWidget(createLabel(p_delay_blend), 2, 4);
+        grid->addWidget(createLabel(p_delay_tune), 2, 5);
+        grid->setSpacing(2);
         grid->setColumnStretch(6, 1);
         return parent;
     }
@@ -211,6 +248,12 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(new QLabel("Tail"), 1, 1);
         grid->addWidget(new QLabel("Damp"), 1, 2);
         grid->addWidget(new QLabel("Blend"), 1, 3);
+        // row 4
+        grid->addWidget(createLabel(p_reverb_bandwidth), 2, 0);
+        grid->addWidget(createLabel(p_reverb_tail), 2, 1);
+        grid->addWidget(createLabel(p_reverb_damping), 2, 2);
+        grid->addWidget(createLabel(p_reverb_blend), 2, 3);
+        grid->setSpacing(2);
         grid->setColumnStretch(4, 1);
         return parent;
     }
@@ -260,33 +303,47 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createDial(p_osc1_fine + off), 1, 1);
         grid->addWidget(createDial(p_osc1_ratio + off), 1, 2);
         grid->addWidget(createDial(p_osc1_level + off), 1, 3);
-        grid->addWidget(osc_wd[i] = new WaveDisplay(120, 60), 1, 4, 2, 3);
+        grid->addWidget(osc_wd[i] = new WaveDisplay(120, 60), 1, 4, 3, 3);
         // row 3
         grid->addWidget(new QLabel("Coarse"), 2, 0);
         grid->addWidget(new QLabel("Fine"), 2, 1);
         grid->addWidget(new QLabel("Ratio"), 2, 2);
         grid->addWidget(new QLabel("Level"), 2, 3);
         // row 4
-        grid->addWidget(connectToOsc(createDial(p_osc1_start + off), i), 3, 0);
-        grid->addWidget(connectToOsc(createDial(p_osc1_width + off), i), 3, 1);
-        grid->addWidget(createDial(p_osc1_level_a + off), 3, 2);
-        grid->addWidget(createDial(p_osc1_level_b + off), 3, 3);
-        if (i > 0) {
-            grid->addWidget(createSelect(p_osc1_input + off, nums, i), 3, 4);
-            grid->addWidget(createSelect(p_osc1_out_mod + off, out_mod, 4), 3, 5);
-            grid->addWidget(createDial(p_osc1_pm + off), 3, 6);
-        }
+        grid->addWidget(createLabel(p_osc1_coarse + off), 3, 0);
+        grid->addWidget(createLabel(p_osc1_fine + off), 3, 1);
+        grid->addWidget(createLabel(p_osc1_ratio + off), 3, 2);
+        grid->addWidget(createLabel(p_osc1_level + off), 3, 3);
         // row 5
-        grid->addWidget(new QLabel("Start"), 4, 0);
-        grid->addWidget(new QLabel("Width"), 4, 1);
-        grid->addWidget(new QLabel("Vol A"), 4, 2);
-        grid->addWidget(new QLabel("Vol B"), 4, 3);
+        grid->addWidget(connectToOsc(createDial(p_osc1_start + off), i), 4, 0);
+        grid->addWidget(connectToOsc(createDial(p_osc1_width + off), i), 4, 1);
+        grid->addWidget(createDial(p_osc1_level_a + off), 4, 2);
+        grid->addWidget(createDial(p_osc1_level_b + off), 4, 3);
         if (i > 0) {
-            grid->addWidget(new QLabel("Input"), 4, 4);
-            grid->addWidget(new QLabel("Mod"), 4, 5);
-            grid->addWidget(new QLabel("PM"), 4, 6);
+            grid->addWidget(createSelect(p_osc1_input + off, nums, i), 4, 4);
+            grid->addWidget(createSelect(p_osc1_out_mod + off, out_mod, 4), 4, 5);
+            grid->addWidget(createDial(p_osc1_pm + off), 4, 6);
         }
-        grid->setRowStretch(5, 1);
+        // row 6
+        grid->addWidget(new QLabel("Start"), 5, 0);
+        grid->addWidget(new QLabel("Width"), 5, 1);
+        grid->addWidget(new QLabel("Vol A"), 5, 2);
+        grid->addWidget(new QLabel("Vol B"), 5, 3);
+        if (i > 0) {
+            grid->addWidget(new QLabel("Input"), 5, 4);
+            grid->addWidget(new QLabel("Mod"), 5, 5);
+            grid->addWidget(new QLabel("PM"), 5, 6);
+        }
+        // row 7
+        grid->addWidget(createLabel(p_osc1_start + off), 6, 0);
+        grid->addWidget(createLabel(p_osc1_width + off), 6, 1);
+        grid->addWidget(createLabel(p_osc1_level_a + off), 6, 2);
+        grid->addWidget(createLabel(p_osc1_level_b + off), 6, 3);
+        if (i > 0) {
+            grid->addWidget(createLabel(p_osc1_pm + off), 6, 6);
+        }
+        grid->setSpacing(2);
+        grid->setRowStretch(7, 1);
         return parent;
     }
 
@@ -336,21 +393,31 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(connectToFilter(createDial(p_filter1_q + off), i), 1, 1);
         grid->addWidget(createDial(p_filter1_level + off), 1, 2);
         grid->addWidget(createDial(p_filter1_pan + off), 1, 3);
-        grid->addWidget(filter_wd[i] = new WaveDisplay(120, 60), 1, 4, 2, 3);
+        grid->addWidget(filter_wd[i] = new WaveDisplay(120, 60), 1, 4, 3, 3);
         // row 3
         grid->addWidget(new QLabel("Freq"), 2, 0);
         grid->addWidget(new QLabel("Res"), 2, 1);
         grid->addWidget(new QLabel("Vol"), 2, 2);
         grid->addWidget(new QLabel("Pan"), 2, 3);
         // row 4
-        grid->addWidget(createDial(p_filter1_distortion + off), 3, 0);
-        grid->addWidget(createDial(p_filter1_key_to_f + off), 3, 1);
-        grid->addWidget(createDial(p_filter1_vel_to_f + off), 3, 2);
+        grid->addWidget(createLabel(p_filter1_freq + off), 3, 0);
+        grid->addWidget(createLabel(p_filter1_q + off), 3, 1);
+        grid->addWidget(createLabel(p_filter1_level + off), 3, 2);
+        grid->addWidget(createLabel(p_filter1_pan + off), 3, 3);
         // row 5
-        grid->addWidget(new QLabel("Dist"), 4, 0);
-        grid->addWidget(new QLabel("K > F"), 4, 1);
-        grid->addWidget(new QLabel("V > F"), 4, 2);
-        grid->setRowStretch(5, 1);
+        grid->addWidget(createDial(p_filter1_distortion + off), 4, 0);
+        grid->addWidget(createDial(p_filter1_key_to_f + off), 4, 1);
+        grid->addWidget(createDial(p_filter1_vel_to_f + off), 4, 2);
+        // row 6
+        grid->addWidget(new QLabel("Dist"), 5, 0);
+        grid->addWidget(new QLabel("K > F"), 5, 1);
+        grid->addWidget(new QLabel("V > F"), 5, 2);
+        // row 7
+        grid->addWidget(createLabel(p_filter1_distortion + off), 6, 0);
+        grid->addWidget(createLabel(p_filter1_key_to_f + off), 6, 1);
+        grid->addWidget(createLabel(p_filter1_vel_to_f + off), 6, 2);
+        grid->setSpacing(2);
+        grid->setRowStretch(7, 1);
         return parent;
     }
 
@@ -386,21 +453,31 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(connectToEnv(createDial(p_env1_decay + off), i), 1, 1);
         grid->addWidget(connectToEnv(createDial(p_env1_sustain + off), i), 1, 2);
         grid->addWidget(connectToEnv(createDial(p_env1_release + off), i), 1, 3);
-        grid->addWidget(env_wd[i] = new WaveDisplay(100, 60), 1, 4, 2, 3);
+        grid->addWidget(env_wd[i] = new WaveDisplay(100, 60), 1, 4, 3, 3);
         // row 3
         grid->addWidget(new QLabel("A"), 2, 0);
         grid->addWidget(new QLabel("D"), 2, 1);
         grid->addWidget(new QLabel("S"), 2, 2);
         grid->addWidget(new QLabel("R"), 2, 3);
         // row 4
-        grid->addWidget(connectToEnv(createDial(p_env1_hold + off), i), 3, 0);
-        grid->addWidget(connectToEnv(createDial(p_env1_pre_delay + off), i), 3, 1);
-        grid->addWidget(connectToEnv(createDial(p_env1_curve + off), i), 3, 2);
+        grid->addWidget(createLabel(p_env1_attack + off), 3, 0);
+        grid->addWidget(createLabel(p_env1_decay + off), 3, 1);
+        grid->addWidget(createLabel(p_env1_sustain + off), 3, 2);
+        grid->addWidget(createLabel(p_env1_release + off), 3, 3);
         // row 5
-        grid->addWidget(new QLabel("Hold"), 4, 0);
-        grid->addWidget(new QLabel("Pre"), 4, 1);
-        grid->addWidget(new QLabel("Curve"), 4, 2);
-        grid->setRowStretch(4, 1);
+        grid->addWidget(connectToEnv(createDial(p_env1_hold + off), i), 4, 0);
+        grid->addWidget(connectToEnv(createDial(p_env1_pre_delay + off), i), 4, 1);
+        grid->addWidget(connectToEnv(createDial(p_env1_curve + off), i), 4, 2);
+        // row 6
+        grid->addWidget(new QLabel("Hold"), 5, 0);
+        grid->addWidget(new QLabel("Pre"), 5, 1);
+        grid->addWidget(new QLabel("Curve"), 5, 2);
+        // row 7
+        grid->addWidget(createLabel(p_env1_hold + off), 6, 0);
+        grid->addWidget(createLabel(p_env1_pre_delay + off), 6, 1);
+        grid->addWidget(createLabel(p_env1_curve + off), 6, 2);
+        grid->setSpacing(2);
+        grid->setRowStretch(7, 1);
         return parent;
     }
 
@@ -477,13 +554,19 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(connectToLfo(createDial(p_lfo1_start + off), i), 1, 1);
         grid->addWidget(connectToLfo(createDial(p_lfo1_width + off), i), 1, 2);
         grid->addWidget(createDial(p_lfo1_humanize + off), 1, 3);
-        grid->addWidget(lfo_wd[i] = new WaveDisplay(100, 60), 1, 4, 2, 3);
+        grid->addWidget(lfo_wd[i] = new WaveDisplay(100, 60), 1, 4, 3, 3);
         // row 3
         grid->addWidget(new QLabel("Freq"), 2, 0);
         grid->addWidget(new QLabel("Start"), 2, 1);
         grid->addWidget(new QLabel("Width"), 2, 2);
         grid->addWidget(new QLabel("Rand"), 2, 3);
-        grid->setRowStretch(3, 1);
+        // row 4
+        grid->addWidget(createLabel(p_lfo1_freq + off), 3, 0);
+        grid->addWidget(createLabel(p_lfo1_start + off), 3, 1);
+        grid->addWidget(createLabel(p_lfo1_width + off), 3, 2);
+        grid->addWidget(createLabel(p_lfo1_humanize + off), 3, 3);
+        grid->setSpacing(2);
+        grid->setRowStretch(4, 1);
         return parent;
     }
 
@@ -508,7 +591,12 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
     // UI to host
     Q_SLOT void portChange(int p) {
+        float val = widgets[p]->get_value();
         //writeControl(p, widgets[p]->get_value());
+        QLabel* label = labels[p];
+        if (label) {
+            label->setNum(val);
+        }
     }
 
     Q_SLOT void updateOsc(int i) {
@@ -616,6 +704,10 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
   public:
 
     rogueGUI() {
+        for (int i = 0; i < p_n_ports; i++) {
+            labels[i] = 0;
+        }
+
         container().setObjectName("root");
         QWidget* browser = createBrowser(new QGroupBox("Browser"));
         QWidget* main = createMain(new QGroupBox("Main"));

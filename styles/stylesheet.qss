@@ -39,7 +39,7 @@ QGroupBox QGroupBox::title {
   subcontrol-position: top right;
 }
 
-QGroupBox QGroupBox QLabel {
+QGroupBox QGroupBox QLabel, #main QLabel {
   qproperty-alignment: AlignCenter;
 }
 
@@ -69,6 +69,8 @@ QGroupBox QGroupBox {
 
 QLabel {
   background: transparent;
+  padding: 0;
+  margin: 0;
 }
 
 /* dials */
@@ -141,9 +143,9 @@ QTabBar::tab:selected {
   font-weight: bold;
 }
 
-#effects QTabWidget {
+/*#effects QTabWidget {
   height: 80px;
-}
+}*/
 
 /* DARK theme */
 

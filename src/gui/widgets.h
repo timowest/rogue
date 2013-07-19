@@ -116,7 +116,7 @@ class GroupBoxAdapter : public Widget {
 
   public:
     GroupBoxAdapter(QGroupBox* _box) {
-        box = box;
+        box = _box;
     }
 
     float get_value() {
