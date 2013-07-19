@@ -8,6 +8,7 @@ FAST = -Ofast -ffast-math
 LVTK = `pkg-config --cflags --libs lvtk-plugin-1`
 LVTK_UI = `pkg-config --cflags --libs lvtk-ui-1`
 QT = `pkg-config --cflags --libs QtGui` 
+FFTW = -lfftw3f
 SNDFILE = -lsndfile
 
 $(BUNDLE): manifest.ttl rogue.ttl presets.ttl rogue.so rogue-gui.so presets styles
@@ -19,7 +20,7 @@ rogue.so: $(SOURCES) src/rogue.gen
 	$(CXX) $(FLAGS) $(FAST) -shared $(SOURCES) $(LVTK) -Idsp -Isrc -Ifx -Ifx/dsp -o $@
 	
 rogue-gui.so: $(SOURCES_UI) src/rogue.gen src/gui/config.gen
-	$(CXX) $(FLAGS) -g -shared $(SOURCES_UI) $(QT) $(LVTK) $(LVTK_UI) -Idsp -Isrc -o $@	
+	$(CXX) $(FLAGS) -g -shared $(SOURCES_UI) $(QT) $(LVTK) $(LVTK_UI) $(FFTW) -Idsp -Isrc -o $@	
 
 src/rogue.gen: rogue.ttl
 	ttl2c $^ src/rogue.gen
@@ -47,11 +48,13 @@ clean:
 
 gui: src/rogue.gen src/gui/config.gen
 	moc src/gui/rogue-gui.cpp > src/gui/rogue-gui.mcpp
-	$(CXX) -g -std=c++11 src/gui/test.cpp $(QT) $(LVTK_UI) -Idsp -Isrc -o qttest.out 
+	$(CXX) -g -std=c++11 src/gui/test.cpp $(QT) $(LVTK_UI) $(FFTW) -Idsp -Isrc -o qttest.out 
 	
 tests: src/rogue.gen
 	$(CXX) -g -std=c++11 test/dsp_tests.cpp $(SNDFILE) $(FAST) -Idsp -o dsp_tests.out
 	$(CXX) -g -std=c++11 test/voice_tests.cpp $(SNDFILE) $(LVTK) -Idsp -Isrc -o voice_tests.out
+	$(CXX) -g -std=c++11 test/fftw_tests.cpp $(FFTW) -o fftw_tests.out
 	mkdir -p wavs
 	./dsp_tests.out	
 	./voice_tests.out
+	./fftw_tests.out

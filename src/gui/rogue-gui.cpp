@@ -12,6 +12,8 @@
 #include <QString>
 #include <QTabWidget>
 
+#include <fftw3.h>
+
 #include "common.h"
 #include "rogue.gen"
 #include "wrappers.h"
@@ -30,6 +32,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     QSignalMapper mapper, oscMapper, filterMapper, envMapper, lfoMapper;
 
     rogue::Osc osc;
+    rogue::Filter filter;
     dsp::LFO lfo;
     dsp::AHDSR env;
 
@@ -300,17 +303,32 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return parent;
     }
 
+    QDial* connectToFilter(QDial* dial, int i) {
+        filterMapper.setMapping(dial, i);
+        connect(dial, SIGNAL(valueChanged(int)), &filterMapper, SLOT(map()));
+        return dial;
+    }
+
+    QPushButton* connectToFilter(QPushButton* button, int i) {
+        filterMapper.setMapping(button, i);
+        connect(button, SIGNAL(toggled(bool)), &filterMapper, SLOT(map()));
+        return button;
+    }
+
     QWidget* createFilter(QGroupBox* parent, int i) {
         int off = i * DCF_OFF;
         parent->setCheckable(true);
         connectBox(p_filter1_on + off, parent);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createSelect(p_filter1_type + off, filter_types, 12), 0, 0, 1, 2);
+        QComboBox* typeBox = createSelect(p_filter1_type + off, filter_types, 12);
+        filterMapper.setMapping(typeBox, i);
+        connect(typeBox, SIGNAL(currentIndexChanged(int)), &filterMapper, SLOT(map()));
+        grid->addWidget(typeBox, 0, 0, 1, 2);
         grid->addWidget(createSelect(p_filter1_source + off, filter_sources, 2 + i), 0, 2, 1, 2);
         // row 2
-        grid->addWidget(createDial(p_filter1_freq + off), 1, 0);
-        grid->addWidget(createDial(p_filter1_q + off), 1, 1);
+        grid->addWidget(connectToFilter(createDial(p_filter1_freq + off), i), 1, 0);
+        grid->addWidget(connectToFilter(createDial(p_filter1_q + off), i), 1, 1);
         grid->addWidget(createDial(p_filter1_level + off), 1, 2);
         grid->addWidget(createDial(p_filter1_pan + off), 1, 3);
         grid->addWidget(filter_wd[i] = new WaveDisplay(120, 60), 1, 4, 2, 3);
@@ -506,7 +524,47 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     }
 
     Q_SLOT void updateFilter(int i) {
-        // TODO
+        int type = (int)widgets[p_filter1_type + i * DCF_OFF]->get_value();
+        float f = widgets[p_filter1_freq + i * DCF_OFF]->get_value();
+        float q = widgets[p_filter1_q + i * DCF_OFF]->get_value();
+
+        int width = 2 * filter_wd[i]->width();
+        float in[width];
+        float out[width];
+
+        // TODO cache plans
+        fftwf_plan plan = fftwf_plan_r2r_1d(width, in, out, FFTW_R2HC, FFTW_MEASURE);
+
+        for (int j = 0; j < width; j++) in[j] = 0;
+        in[width / 2] = 1.0;
+
+        // filter
+        if (type < 8) {
+            filter.moog.setType(type);
+            filter.moog.setCoefficients(f, q);
+            filter.moog.process(in, in, width);
+        } else {
+            filter.svf.setType(type - 8);
+            filter.svf.setCoefficients(f, q);
+            filter.svf.process(in, in, width);
+        }
+
+        fftwf_execute(plan);
+        fftwf_destroy_plan(plan);
+
+        // post process fft results
+        float* samples = filter_wd[i]->getSamples();
+        float max_val = 0.0;
+        for (int j = 0; j < (width/2); j++) {
+            samples[j] = sqrt(pow(out[j], 2) + pow(out[width - j], 2));
+            max_val = std::max(max_val, samples[j]);
+        }
+        max_val /= 2.0;
+        // normalize
+        for (int j = 0; j < (width/2); j++) {
+            samples[j] = samples[j] / max_val - 1.0;
+        }
+        filter_wd[i]->repaint();
     }
 
     Q_SLOT void updateEnv(int i) {
@@ -595,16 +653,13 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         container().setStyleSheet(styleSheet);
 
         osc.setSamplerate(120);
+        filter.setSamplerate(44100.0);
         lfo.setFreq(1.0);
         lfo.setSamplerate(100);
     }
 
     ~rogueGUI() {
-        for (int i = 3; i < p_n_ports; i++) {
-            if (widgets[i] && dynamic_cast<GroupBoxAdapter*>(widgets[i])) {
-                delete widgets[i];
-            }
-        }
+        // TODO delete widgets that are not managed by Qt
     }
 };
 
