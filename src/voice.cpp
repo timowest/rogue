@@ -65,8 +65,12 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
     for (int i = 0; i < NDCF; i++) configFilter(i);
 
     // trigger on
-    for (int i = 0; i < NLFO; i++) lfos[i].on();
-    for (int i = 0; i < NENV; i++) envs[i].on();
+    for (int i = 0; i < NLFO; i++) {
+        lfos[i].on();
+    }
+    for (int i = 0; i < NENV; i++) {
+        envs[i].on();
+    }
     for (int i = 0; i < NOSC; i++) {
         if (!data->oscs[i].free) oscs[i].resetPhase();
     }
@@ -121,6 +125,7 @@ void rogueVoice::configLFO(int i) {
 
     // NOTE: lfos can't modulate each other's freq
     lfo.lfo.setType(lfoData.type);
+    lfo.lfo.setStart(lfoData.start);
     lfo.lfo.setFreq(f);
     lfo.lfo.setWidth(lfoData.width);
     // TODO humanize
@@ -185,7 +190,8 @@ void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
 void rogueVoice::configOsc(int i) {
     OscData& oscData = data->oscs[i];
     Osc& osc = oscs[i];
-    // TODO
+
+    osc.setStart(oscData.start);
 }
 
 void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
@@ -209,7 +215,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         // TODO sync
 
         // process
-        osc.process(oscData.type, f, oscData.start, osc.width_prev, width, osc.buffer + from, to - from);
+        osc.process(oscData.type, f, osc.width_prev, width, osc.buffer + from, to - from);
 
         // amp modulation
         float v = oscData.level;

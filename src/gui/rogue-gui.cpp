@@ -41,6 +41,11 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     WaveDisplay* env_wd[5];
     WaveDisplay* lfo_wd[3];
 
+    // fft utils
+    float* fftIn[2];
+    float* fftOut[2];
+    fftwf_plan fftPlan[2];
+
     QDial* createDial(int p, bool big = false) {
         int size = big ? 45 : 35;
         const port_meta_t& port = p_port_meta[p];
@@ -516,7 +521,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         osc.resetPhase();
         float* buffer = osc_wd[i]->getSamples();
         int width = osc_wd[i]->width();
-        osc.process(type, 1.0f, s, w, w, buffer, width);
+        osc.process(type, 1.0f, w, w, buffer, width);
         if (inv) {
             for (int j = 0; j < width; j++) buffer[j] *= -1.0;
         }
@@ -529,12 +534,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         float q = widgets[p_filter1_q + i * DCF_OFF]->get_value();
 
         int width = 2 * filter_wd[i]->width();
-        float in[width];
-        float out[width];
-
-        // TODO cache plans
-        fftwf_plan plan = fftwf_plan_r2r_1d(width, in, out, FFTW_R2HC, FFTW_MEASURE);
-
+        float* in = fftIn[i];
+        float* out = fftOut[i];
         for (int j = 0; j < width; j++) in[j] = 0;
         in[width / 2] = 1.0;
 
@@ -549,8 +550,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
             filter.svf.process(in, in, width);
         }
 
-        fftwf_execute(plan);
-        fftwf_destroy_plan(plan);
+        fftwf_execute(fftPlan[i]);
 
         // post process fft results
         float* samples = filter_wd[i]->getSamples();
@@ -656,10 +656,23 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         filter.setSamplerate(44100.0);
         lfo.setFreq(1.0);
         lfo.setSamplerate(100);
+
+        // fft
+        const int fft_width = 2 * 120;
+        for (int i = 0; i < 2; i++) {
+            fftIn[i] = (float*) fftwf_malloc(sizeof(float) * fft_width);
+            fftOut[i] = (float*) fftwf_malloc(sizeof(float) * fft_width);
+            fftPlan[i] = fftwf_plan_r2r_1d(fft_width, fftIn[i], fftOut[i], FFTW_R2HC, FFTW_MEASURE);
+        }
     }
 
     ~rogueGUI() {
         // TODO delete widgets that are not managed by Qt
+        for (int i = 0; i < 2; i++) {
+            fftwf_free(fftIn[i]);
+            fftwf_free(fftOut[i]);
+            fftwf_destroy_plan(fftPlan[i]);
+        }
     }
 };
 

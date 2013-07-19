@@ -46,7 +46,7 @@ struct LFOData {
     int type, reset_type;
     bool inv;
     float freq;
-    float width;
+    float start, width;
     float humanize;
 };
 
