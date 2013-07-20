@@ -2,7 +2,7 @@
   background: rgb(130, 130, 130);
 }
 
-QTabBar::tab, QLabel, QComboBox, QDoubleSpinBox {
+QTabBar::tab, QLabel, QComboBox, QDoubleSpinBox, QPushButton {
   font-size: 12px;
 }
 
@@ -71,6 +71,10 @@ QLabel {
   background: transparent;
   padding: 0;
   margin: 0;
+}
+
+QLabel[num=true] {
+  font-size: 11px;
 }
 
 /* dials */

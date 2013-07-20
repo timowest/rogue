@@ -48,7 +48,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     fftwf_plan fftPlan[2];
 
     QDial* createDial(int p, bool big = false) {
-        int size = big ? 45 : 35;
+        int size = big ? 40 : 35;
         const port_meta_t& port = p_port_meta[p];
         CustomDial* dial = new CustomDial(port.min, port.max, port.step, port.default_value);
         dial->setFixedSize(size, size);
@@ -61,6 +61,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     QLabel* createLabel(int p) {
         QLabel* label = new QLabel();
         label->setNum(p_port_meta[p].default_value);
+        label->setProperty("num", QVariant(true));
         labels[p] = label;
         return label;
     }
@@ -140,7 +141,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createLabel(p_bus_a_pan), 2, 2);
         grid->addWidget(createLabel(p_bus_b_level), 2, 3);
         grid->addWidget(createLabel(p_bus_b_pan), 2, 4);
-        grid->setSpacing(2);
+        grid->setHorizontalSpacing(2);
+        grid->setVerticalSpacing(0);
         grid->setColumnStretch(5, 1);
         grid->setRowStretch(3, 1);
         return parent;
@@ -172,7 +174,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createLabel(p_chorus_blend), 2, 3);
         grid->addWidget(createLabel(p_chorus_feedforward), 2, 4);
         grid->addWidget(createLabel(p_chorus_feedback), 2, 5);
-        grid->setSpacing(2);
+        grid->setHorizontalSpacing(2);
+        grid->setVerticalSpacing(0);
         grid->setColumnStretch(6, 1);
         return parent;
     }
@@ -197,7 +200,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createLabel(p_phaser_depth), 2, 1);
         grid->addWidget(createLabel(p_phaser_spread), 2, 2);
         grid->addWidget(createLabel(p_phaser_resonance), 2, 3);
-        grid->setSpacing(2);
+        grid->setHorizontalSpacing(2);
+        grid->setVerticalSpacing(0);
         grid->setColumnStretch(4, 1);
         return parent;
     }
@@ -228,7 +232,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createLabel(p_delay_dry), 2, 3);
         grid->addWidget(createLabel(p_delay_blend), 2, 4);
         grid->addWidget(createLabel(p_delay_tune), 2, 5);
-        grid->setSpacing(2);
+        grid->setHorizontalSpacing(2);
+        grid->setVerticalSpacing(0);
         grid->setColumnStretch(6, 1);
         return parent;
     }
@@ -253,7 +258,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createLabel(p_reverb_tail), 2, 1);
         grid->addWidget(createLabel(p_reverb_damping), 2, 2);
         grid->addWidget(createLabel(p_reverb_blend), 2, 3);
-        grid->setSpacing(2);
+        grid->setHorizontalSpacing(2);
+        grid->setVerticalSpacing(0);
         grid->setColumnStretch(4, 1);
         return parent;
     }
@@ -342,7 +348,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         if (i > 0) {
             grid->addWidget(createLabel(p_osc1_pm + off), 6, 6);
         }
-        grid->setSpacing(2);
+        grid->setHorizontalSpacing(2);
+        grid->setVerticalSpacing(0);
         grid->setRowStretch(7, 1);
         return parent;
     }
@@ -353,11 +360,11 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         // row 1
         grid->addWidget(new QLabel("1"), 0, 0);
         grid->addWidget(createOscillator(new QGroupBox(), 0), 0, 1);
-        grid->addWidget(createOscillator(new QGroupBox(), 1), 0, 2);
-        grid->addWidget(new QLabel("2"), 0, 3);
+        grid->addWidget(createOscillator(new QGroupBox(), 2), 0, 2);
+        grid->addWidget(new QLabel("3"), 0, 3);
         // row 2
-        grid->addWidget(new QLabel("3"), 1, 0);
-        grid->addWidget(createOscillator(new QGroupBox(), 2), 1, 1);
+        grid->addWidget(new QLabel("2"), 1, 0);
+        grid->addWidget(createOscillator(new QGroupBox(), 1), 1, 1);
         grid->addWidget(createOscillator(new QGroupBox(), 3), 1, 2);
         grid->addWidget(new QLabel("4"), 1, 3);
         grid->setColumnStretch(1, 1);
@@ -416,7 +423,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createLabel(p_filter1_distortion + off), 6, 0);
         grid->addWidget(createLabel(p_filter1_key_to_f + off), 6, 1);
         grid->addWidget(createLabel(p_filter1_vel_to_f + off), 6, 2);
-        grid->setSpacing(2);
+        grid->setHorizontalSpacing(2);
+        grid->setVerticalSpacing(0);
         grid->setRowStretch(7, 1);
         return parent;
     }
@@ -476,7 +484,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createLabel(p_env1_hold + off), 6, 0);
         grid->addWidget(createLabel(p_env1_pre_delay + off), 6, 1);
         grid->addWidget(createLabel(p_env1_curve + off), 6, 2);
-        grid->setSpacing(2);
+        grid->setHorizontalSpacing(2);
+        grid->setVerticalSpacing(0);
         grid->setRowStretch(7, 1);
         return parent;
     }
@@ -565,7 +574,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createLabel(p_lfo1_start + off), 3, 1);
         grid->addWidget(createLabel(p_lfo1_width + off), 3, 2);
         grid->addWidget(createLabel(p_lfo1_humanize + off), 3, 3);
-        grid->setSpacing(2);
+        grid->setHorizontalSpacing(2);
+        grid->setVerticalSpacing(0);
         grid->setRowStretch(4, 1);
         return parent;
     }
@@ -629,10 +639,12 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
         // filter
         if (type < 8) {
+            filter.moog.clear();
             filter.moog.setType(type);
             filter.moog.setCoefficients(f, q);
             filter.moog.process(in, in, width);
         } else {
+            filter.svf.clear();
             filter.svf.setType(type - 8);
             filter.svf.setCoefficients(f, q);
             filter.svf.process(in, in, width);
@@ -709,7 +721,6 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         }
 
         container().setObjectName("root");
-        QWidget* browser = createBrowser(new QGroupBox("Browser"));
         QWidget* main = createMain(new QGroupBox("Main"));
         QWidget* effects = createEffects(new QGroupBox());
         QWidget* oscs = createOscillators(new QGroupBox("Oscillators"));
@@ -720,16 +731,18 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
         // main grid
         QGridLayout* grid = new QGridLayout(&container());
-        grid->addWidget(browser, 0, 0);
-        grid->addWidget(main, 0, 1);
-        grid->addWidget(effects, 0, 2);
-        grid->addWidget(oscs, 1, 0, 2, 2);
-        grid->addWidget(filters, 1, 2, 2, 1);
-        grid->addWidget(envs, 3, 0);
-        grid->addWidget(mod, 3, 1);
-        grid->addWidget(lfos, 3, 2);
+        // row 1 & 2
+        grid->addWidget(oscs, 0, 0, 2, 2);
+        grid->addWidget(filters, 0, 2, 2, 1);
+        // row 3
+        grid->addWidget(envs, 2, 0);
+        grid->addWidget(mod, 2, 1);
+        grid->addWidget(lfos, 2, 2);
+        // row 4
+        grid->addWidget(effects, 3, 0);
+        grid->addWidget(main, 3, 1, 1, 2);
+        grid->setRowStretch(0, 1);
         grid->setRowStretch(1, 1);
-        grid->setRowStretch(2, 1);
 
         // connect
         connect(&mapper, SIGNAL(mapped(int)), SLOT(portChange(int)));
