@@ -118,21 +118,21 @@ void Virtual::va_saw(float* output, int samples) {
     // saw
     el_saw(output, samples);
     // highpass
-    va_highpass(output, samples);
+    //va_highpass(output, samples);
 }
 
 void Virtual::va_tri_saw(float* output, int samples) {
     // tri
     el_tri(output, samples);
     // highpass
-    va_highpass(output, samples);
+    //va_highpass(output, samples);
 }
 
 void Virtual::va_pulse(float* output, int samples) {
     // pulse
     el_pulse(output, samples);
     // highpass
-    va_highpass(output, samples);
+    //va_highpass(output, samples);
 }
 
 // PD
