@@ -63,21 +63,18 @@ PREFIX = """@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
 PREFIX_GUI = """#ifndef ANALOGUE_META
 #define ANALOGUE_META
 
-enum {KNOB, LABEL, TOGGLE, SELECT};
-
 typedef struct {
     const char* symbol;
     float min;
     float max;
     float default_value;
     float step;
-    int type;
 } port_meta_t;
 
 static const port_meta_t p_port_meta[] = {
-    {"control", 0, 0, 0, 1, KNOB},
-    {"left", 0, 0, 0, 1, KNOB},
-    {"right", 0, 0, 0, 1, KNOB},"""
+    {"control", 0, 0, 0, 1},
+    {"left", 0, 0, 0, 1},
+    {"right", 0, 0, 0, 1},"""
 
 def ttl_control(idx, symbol, name, min, max, default):
     if (min == 0 and max == 1 and isinstance(max, int) and default == 0):
@@ -113,16 +110,7 @@ def ttl_control(idx, symbol, name, min, max, default):
   ]""" % (idx, symbol, name, min, max, default)
 
 def port_meta(symbol, min, max, default, step):
-    type = "KNOB"
-    if (min == 0 and max == 1 and isinstance(max, int) and default == 0 and step == 1):
-        type = "TOGGLE"
-    elif "_tracking" in symbol:
-        type = "TOGGLE"
-    elif (min == 0 and isinstance(max, int) and step == 1):
-        type = "SELECT"
-    elif "_amount" in symbol:
-        type = "LABEL"
-    return '    {"%s", %s, %s, %s, %s, %s},' % (symbol, min, max, default, step, type)
+    return '    {"%s", %s, %s, %s, %s},' % (symbol, min, max, default, step)
 
 def controls(ttl, gui, idx, type, count, controls):
     for i in range(count):
