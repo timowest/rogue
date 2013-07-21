@@ -11,7 +11,7 @@ namespace dsp {
 
 class LFO {
 
-    enum {SIN, TRI, SAW, SQUARE, SH};
+    enum {SIN, TRI, SAW, PULSE, SH, NOISE};
 
   public:
     void clear ();

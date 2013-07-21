@@ -290,7 +290,6 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     }
 
     QWidget* createOscillator(QGroupBox* parent, int i) {
-        // TODO simplify oscMapper connections
         int off = i * OSC_OFF;
         parent->setCheckable(true);
         connectBox(p_osc1_on + off, parent);
@@ -546,13 +545,12 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     }
 
     QWidget* createLfo(QGroupBox* parent, int i) {
-        // TODO simplify lfoMapper connections
         int off = i * LFO_OFF;
         parent->setCheckable(true);
         connectBox(p_lfo1_on + off, parent);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        QComboBox* typeBox = createSelect(p_lfo1_type + off, lfo_types, 5);
+        QComboBox* typeBox = createSelect(p_lfo1_type + off, lfo_types, 6);
         lfoMapper.setMapping(typeBox, i);
         connect(typeBox, SIGNAL(currentIndexChanged(int)), &lfoMapper, SLOT(map()));
         grid->addWidget(typeBox, 0, 0, 1, 2);

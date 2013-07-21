@@ -23,7 +23,7 @@ CHARS filter_types[] = {"LP 24dB", "LP 18dB", "LP 12dB", "LP 6dB", "HP 24dB",
 
 CHARS filter_sources[] = {"Bus A", "Bus B", "Filter1"};
 
-CHARS lfo_types[] = {"Sin", "Tri", "Saw", "Square", "S/H"};
+CHARS lfo_types[] = {"Sin", "Tri", "Saw", "Pulse", "S/H", "Noise"};
 
 CHARS lfo_reset_types[] = {"Poly", "Free", "Mono"};
 

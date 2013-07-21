@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "lfo.h"
+#include "phase.h"
 #include "tables.h"
 
 namespace dsp {
@@ -31,10 +32,10 @@ float LFO::getValue(float p) {
     case SIN:
         return sin_.fast(p);
     case TRI:
-        return 2.0f * (p < 0.5f ? 2.0f * p : 2.0f - 2.0f * p) - 1.0f;
+        return gb(gtri(p, width));
     case SAW:
-        return 2.0f * p - 1.0f;
-    case SQUARE:
+        return gb(p);
+    case PULSE:
         return p < width ? -1.0 : 1.0;
     case SH:
         if (prev_phase > p) { // update value once per cycle
@@ -42,6 +43,8 @@ float LFO::getValue(float p) {
         }
         prev_phase = p;
         return value;
+    case NOISE:
+        return (2.0f * rand() / float(RAND_MAX + 1.0f) - 1.0f);
     default:
         return 0.0f;
     }
