@@ -25,6 +25,13 @@
 
 class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvtk::URID<true> > {
 
+    static const int OSC_WIDTH = 120;
+    static const int DCF_WIDTH = 100;
+    static const int ENV_WIDTH = 100;
+    static const int LFO_WIDTH = 100;
+
+    static const int WAVE_HEIGHT = 60;
+
     Q_OBJECT
 
     Widget* widgets[p_n_ports];
@@ -308,7 +315,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createDial(p_osc1_fine + off), 1, 1);
         grid->addWidget(createDial(p_osc1_ratio + off), 1, 2);
         grid->addWidget(createDial(p_osc1_level + off), 1, 3);
-        grid->addWidget(osc_wd[i] = new WaveDisplay(120, 60), 1, 4, 3, 3);
+        grid->addWidget(osc_wd[i] = new WaveDisplay(OSC_WIDTH, WAVE_HEIGHT), 1, 4, 3, 3);
         // row 3
         grid->addWidget(new QLabel("Coarse"), 2, 0);
         grid->addWidget(new QLabel("Fine"), 2, 1);
@@ -399,7 +406,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(connectToFilter(createDial(p_filter1_q + off), i), 1, 1);
         grid->addWidget(createDial(p_filter1_level + off), 1, 2);
         grid->addWidget(createDial(p_filter1_pan + off), 1, 3);
-        grid->addWidget(filter_wd[i] = new WaveDisplay(120, 60), 1, 4, 3, 3);
+        grid->addWidget(filter_wd[i] = new WaveDisplay(DCF_WIDTH, WAVE_HEIGHT), 1, 4, 3, 3);
         // row 3
         grid->addWidget(new QLabel("Freq"), 2, 0);
         grid->addWidget(new QLabel("Res"), 2, 1);
@@ -460,7 +467,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(connectToEnv(createDial(p_env1_decay + off), i), 1, 1);
         grid->addWidget(connectToEnv(createDial(p_env1_sustain + off), i), 1, 2);
         grid->addWidget(connectToEnv(createDial(p_env1_release + off), i), 1, 3);
-        grid->addWidget(env_wd[i] = new WaveDisplay(100, 60), 1, 4, 3, 3);
+        grid->addWidget(env_wd[i] = new WaveDisplay(ENV_WIDTH, WAVE_HEIGHT), 1, 4, 3, 3);
         // row 3
         grid->addWidget(new QLabel("A"), 2, 0);
         grid->addWidget(new QLabel("D"), 2, 1);
@@ -561,7 +568,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(connectToLfo(createDial(p_lfo1_start + off), i), 1, 1);
         grid->addWidget(connectToLfo(createDial(p_lfo1_width + off), i), 1, 2);
         grid->addWidget(createDial(p_lfo1_humanize + off), 1, 3);
-        grid->addWidget(lfo_wd[i] = new WaveDisplay(100, 60), 1, 4, 3, 3);
+        grid->addWidget(lfo_wd[i] = new WaveDisplay(LFO_WIDTH, WAVE_HEIGHT), 1, 4, 3, 3);
         // row 3
         grid->addWidget(new QLabel("Freq"), 2, 0);
         grid->addWidget(new QLabel("Start"), 2, 1);
@@ -616,7 +623,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         osc.setStart(s);
         osc.resetPhase();
         float* buffer = osc_wd[i]->getSamples();
-        int width = osc_wd[i]->width();
+        int width = OSC_WIDTH;
         osc.process(type, 1.0f, w, w, buffer, width);
         if (inv) {
             for (int j = 0; j < width; j++) buffer[j] *= -1.0;
@@ -629,7 +636,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         float f = widgets[p_filter1_freq + i * DCF_OFF]->get_value();
         float q = widgets[p_filter1_q + i * DCF_OFF]->get_value();
 
-        int width = 2 * filter_wd[i]->width();
+        int width = 2 * DCF_WIDTH;
         float* in = fftIn[i];
         float* out = fftOut[i];
         for (int j = 0; j < width; j++) in[j] = 0;
@@ -653,7 +660,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         // post process fft results
         float* samples = filter_wd[i]->getSamples();
         float max_val = 0.0;
-        for (int j = 0; j < (width/2); j++) {
+        for (int j = 0; j < DCF_WIDTH; j++) {
             samples[j] = sqrt(pow(out[j], 2) + pow(out[width - j], 2));
             max_val = std::max(max_val, samples[j]);
         }
@@ -675,7 +682,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
         float curve = widgets[p_env1_curve + i * ENV_OFF]->get_value();
 
-        int width = env_wd[i]->width();
+        int width = ENV_WIDTH;
         float scale = ((float)width) / (pre + a + h + d + r);
         env.setPredelay(scale * pre);
         env.setAHDSR(scale * a, scale * h, scale * d, s, scale * r);
@@ -703,7 +710,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         lfo.setWidth(w);
         lfo.reset();
         float* buffer = lfo_wd[i]->getSamples();
-        int width = lfo_wd[i]->width();
+        int width = LFO_WIDTH;
         float scale = inv ? -1.0 : 1.0;
         for (int j = 0; j < width; j++) {
             buffer[j] = scale * lfo.tick();
@@ -755,18 +762,33 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         QString styleSheet = QLatin1String(file.readAll());
         container().setStyleSheet(styleSheet);
 
-        osc.setSamplerate(120);
+        osc.setSamplerate(OSC_WIDTH);
         filter.setSamplerate(44100.0);
         lfo.setFreq(1.0);
-        lfo.setSamplerate(100);
+        lfo.setSamplerate(LFO_WIDTH);
 
         // fft
-        const int fft_width = 2 * 120;
+        const int fft_width = 2 * DCF_WIDTH;
         for (int i = 0; i < 2; i++) {
             fftIn[i] = (float*) fftwf_malloc(sizeof(float) * fft_width);
             fftOut[i] = (float*) fftwf_malloc(sizeof(float) * fft_width);
             fftPlan[i] = fftwf_plan_r2r_1d(fft_width, fftIn[i], fftOut[i], FFTW_R2HC, FFTW_MEASURE);
         }
+
+        // update displays
+        for (int i = 0; i < 4; i++) {
+            updateOsc(i);
+        }
+        for (int i = 0; i < 2; i++) {
+            updateFilter(i);
+        }
+        for (int i = 0; i < 5; i++) {
+            updateEnv(i);
+        }
+        for (int i = 0; i < 3; i++) {
+            updateLfo(i);
+        }
+
     }
 
     ~rogueGUI() {
