@@ -5,6 +5,7 @@
 #include <QDoubleSpinBox>
 #include <QFrame>
 #include <QPainter>
+#include <QMouseEvent>
 
 class Widget {
   public:
@@ -19,6 +20,8 @@ class CustomDial : public QDial, public Widget {
     static const int FULL = 5760;
     static const int HALF = 2880;
     float min, max, pos0, step;
+    int origin_y, origin_val, range;
+
 
   protected:
     void paintEvent(QPaintEvent *pe) {
@@ -46,6 +49,52 @@ class CustomDial : public QDial, public Widget {
             width/2.0 + 0.8 * radius * cos(angle), height/2.0 + 0.8 * radius * sin(angle));
     }
 
+    void mousePressEvent(QMouseEvent* e) {
+        if ((e->button() != Qt::LeftButton) ||
+            (e->buttons() ^ e->button())) {
+            e->ignore();
+            return;
+        }
+        e->accept();
+
+        //setSliderPosition(d->valueFromPoint(e->pos()));
+        origin_y = e->globalY();
+        origin_val = value();
+        setSliderDown(true);
+    }
+
+    void mouseReleaseEvent(QMouseEvent* e) {
+        if (e->buttons() & (~e->button()) ||
+           (e->button() != Qt::LeftButton)) {
+            e->ignore();
+            return;
+        }
+        e->accept();
+
+        //setValue(d->valueFromPoint(e->pos()));
+        setSliderDown(false);
+    }
+
+    void mouseMoveEvent(QMouseEvent* e) {
+        if (!(e->buttons() & Qt::LeftButton)) {
+            e->ignore();
+            return;
+        }
+        e->accept();
+
+        int offset = origin_y - e->globalY();
+        int new_value = origin_val + offset;
+        if (new_value > max) {
+            new_value = max;
+        } else if (new_value < min) {
+            new_value = min;
+        }
+        setSliderPosition(new_value);
+        //d->doNotEmit = true;
+        //setSliderPosition(d->valueFromPoint(e->pos()));
+        //d->doNotEmit = false;
+    }
+
   public:
     CustomDial(float _min, float _max, float _step, float _value) : QDial() {
         min = _min / _step;
@@ -54,6 +103,9 @@ class CustomDial : public QDial, public Widget {
         pos0 = ((min > 0.0 ? min : 0.0) - min) / (max - min);
         setRange(min, max);
         setValue(_value / _step);
+        setSingleStep(1);
+        setPageStep(1);
+        range = max - min;
     }
 
     float get_value() {

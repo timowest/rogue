@@ -776,19 +776,10 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         }
 
         // update displays
-        for (int i = 0; i < 4; i++) {
-            updateOsc(i);
-        }
-        for (int i = 0; i < 2; i++) {
-            updateFilter(i);
-        }
-        for (int i = 0; i < 5; i++) {
-            updateEnv(i);
-        }
-        for (int i = 0; i < 3; i++) {
-            updateLfo(i);
-        }
-
+        for (int i = 0; i < 4; i++) updateOsc(i);
+        for (int i = 0; i < 2; i++) updateFilter(i);
+        for (int i = 0; i < 5; i++) updateEnv(i);
+        for (int i = 0; i < 3; i++) updateLfo(i);
     }
 
     ~rogueGUI() {
