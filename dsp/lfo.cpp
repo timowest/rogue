@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include "lfo.h"
-#include "phase.h"
 #include "tables.h"
 
 namespace dsp {
@@ -32,9 +31,13 @@ float LFO::getValue(float p) {
     case SIN:
         return sin_.fast(p);
     case TRI:
-        return gb(gtri(p, width));
+        if (p < width) {
+            return 2.0 * (p/width) - 1.0;
+        } else {
+            return 2.0 * (1.0 - (p-width) / (1.0-width)) - 1.0;
+        }
     case SAW:
-        return gb(p);
+        return 2.0f * p - 1.0f;
     case PULSE:
         return p < width ? -1.0 : 1.0;
     case SH:

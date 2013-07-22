@@ -119,6 +119,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
     void connectBox(int p, QGroupBox* box) {
         mapper.setMapping(box, p);
+        box->setChecked(p_port_meta[p].default_value > 0.0);
         connect(box, SIGNAL(toggled(bool)), &mapper, SLOT(map()));
         widgets[p] = new GroupBoxAdapter(box);
     }
@@ -271,16 +272,15 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return parent;
     }
 
-    QWidget* createEffects(QGroupBox* parent) {
+    QWidget* createEffects(QWidget* parent) {
         parent->setObjectName("effects");
-        QHBoxLayout* layout = new QHBoxLayout(parent);
-        QTabWidget* tabs = new QTabWidget();
-        //tabs->setTabPosition(QTabWidget::West);
-        tabs->addTab(createChorus(new QGroupBox()), "Chorus");
-        tabs->addTab(createPhaser(new QGroupBox()), "Phaser");
-        tabs->addTab(createDelay(new QGroupBox()), "Delay");
-        tabs->addTab(createReverb(new QGroupBox()), "Reverb");
-        layout->addWidget(tabs);
+        QGridLayout* grid = new QGridLayout(parent);
+        // row 1
+        grid->addWidget(createChorus(new QGroupBox("Chorus")), 0, 0);
+        grid->addWidget(createPhaser(new QGroupBox("Phaser")), 0, 1);
+        grid->addWidget(createDelay(new QGroupBox("Delay")), 0, 2);
+        // row 2
+        grid->addWidget(createReverb(new QGroupBox("Reverb")), 1, 0);
         return parent;
     }
 
@@ -437,7 +437,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
     QWidget* createFilters(QWidget* parent) {
         parent->setObjectName("filters");
-        QGridLayout* grid = new QGridLayout();
+        QGridLayout* grid = new QGridLayout(parent);
         // row 1
         grid->addWidget(new QLabel("1"), 0, 0);
         grid->addWidget(createFilter(new QGroupBox(), 0), 0, 1);
@@ -445,7 +445,6 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(new QLabel("2"), 1, 0);
         grid->addWidget(createFilter(new QGroupBox(), 1), 1, 1);
         grid->setColumnStretch(1, 1);
-        parent->setLayout(grid);
         return parent;
     }
 
@@ -498,44 +497,55 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
     QWidget* createEnvs(QWidget* parent) {
         parent->setObjectName("envs");
+        // 1
+        QFrame* frame1 = new QFrame();
+        QGridLayout* grid1 = new QGridLayout(frame1);
+        grid1->addWidget(new QLabel("1"), 0, 0);
+        grid1->addWidget(createEnv(new QGroupBox(), 0), 0, 1);
+        grid1->addWidget(new QLabel("2"), 0, 2);
+        grid1->addWidget(createEnv(new QGroupBox(), 1), 0, 3);
+        grid1->addWidget(new QLabel("3"), 0, 4);
+        grid1->addWidget(createEnv(new QGroupBox(), 2), 0, 5);
+        grid1->setColumnStretch(6, 1);
+        // 2
+        QFrame* frame2 = new QFrame();
+        QGridLayout* grid2 = new QGridLayout(frame2);
+        grid2->addWidget(new QLabel("4"), 0, 0);
+        grid2->addWidget(createEnv(new QGroupBox(), 3), 0, 1);
+        grid2->addWidget(new QLabel("5"), 0, 2);
+        grid2->addWidget(createEnv(new QGroupBox(), 4), 0, 3);
+        grid2->setColumnStretch(4, 1);
+
         QHBoxLayout* layout = new QHBoxLayout(parent);
         QTabWidget* tabs = new QTabWidget();
         tabs->setTabPosition(QTabWidget::West);
-        tabs->addTab(createEnv(new QGroupBox(), 0), "1");
-        tabs->addTab(createEnv(new QGroupBox(), 1), "2");
-        tabs->addTab(createEnv(new QGroupBox(), 2), "3");
-        tabs->addTab(createEnv(new QGroupBox(), 3), "4");
-        tabs->addTab(createEnv(new QGroupBox(), 4), "5");
+        tabs->addTab(frame1, "1-3");
+        tabs->addTab(frame2, "4-5");
         layout->addWidget(tabs);
         return parent;
     }
 
     QWidget* createMod(QWidget* parent, int i) {
-        int off = i * (p_mod6_src - p_mod1_src);
+        int off = i * (p_mod8_src - p_mod1_src);
         QGridLayout* grid = new QGridLayout(parent);
-        for (int j = 0; j < 5; j++) {
+        int max = i < 2 ? 7 : 6;
+        for (int j = 0; j < max; j++) {
             grid->addWidget(createSelect(p_mod1_src + off, mod_src_labels, M_SIZE), j, 0);
             grid->addWidget(createSelect(p_mod1_target + off, mod_target_labels, M_TARGET_SIZE), j, 1);
             grid->addWidget(createSpin(p_mod1_amount + off), j, 2);
             off += 3;
         }
         grid->setSpacing(2);
-        grid->setColumnStretch(1, 1);
-        grid->setRowStretch(5, 1);
+        grid->setRowStretch(max, 1);
         return parent;
     }
 
     QWidget* createMod(QWidget* parent) {
         parent->setObjectName("mod");
-        QHBoxLayout* layout = new QHBoxLayout();
-        QTabWidget* tabs = new QTabWidget();
-        tabs->setTabPosition(QTabWidget::West);
-        tabs->addTab(createMod(new QGroupBox(), 0), "1");
-        tabs->addTab(createMod(new QGroupBox(), 1), "2");
-        tabs->addTab(createMod(new QGroupBox(), 2), "3");
-        tabs->addTab(createMod(new QGroupBox(), 3), "4");
-        layout->addWidget(tabs);
-        parent->setLayout(layout);
+        QHBoxLayout* layout = new QHBoxLayout(parent);
+        layout->addWidget(createMod(new QGroupBox(), 0));
+        layout->addWidget(createMod(new QGroupBox(), 1));
+        layout->addWidget(createMod(new QGroupBox(), 2));
         return parent;
     }
 
@@ -587,13 +597,14 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
     QWidget* createLfos(QWidget* parent) {
         parent->setObjectName("lfos");
-        QHBoxLayout* layout = new QHBoxLayout(parent);
-        QTabWidget* tabs = new QTabWidget();
-        tabs->setTabPosition(QTabWidget::West);
-        tabs->addTab(createLfo(new QGroupBox(), 0), "1");
-        tabs->addTab(createLfo(new QGroupBox(), 1), "2");
-        tabs->addTab(createLfo(new QGroupBox(), 2), "3");
-        layout->addWidget(tabs);
+        QGridLayout* grid = new QGridLayout(parent);
+        grid->addWidget(new QLabel("1"), 0, 0);
+        grid->addWidget(createLfo(new QGroupBox(), 0), 0, 1);
+        grid->addWidget(new QLabel("2"), 0, 2);
+        grid->addWidget(createLfo(new QGroupBox(), 1), 0, 3);
+        grid->addWidget(new QLabel("3"), 0, 4);
+        grid->addWidget(createLfo(new QGroupBox(), 2), 0, 5);
+        grid->setColumnStretch(6, 1);
         return parent;
     }
 
@@ -727,12 +738,19 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
         container().setObjectName("root");
         QWidget* main = createMain(new QGroupBox("Main"));
-        QWidget* effects = createEffects(new QGroupBox());
+        main->setProperty("top", QVariant(true));
         QWidget* oscs = createOscillators(new QGroupBox("Oscillators"));
+        oscs->setProperty("top", QVariant(true));
         QWidget* filters = createFilters(new QGroupBox("Filters"));
-        QWidget* envs = createEnvs(new QGroupBox("Envelopes"));
-        QWidget* mod = createMod(new QGroupBox("Modulation"));
-        QWidget* lfos = createLfos(new QGroupBox("LFOs"));
+        filters->setProperty("top", QVariant(true));
+
+        QTabWidget* tabs = new QTabWidget();
+        tabs->setObjectName("mainTab");
+        tabs->setProperty("top", QVariant(true));
+        tabs->addTab(createLfos(new QFrame()), "LFOs");
+        tabs->addTab(createEnvs(new QFrame()), "Envelopes");
+        tabs->addTab(createMod(new QFrame()), "Modulation");
+        tabs->addTab(createEffects(new QFrame()), "Effects");
 
         // main grid
         QGridLayout* grid = new QGridLayout(&container());
@@ -740,12 +758,9 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(oscs, 0, 0, 2, 2);
         grid->addWidget(filters, 0, 2, 2, 1);
         // row 3
-        grid->addWidget(envs, 2, 0);
-        grid->addWidget(mod, 2, 1);
-        grid->addWidget(lfos, 2, 2);
+        grid->addWidget(tabs, 2, 0, 1, 3);
         // row 4
-        grid->addWidget(effects, 3, 0);
-        grid->addWidget(main, 3, 1, 1, 2);
+        grid->addWidget(main, 3, 0, 1, 3);
         grid->setRowStretch(0, 1);
         grid->setRowStretch(1, 1);
 

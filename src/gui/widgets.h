@@ -21,6 +21,7 @@ class CustomDial : public QDial, public Widget {
     static const int HALF = 2880;
     float min, max, pos0, step;
     int origin_y, origin_val, range;
+    float* values;
 
 
   protected:
@@ -32,16 +33,22 @@ class CustomDial : public QDial, public Widget {
         painter.setRenderHint(QPainter::Antialiasing, true);
 
         // circle
-        painter.setPen(QPen(QBrush("#bbb"), 1));
-        painter.setBrush(QBrush(QColor("#bbb")));
+        painter.setPen(QPen(QBrush("#aaa"), 1));
+        painter.setBrush(QBrush(QColor("#aaa")));
         painter.drawEllipse(6, 6, width - 12, height - 12);
+
+        if (isEnabled()) {
+            painter.setPen(QPen(QBrush("#bbb"), 1));
+            painter.setBrush(QBrush(QColor("#bbb")));
+            painter.drawEllipse(8, 8, width - 16, height - 16);
+        }
 
         // arc
         painter.setPen(QPen(isEnabled() ? QBrush("#666") : QBrush("#bbb"), 3));
         painter.drawArc(2, 2, width - 4, height - 4, (1.125 - pos0 * 1.25) * HALF, -(pos - pos0) * 1.25 * HALF);
 
         // line
-        int radius = 0.5 * width - 6;
+        int radius = 0.5 * width - 6.0;
         double angle = (0.75 + pos * 1.5) * M_PI;
         painter.setPen(QPen(QBrush("#fff"), 2));
         painter.drawLine(
@@ -106,10 +113,18 @@ class CustomDial : public QDial, public Widget {
         setSingleStep(1);
         setPageStep(1);
         range = max - min;
+        values = new float[range + 1];
+        for (int i = 0; i <= range; i++) {
+            values[i] = _min + i * step;
+        }
+    }
+
+    ~CustomDial() {
+        delete values;
     }
 
     float get_value() {
-        return value() * step;
+        return values[value()];
     }
 
     void set_value(float v) {

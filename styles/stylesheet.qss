@@ -1,14 +1,12 @@
 #root {
-  background: rgb(130, 130, 130);
+  background: rgb(130, 130, 130);  
 }
 
 QTabBar::tab, QLabel, QComboBox, QDoubleSpinBox, QPushButton {
   font-size: 12px;
 }
 
-/* groupBox */
-
-QGroupBox {
+QGroupBox, #mainTab::pane {
   background: rgb(220, 220, 220);
   padding-top: 10px;
   font-weight: bold;
@@ -17,11 +15,15 @@ QGroupBox {
   border-radius: 5px;
 }
 
+#mainTab::pane {
+  border-top-left-radius: 1px;
+}
+
 QGroupBox::title {
   padding: 2px;
 }
 
-QGroupBox QGroupBox {
+*[top=true] QGroupBox {
   background: rgb(255, 255, 255);
   border: 1px solid rgb(255, 255, 255);
 }
@@ -34,32 +36,39 @@ QGroupBox::indicator:unchecked, QRadioButton:indicator:unchecked {
   image: url(styles/check_unselected.png); 
 }
 
-QGroupBox QGroupBox::title {
+*[top=true] QGroupBox::title {
   subcontrol-origin: margin;
   subcontrol-position: top right;
 }
 
-QGroupBox QGroupBox QLabel, #main QLabel {
+*[top=true] QGroupBox QLabel {
   qproperty-alignment: AlignCenter;
 }
 
-QGroupBox QGroupBox QFrame {
+*[top=true] QGroupBox QFrame {
   background: rgb(220, 220, 220);
   border: solid 1px rgb(180, 180, 180);
 }
 
-QGroupBox QGroupBox QLabel {
+*[top=true] QGroupBox QLabel  {
   background: transparent;
 }
 
-#oscillators > QLabel, #filters >  QLabel {
+#oscillators > QLabel, #filters >  QLabel, #lfos > QLabel, #envs QFrame > QLabel {
   qproperty-alignment: AlignTop;
   font-weight: bold;  
 }
 
-QGroupBox QGroupBox {
+*[top=true] QGroupBox {
   padding-top: -5px;
 }
+
+ #mainTab QTabBar::tab:selected {
+   background: rgb(220, 220, 220);
+   border: 1px solid rgb(220, 220, 220);
+   border-top-left-radius: 5px;
+   border-top-right-radius: 5px;
+ }
 
 #effects {
   padding-top: -10px;
@@ -80,6 +89,7 @@ QLabel[num=true] {
 /* dials */
 
 QDial {
+  background-image: url(styles/knob.png);
   padding: 0;
   margin: 0;
 }
@@ -102,6 +112,10 @@ QComboBox {
   background: transparent;
   border: none;
   max-width: 80px;
+}
+
+#mod QComboBox {
+  max-width: 100px;
 }
 
 QComboBox::down-arrow {  
@@ -147,23 +161,3 @@ QTabBar::tab:selected {
   font-weight: bold;
 }
 
-/*#effects QTabWidget {
-  height: 80px;
-}*/
-
-/* DARK theme */
-
-/*#root {
-  background: rgb(80, 80, 80);
-  color: rgb(120, 120, 120);
-}
-
-QGroupBox {
-  background: rgb(60, 60, 60);
-  border: 1px solid rgb(60, 60, 60);
-}
-
-QGroupBox QGroupBox {
-  background: rgb(30, 30, 30);
-  border: 1px solid rgb(30, 30, 30);
-}*/

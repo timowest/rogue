@@ -115,9 +115,11 @@ def port_meta(symbol, min, max, default, step):
 def controls(ttl, gui, idx, type, count, controls):
     for i in range(count):
         prefix = type+str(i+1)+"_"
-        for c in controls:            
-            ttl.append(ttl_control(idx, prefix+c[0], c[0], c[1], c[2], c[3]))
-            gui.append(port_meta(prefix+c[0], c[1], c[2], c[3], c[4]))
+        for c in controls:
+            # override default
+            c3 = 1 if (i == 0 and c[0] == "on") else c[3]
+            ttl.append(ttl_control(idx, prefix+c[0], c[0], c[1], c[2], c3))
+            gui.append(port_meta(prefix+c[0], c[1], c[2], c3, c[4]))
             idx += 1
     return idx
 
@@ -169,11 +171,11 @@ def main():
   
     envs = [["on"         , 0, 1, 0, 1], # toggled
             ["pre_delay"  , 0, 5.0, 0, 0.01],
-            ["attack"     , 0, 5.0, 0, 0.01],
+            ["attack"     , 0, 5.0, 0.1, 0.01],
             ["hold"       , 0, 5.0, 0, 0.01],
-            ["decay"      , 0, 5.0, 0, 0.01],
-            ["sustain"    , 0, 1.0, 1.0, 0.01],
-            ["release"    , 0, 5.0, 0, 0.01],
+            ["decay"      , 0, 5.0, 0.5, 0.01],
+            ["sustain"    , 0, 1.0, 0.8, 0.01],
+            ["release"    , 0, 5.0, 0.5, 0.01],
             ["curve"      , 0, 1.0, 0.5, 0.01],
             ["retrigger"  , 0, 1, 0, 1]] # toggled
                         
