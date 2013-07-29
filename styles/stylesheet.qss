@@ -2,11 +2,16 @@
   background: rgb(130, 130, 130);  
 }
 
-QTabBar::tab, QLabel, QComboBox, QDoubleSpinBox, QPushButton {
+#logo {
+  background-image: url(styles/logo-white.png);
+  background-position: bottom right;
+}
+
+QGroupBox, QTabBar::tab, QLabel, QComboBox, QDoubleSpinBox, QPushButton {
   font-size: 12px;
 }
 
-QGroupBox, #mainTab::pane {
+QGroupBox, #mainTab::pane, #sideTab::pane {
   background: rgb(220, 220, 220);
   padding-top: 10px;
   font-weight: bold;
@@ -16,6 +21,10 @@ QGroupBox, #mainTab::pane {
 }
 
 #mainTab::pane {
+  border-top-left-radius: 1px;
+}
+
+#sideTab::pane {
   border-top-left-radius: 1px;
 }
 
@@ -54,7 +63,7 @@ QGroupBox::indicator:unchecked, QRadioButton:indicator:unchecked {
   background: transparent;
 }
 
-#oscillators > QLabel, #filters >  QLabel, #lfos > QLabel, #envs QFrame > QLabel {
+#oscillators > QLabel, #filters >  QLabel, #lfos > QLabel, #envs1 > QLabel, #envs2 > QLabel, #mixer > QLabel {
   qproperty-alignment: AlignTop;
   font-weight: bold;  
 }
@@ -67,11 +76,19 @@ QGroupBox::indicator:unchecked, QRadioButton:indicator:unchecked {
    background: rgb(220, 220, 220);
    border: 1px solid rgb(220, 220, 220);
    border-top-left-radius: 5px;
+   border-bottom-left-radius: 5px;
+ }
+ 
+ #sideTab QTabBar::tab:selected {
+   background: rgb(220, 220, 220);
+   border: 1px solid rgb(220, 220, 220);
+   border-top-left-radius: 5px;
    border-top-right-radius: 5px;
  }
 
-#effects {
-  padding-top: -10px;
+#effects QGroupBox {
+  padding-top: 10px;
+  padding-right: 3px;
 }
 
 /* labels */
@@ -126,6 +143,10 @@ QComboBox::drop-down {
   /*border: none;*/
 }
 
+#mainTab::pane {
+  margin-top: -10px;
+}
+
 /* spinbox */
 
 QDoubleSpinBox {
@@ -142,7 +163,7 @@ QTabWidget {
 
 QTabWidget::pane {
   background: transparent;
-  border: 0;
+  border: 0;    
 }
 
 QTabBar {

@@ -21,8 +21,6 @@ class CustomDial : public QDial, public Widget {
     static const int HALF = 2880;
     float min, max, pos0, step;
     int origin_y, origin_val, range;
-    float* values;
-
 
   protected:
     void paintEvent(QPaintEvent *pe) {
@@ -113,18 +111,10 @@ class CustomDial : public QDial, public Widget {
         setSingleStep(1);
         setPageStep(1);
         range = max - min;
-        values = new float[range + 1];
-        for (int i = 0; i <= range; i++) {
-            values[i] = _min + i * step;
-        }
-    }
-
-    ~CustomDial() {
-        delete values;
     }
 
     float get_value() {
-        return values[value()];
+        return value() * step;
     }
 
     void set_value(float v) {

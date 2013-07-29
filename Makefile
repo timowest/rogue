@@ -2,7 +2,7 @@ BUNDLE = lv2-rogue.lv2
 INSTALL_DIR = /usr/local/lib/lv2
 
 SOURCES = dsp/*.cpp src/*.cpp fx/*.cc
-SOURCES_UI = dsp/lfo.cpp dsp/tables.cpp dsp/filter.cpp dsp/oscillator.cpp src/gui/rogue-gui.cpp
+SOURCES_UI = dsp/lfo.cpp dsp/tables.cpp dsp/filter.cpp dsp/oscillator.cpp dsp/envelope.cpp src/gui/rogue-gui.cpp
 FLAGS = -fPIC -DPIC -std=c++11 
 FAST = -Ofast -ffast-math
 LVTK = `pkg-config --cflags --libs lvtk-plugin-1`
