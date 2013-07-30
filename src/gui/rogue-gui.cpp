@@ -124,6 +124,12 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         widgets[p] = new GroupBoxAdapter(box);
     }
 
+    QWidget* createIndex(const char* text) {
+        QWidget* widget = new QLabel(text);
+        widget->setProperty("index", QVariant(true));
+        return widget;
+    }
+
     QWidget* createBrowser(QWidget* parent) {
         return parent;
     }
@@ -419,17 +425,18 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         parent->setObjectName("mixer");
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(new QLabel("1"), 0, 0);
+        grid->addWidget(createIndex("1"), 0, 0);
         grid->addWidget(createMixer(new QGroupBox(), 0), 0, 1);
         // row 2
-        grid->addWidget(new QLabel("2"), 1, 0);
+        grid->addWidget(createIndex("2"), 1, 0);
         grid->addWidget(createMixer(new QGroupBox(), 1), 1, 1);
         // row 3
-        grid->addWidget(new QLabel("3"), 2, 0);
+        grid->addWidget(createIndex("3"), 2, 0);
         grid->addWidget(createMixer(new QGroupBox(), 2), 2, 1);
         // row 4
-        grid->addWidget(new QLabel("4"), 3, 0);
+        grid->addWidget(createIndex("4"), 3, 0);
         grid->addWidget(createMixer(new QGroupBox(), 3), 3, 1);
+        grid->setHorizontalSpacing(2);
         return parent;
     }
 
@@ -495,12 +502,13 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         parent->setObjectName("filters");
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(new QLabel("1"), 0, 0);
+        grid->addWidget(createIndex("1"), 0, 0);
         grid->addWidget(createFilter(new QGroupBox(), 0), 0, 1);
         // row 2
-        grid->addWidget(new QLabel("2"), 1, 0);
+        grid->addWidget(createIndex("2"), 1, 0);
         grid->addWidget(createFilter(new QGroupBox(), 1), 1, 1);
         grid->setColumnStretch(1, 1);
+        grid->setHorizontalSpacing(2);
         return parent;
     }
 
@@ -556,28 +564,30 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     QWidget* createEnvs1(QWidget* parent) {
         parent->setObjectName("envs1");
         QGridLayout* grid1 = new QGridLayout(parent);
-        grid1->addWidget(new QLabel("1"), 0, 0);
+        grid1->addWidget(createIndex("1"), 0, 0);
         grid1->addWidget(createEnv(new QGroupBox(), 0), 0, 1);
-        grid1->addWidget(new QLabel("2"), 0, 2);
+        grid1->addWidget(createIndex("2"), 0, 2);
         grid1->addWidget(createEnv(new QGroupBox(), 1), 0, 3);
-        grid1->addWidget(new QLabel("3"), 0, 4);
+        grid1->addWidget(createIndex("3"), 0, 4);
         grid1->addWidget(createEnv(new QGroupBox(), 2), 0, 5);
         grid1->setRowStretch(1, 1);
         grid1->setColumnStretch(1, 1);
         grid1->setColumnStretch(3, 1);
         grid1->setColumnStretch(5, 1);
+        grid1->setHorizontalSpacing(2);
         return parent;
     }
 
     QWidget* createEnvs2(QWidget* parent) {
         parent->setObjectName("envs2");
         QGridLayout* grid2 = new QGridLayout(parent);
-        grid2->addWidget(new QLabel("4"), 0, 0);
+        grid2->addWidget(createIndex("4"), 0, 0);
         grid2->addWidget(createEnv(new QGroupBox(), 3), 0, 1);
-        grid2->addWidget(new QLabel("5"), 0, 2);
+        grid2->addWidget(createIndex("5"), 0, 2);
         grid2->addWidget(createEnv(new QGroupBox(), 4), 0, 3);
         grid2->setRowStretch(1, 1);
         grid2->setColumnStretch(4, 1);
+        grid2->setHorizontalSpacing(2);
         return parent;
     }
 
@@ -657,11 +667,11 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     QWidget* createLfos(QWidget* parent) {
         parent->setObjectName("lfos");
         QGridLayout* grid = new QGridLayout(parent);
-        grid->addWidget(new QLabel("1"), 0, 0);
+        grid->addWidget(createIndex("1"), 0, 0);
         grid->addWidget(createLfo(new QGroupBox(), 0), 0, 1);
-        grid->addWidget(new QLabel("2"), 0, 2);
+        grid->addWidget(createIndex("2"), 0, 2);
         grid->addWidget(createLfo(new QGroupBox(), 1), 0, 3);
-        grid->addWidget(new QLabel("3"), 0, 4);
+        grid->addWidget(createIndex("3"), 0, 4);
         grid->addWidget(createLfo(new QGroupBox(), 2), 0, 5);
         grid->setRowStretch(1, 1);
         grid->setColumnStretch(1, 1);
@@ -790,7 +800,6 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
     // host to UI
     void port_event(uint32_t port, uint32_t buffer_size, uint32_t format, const void* buffer) {
-        // FIXME
         if (port > 2) {
             widgets[port]->set_value(*static_cast<const float*>(buffer));
         }
@@ -810,13 +819,13 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         filters->setProperty("top", QVariant(true));
 
         QTabWidget* tabs = new QTabWidget();
-        tabs->setTabPosition(QTabWidget::West);
+        tabs->setTabPosition(QTabWidget::South);
         tabs->setObjectName("mainTab");
         tabs->setProperty("top", QVariant(true));
         tabs->addTab(createEnvs1(new QFrame()), "Envs 1");
         tabs->addTab(createEnvs2(new QFrame()), "Envs 2");
         tabs->addTab(createLfos(new QFrame()), "LFOs");
-        tabs->addTab(createEffects(new QFrame()), "FX");
+        tabs->addTab(createEffects(new QFrame()), "Effects");
 
         QTabWidget* tabs2 = new QTabWidget();
         tabs2->setObjectName("sideTab");
