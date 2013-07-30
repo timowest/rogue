@@ -218,9 +218,6 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         if (oscData.inv) {
             v *= -1.0f;
         }
-        if (oscData.vel_to_vol > 0.0f) {
-            v *= 1.0 - oscData.vel_to_vol + oscData.vel_to_vol * midi2f(m_velocity);
-        }
 
         v *= modulate(1.0f, M_OSC1_AMP + 4 * i, amp_mod);
         float step = (v - osc.prev_level) / float(to - from);

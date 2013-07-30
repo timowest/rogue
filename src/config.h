@@ -23,8 +23,6 @@ struct OscData {
     float level;
 
     // modulation
-    float vel_to_vol;
-
     int input, out_mod;
     float pm;
     bool sync;

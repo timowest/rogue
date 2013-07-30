@@ -1,3 +1,5 @@
+#define ROGUI_UI_TEST
+
 #include "lfo.cpp"
 #include "tables.cpp"
 #include "filter.cpp"

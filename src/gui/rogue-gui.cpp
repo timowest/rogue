@@ -158,10 +158,20 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createLabel(p_bus_b_level), 8, 0);
         grid->addWidget(createLabel(p_bus_b_pan), 8, 1);
 
+        // row 10
+        grid->addWidget(createDial(p_glide_time), 9, 0);
+        grid->addWidget(createDial(p_bend_range), 9, 1);
+        // row 11
+        grid->addWidget(new QLabel("Glide t."), 10, 0);
+        grid->addWidget(new QLabel("Bend r."), 10, 1);
+        // row 12
+        grid->addWidget(createLabel(p_glide_time), 11, 0);
+        grid->addWidget(createLabel(p_bend_range), 11, 1);
+
         grid->setHorizontalSpacing(2);
         grid->setVerticalSpacing(0);
         grid->setColumnStretch(2, 1);
-        grid->setRowStretch(9, 1);
+        grid->setRowStretch(12, 1);
         return parent;
     }
 
@@ -663,7 +673,9 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     // UI to host
     Q_SLOT void portChange(int p) {
         float val = widgets[p]->get_value();
-        //write_control(p, val);
+#ifndef ROGUI_UI_TEST
+        write_control(p, val);
+#endif
         QLabel* label = labels[p];
         if (label) {
             label->setNum(val);
@@ -860,6 +872,17 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         for (int i = 0; i < 2; i++) updateFilter(i);
         for (int i = 0; i < 5; i++) updateEnv(i);
         for (int i = 0; i < 3; i++) updateLfo(i);
+
+        // create dummy widgets for unused controls of osc1
+        createDial(p_osc1_input);
+        createDial(p_osc1_pm);
+        createDial(p_osc1_sync);
+        createDial(p_osc1_out_mod);
+
+        for (int i = 3; i < p_n_ports; i++) {
+            if (!widgets[i])
+                std::cout << "Port "<< i << " not mapped!" << std::endl;
+        }
     }
 
     ~rogueGUI() {
@@ -869,6 +892,11 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
             fftwf_free(fftOut[i]);
             fftwf_destroy_plan(fftPlan[i]);
         }
+
+        delete widgets[p_osc1_input];
+        delete widgets[p_osc1_pm];
+        delete widgets[p_osc1_sync];
+        delete widgets[p_osc1_out_mod];
     }
 };
 

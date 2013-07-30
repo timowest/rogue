@@ -141,8 +141,6 @@ def main():
             ["level_b"    , 0, 1.0, 0, 0.01],
             ["level"      , 0, 1.0, 0, 0.01],
             
-            ["vel_to_vol" , 0, 1.0, 0, 0.01], # TODO via matrix           
-            
             ["input"      , 0, 2, 0, 1],
             ["pm"         , 0, 1.0, 0, 0.01],
             ["sync"       , 0, 1,   0, 1], # toggled
