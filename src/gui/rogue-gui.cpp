@@ -909,6 +909,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     }
 };
 
+#include "gui/rogue-gui.mcpp"
+
 static int _ = rogueGUI::register_class("http://www.github.com/timowest/rogue/ui");
 
-#include "gui/rogue-gui.mcpp"
+
