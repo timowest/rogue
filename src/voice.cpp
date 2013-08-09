@@ -348,20 +348,21 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     // TODO filter2 pan modulation
 
     // amp modulation
-    float e_from = envs[0].last;
-    float e_step = (envs[0].current - e_from) / float(to - from);
+    const float e_start = envs[0].last;
+    const float e_step = (envs[0].current - e_start) / float(to - from);
+    float e_vol = e_start;
 
     // bus a
     if (data->bus_a_level > 0.0f) {
         float l = data->bus_a_level * (1.0f - data->bus_a_pan);
         float r = data->bus_a_level * data->bus_a_pan;
         for (int i = from; i< to; i++) {
-            float sample = e_from *bus_a[i];
+            float sample = e_vol * bus_a[i];
             left[off + i]  += l * sample;
             right[off + i] += r * sample;
-            e_from += e_step;
+            e_vol += e_step;
         }
-        e_from = envs[0].last;
+        e_vol = e_start;
     }
 
     // bus b
@@ -369,12 +370,12 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
         float l = data->bus_b_level * (1.0f - data->bus_b_pan);
         float r = data->bus_b_level * data->bus_b_pan;
         for (int i = from; i< to; i++) {
-            float sample = e_from * bus_b[i];
+            float sample = e_vol * bus_b[i];
             left[off + i]  += l * sample;
             right[off + i] += r * sample;
-            e_from += e_step;
+            e_vol += e_step;
         }
-        e_from = envs[0].last;
+        e_vol = e_start;
     }
 
     // filter 1
@@ -382,12 +383,12 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
         float l = data->filters[0].level * (1.0f - data->filters[0].pan);
         float r = data->filters[0].level * data->filters[0].pan;
         for (int i = from; i< to; i++) {
-            float sample = e_from * filters[0].buffer[i];
+            float sample = e_vol * filters[0].buffer[i];
             left[off + i]  += l * sample;
             right[off + i] += r * sample;
-            e_from += e_step;
+            e_vol += e_step;
         }
-        e_from = envs[0].last;
+        e_vol = e_start;
     }
 
     // filter 2
@@ -395,12 +396,12 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
         float l = data->filters[1].level * (1.0f - data->filters[1].pan);
         float r = data->filters[1].level * data->filters[1].pan;
         for (int i = from; i< to; i++) {
-            float sample = e_from * filters[1].buffer[i];
+            float sample = e_vol * filters[1].buffer[i];
             left[off + i]  += l * sample;
             right[off + i] += r * sample;
-            e_from += e_step;
+            e_vol += e_step;
         }
-        e_from = envs[0].last;
+        e_vol = e_start;
     }
 
     // close voice, if too silent

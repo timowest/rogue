@@ -169,9 +169,11 @@ void rogueSynth::post_process(uint32_t from, uint32_t to) {
     float* left = p(p_left) + from;
     float* right = p(p_right) + from;
 
+    const uint32_t samples = to - from;
+
     // DC blocking
-    ldcBlocker.process(left, left, to - from);
-    rdcBlocker.process(right, right, to - from);
+    ldcBlocker.process(left, left, samples);
+    rdcBlocker.process(right, right, samples);
 
     if (!effects_activated) {
         chorus_ports[0] = p(p_chorus_t);
@@ -211,7 +213,7 @@ void rogueSynth::post_process(uint32_t from, uint32_t to) {
     	chorus_ports[7] = right;
     	chorus_ports[8] = left;
     	chorus_ports[9] = right;
-    	chorus.run(to - from);
+    	chorus.run(samples);
     }
     // phaser
     if (*p(p_phaser_on) > 0.0) {
@@ -219,7 +221,7 @@ void rogueSynth::post_process(uint32_t from, uint32_t to) {
     	phaser_ports[1] = right;
     	phaser_ports[6] = left;
     	phaser_ports[7] = right;
-    	phaser.run(to - from);
+    	phaser.run(samples);
     }
     // delay
     if (*p(p_delay_on) > 0.0) {
@@ -227,7 +229,7 @@ void rogueSynth::post_process(uint32_t from, uint32_t to) {
         delay_ports[1] = right;
         delay_ports[8] = left;
         delay_ports[9] = right;
-        delay.run(to - from);
+        delay.run(samples);
     }
     // reverb
     if (*p(p_reverb_on) > 0.0) {
@@ -235,11 +237,11 @@ void rogueSynth::post_process(uint32_t from, uint32_t to) {
     	reverb_ports[1] = right;
     	reverb_ports[6] = left;
     	reverb_ports[7] = right;
-    	reverb.run(to - from);
+    	reverb.run(samples);
     }
 
     // volume
-    for (int i = from; i < to; i++) {
+    for (int i = 0; i < samples; i++) {
         left[i] = data.volume * left[i];
         right[i] = data.volume * right[i];
     }
