@@ -811,11 +811,11 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         }
 
         container().setObjectName("root");
-        QWidget* oscs = createOscillators(new QGroupBox("Oscillators"));
+        QWidget* oscs = createOscillators(new QGroupBox());
         oscs->setProperty("top", QVariant(true));
-        QWidget* mixer = createMixer(new QGroupBox("Mixer"));
+        QWidget* mixer = createMixer(new QGroupBox());
         mixer->setProperty("top", QVariant(true));
-        QWidget* filters = createFilters(new QGroupBox("Filters"));
+        QWidget* filters = createFilters(new QGroupBox());
         filters->setProperty("top", QVariant(true));
 
         QTabWidget* tabs = new QTabWidget();
@@ -839,16 +839,21 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
         // main grid
         QGridLayout* grid = new QGridLayout(&container());
-        // row 1 & 2
-        grid->addWidget(oscs, 0, 0, 2, 1);
-        grid->addWidget(mixer, 0, 1, 2, 1);
-        grid->addWidget(filters, 0, 2, 2, 1);
-        grid->addWidget(tabs2, 0, 3, 3, 1);
-        // row 3
-        grid->addWidget(tabs, 2, 0, 2, 3);
+        // row 1
+        grid->addWidget(new QLabel("Oscillators"), 0, 0);
+        grid->addWidget(new QLabel("Mixer"), 0, 1);
+        grid->addWidget(new QLabel("Filters"), 0, 2);
+        grid->addWidget(new QLabel("Output"), 0, 3);
+        // row 2 & 3
+        grid->addWidget(oscs, 1, 0, 2, 1);
+        grid->addWidget(mixer, 1, 1, 2, 1);
+        grid->addWidget(filters, 1, 2, 2, 1);
+        grid->addWidget(tabs2, 1, 3, 3, 1);
         // row 4
-        grid->addWidget(logo, 3, 3);
-        grid->setRowStretch(4, 1);
+        grid->addWidget(tabs, 3, 0, 2, 3);
+        // row 5
+        grid->addWidget(logo, 4, 3);
+        grid->setRowStretch(6, 1);
 
         // connect
         connect(&mapper, SIGNAL(mapped(int)), SLOT(portChange(int)));

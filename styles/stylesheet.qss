@@ -13,7 +13,7 @@ QGroupBox, QTabBar::tab, QLabel, QComboBox, QDoubleSpinBox, QPushButton {
 
 QGroupBox, #mainTab::pane, #sideTab::pane {
   background: rgb(220, 220, 220);
-  padding-top: 10px;
+  /*padding-top: 10px;*/
   font-weight: bold;
   spacing: 20;
   border: 1px solid rgb(220, 220, 220);
@@ -77,41 +77,32 @@ QGroupBox::indicator:unchecked, QRadioButton:indicator:unchecked {
 }
 
 QTabBar::tab {
-   color: white;
- }
-
-QTabBar::tab:selected {
-   color: black;
+  color: white;
 }
 
- #mainTab QTabBar::tab:selected {
-   background: rgb(220, 220, 220);
-   border: 1px solid rgb(220, 220, 220);
-   border-bottom-left-radius: 5px;
-   border-bottom-right-radius: 5px;
- } 
+QTabBar::tab:selected {
+  color: black;
+}
+
+#mainTab QTabBar::tab:selected {
+  background: rgb(220, 220, 220);
+  border: 1px solid rgb(220, 220, 220);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+} 
  
- #sideTab QTabBar::tab:selected {
-   background: rgb(220, 220, 220);
-   border: 1px solid rgb(220, 220, 220);
-   border-top-left-radius: 5px;
-   border-top-right-radius: 5px;
- }
+#sideTab QTabBar::tab:selected {
+  background: rgb(220, 220, 220);
+  border: 1px solid rgb(220, 220, 220);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
 
 #effects QGroupBox {
   padding-top: 10px;
   padding-right: 3px;
 }
 
-/*QLabel[index=true] {
-  width: 20px;
-  max-height: 20px;
-  background: rgb(255, 255, 255);
-  border: 1px solid rgb(255, 255, 255);
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-  margin-left: 4px;
-}*/
 
 /* labels */
 
@@ -123,6 +114,11 @@ QLabel {
 
 QLabel[num=true] {
   font-size: 11px;
+}
+
+#root > QLabel {
+  color: white;  
+  qproperty-alignment: AlignCenter; 
 }
 
 /* dials */
