@@ -342,17 +342,6 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     float* left = p(p_left);
     float* right = p(p_right);
 
-    // pan config (not interpolated)
-    // bus a, bus b, filter 1, filter 2
-    float left_p[] = {data->bus_a_level * (1.0f - data->bus_a_pan),
-                      data->bus_b_level * (1.0f - data->bus_b_pan),
-                      data->filters[0].level * (1.0f - data->filters[0].pan),
-                      data->filters[1].level * (1.0f - data->filters[1].pan)};
-    float right_p[] = {data->bus_a_level * data->bus_a_pan,
-                       data->bus_b_level * data->bus_b_pan,
-                       data->filters[0].level * data->filters[0].pan,
-                       data->filters[1].level * data->filters[1].pan};
-
     // TODO bus a pan modulation
     // TODO bus b pan modulation
     // TODO filter1 pan modulation
@@ -362,14 +351,56 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     float e_from = envs[0].last;
     float e_step = (envs[0].current - e_from) / float(to - from);
 
-    // copy buffers
-    for (int i = from; i < to; i++) {
-        for (int j = 0; j < 4; j++) {
-            float sample = data->volume * e_from * buffers[j][i];
-            left[off + i]  += left_p[j] * sample;
-            right[off + i] += right_p[j] * sample;
+    // bus a
+    if (data->bus_a_level > 0.0f) {
+        float l = data->bus_a_level * (1.0f - data->bus_a_pan);
+        float r = data->bus_a_level * data->bus_a_pan;
+        for (int i = from; i< to; i++) {
+            float sample = e_from *bus_a[i];
+            left[off + i]  += l * sample;
+            right[off + i] += r * sample;
+            e_from += e_step;
         }
-        e_from += e_step;
+        e_from = envs[0].last;
+    }
+
+    // bus b
+    if (data->bus_b_level > 0.0f) {
+        float l = data->bus_b_level * (1.0f - data->bus_b_pan);
+        float r = data->bus_b_level * data->bus_b_pan;
+        for (int i = from; i< to; i++) {
+            float sample = e_from * bus_b[i];
+            left[off + i]  += l * sample;
+            right[off + i] += r * sample;
+            e_from += e_step;
+        }
+        e_from = envs[0].last;
+    }
+
+    // filter 1
+    if (data->filters[0].on && data->filters[0].level > 0.0f) {
+        float l = data->filters[0].level * (1.0f - data->filters[0].pan);
+        float r = data->filters[0].level * data->filters[0].pan;
+        for (int i = from; i< to; i++) {
+            float sample = e_from * filters[0].buffer[i];
+            left[off + i]  += l * sample;
+            right[off + i] += r * sample;
+            e_from += e_step;
+        }
+        e_from = envs[0].last;
+    }
+
+    // filter 2
+    if (data->filters[1].on && data->filters[1].level > 0.0f) {
+        float l = data->filters[1].level * (1.0f - data->filters[1].pan);
+        float r = data->filters[1].level * data->filters[1].pan;
+        for (int i = from; i< to; i++) {
+            float sample = e_from * filters[1].buffer[i];
+            left[off + i]  += l * sample;
+            right[off + i] += r * sample;
+            e_from += e_step;
+        }
+        e_from = envs[0].last;
     }
 
     // close voice, if too silent

@@ -238,6 +238,12 @@ void rogueSynth::post_process(uint32_t from, uint32_t to) {
     	reverb.run(to - from);
     }
 
+    // volume
+    for (int i = from; i < to; i++) {
+        left[i] = data.volume * left[i];
+        right[i] = data.volume * right[i];
+    }
+
     // TODO limiter
 }
 
