@@ -191,6 +191,7 @@ void rogueVoice::configOsc(int i) {
 }
 
 void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
+    uint32_t samples = to - from;
     OscData& oscData = data->oscs[i];
     Osc& osc = oscs[i];
     if (oscData.on) {
@@ -207,11 +208,10 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         // pulse width modulation
         float width = oscData.width * modulate(1.0f, M_OSC1_PWM + 4 * i, amp_mod);
 
-        // TODO pm
-        // TODO sync
-
         // process
-        osc.process(oscData.type, f, osc.width_prev, width, osc.buffer + from, to - from);
+        float* in = oscs[oscData.input].buffer + from;
+        osc.setModulation(oscData.type, in, oscData.pm, oscData.sync);
+        osc.process(oscData.type, f, osc.width_prev, width, osc.buffer + from, samples);
 
         // amp modulation
         float v = oscData.level;
@@ -220,7 +220,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         }
 
         v *= modulate(1.0f, M_OSC1_AMP + 4 * i, amp_mod);
-        float step = (v - osc.prev_level) / float(to - from);
+        float step = (v - osc.prev_level) / float(samples);
         float l = osc.prev_level;
         for (int i = from; i < to; i++) {
             osc.buffer[i] *= l;
@@ -230,7 +230,6 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
 
         // audio output modulation
         if (oscData.out_mod > 0) {
-            float* in = oscs[oscData.input].buffer;
             switch (oscData.out_mod) {
             case 1: // Add
                 for (int i = from; i < to; i++) {

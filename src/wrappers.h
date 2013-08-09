@@ -44,6 +44,14 @@ struct Osc {
         noise.setSamplerate(r);
     }
 
+    void setModulation(int type, float* _input, float _pm, bool _sync) {
+        if (type < 34) {
+            virt.setModulation(_input, _pm, _sync);
+        } else if (type < 37) {
+            as.setModulation(_input, _pm, _sync);
+        }
+    }
+
     void process(int type, float freq, float wf, float wt, float* buffer, int samples) {
         dsp::Oscillator* osc;
         if (type < 34) {
