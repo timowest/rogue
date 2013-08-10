@@ -16,7 +16,7 @@
 // number of elements
 #define NOSC    4
 #define NDCF    2
-#define NLFO    3
+#define NLFO    4
 #define NENV    5
 #define NMOD    20
 
@@ -43,12 +43,13 @@ enum {
   M_LFO2_UN,
   M_LFO3_BI,
   M_LFO3_UN,
+  M_LFO4_BI,
+  M_LFO4_UN,
   // env
   M_ENV1,
   M_ENV2,
   M_ENV3,
   M_ENV4,
-  M_ENV5,
   M_SIZE
 };
 
@@ -67,12 +68,12 @@ enum {
   M_LFO1_S, M_LFO1_AMP,
   M_LFO2_S, M_LFO2_AMP,
   M_LFO3_S, M_LFO3_AMP,
+  M_LFO4_S, M_LFO4_AMP,
   // env
   M_ENV1_S, M_ENV1_AMP,
   M_ENV2_S, M_ENV2_AMP,
   M_ENV3_S, M_ENV3_AMP,
   M_ENV4_S, M_ENV4_AMP,
-  M_ENV5_S, M_ENV5_AMP,
   // bus
   M_BUSA_PAN, M_BUSB_PAN,
   M_TARGET_SIZE

@@ -11,9 +11,8 @@ QGroupBox, QTabBar::tab, QLabel, QComboBox, QDoubleSpinBox, QPushButton {
   font-size: 12px;
 }
 
-QGroupBox, #mainTab::pane, #sideTab::pane {
+QGroupBox, #mainTab::pane{
   background: rgb(220, 220, 220);
-  /*padding-top: 10px;*/
   font-weight: bold;
   spacing: 20;
   border: 1px solid rgb(220, 220, 220);
@@ -21,11 +20,8 @@ QGroupBox, #mainTab::pane, #sideTab::pane {
 }
 
 #mainTab::pane {
+  padding-top: 10px;
   border-bottom-left-radius: 1px;
-}
-
-#sideTab::pane {
-  border-top-left-radius: 1px;
 }
 
 QGroupBox::title {

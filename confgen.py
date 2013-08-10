@@ -177,7 +177,7 @@ def main():
             ["curve"      , 0, 1.0, 0.5, 0.01],
             ["retrigger"  , 0, 1, 0, 1]] # toggled
                         
-    mods = [["src"        , 0, 17, 0, 1],
+    mods = [["src"        , 0, 18, 0, 1],
             ["target"     , 0, 43, 0, 1],
             ["amount"     , -1.0, 1.0, 0, 0.01]]        
 
@@ -193,9 +193,9 @@ def main():
     # dcfs
     idx = controls(ttl, gui, idx, "filter", 2, dcfs)
     # lfos
-    idx = controls(ttl, gui, idx, "lfo", 3, lfos)
+    idx = controls(ttl, gui, idx, "lfo", 4, lfos)
     # envs
-    idx = controls(ttl, gui, idx, "env", 5, envs)
+    idx = controls(ttl, gui, idx, "env", 4, envs)
     # mods
     idx = controls(ttl, gui, idx, "mod", 20, mods)
 
@@ -205,9 +205,9 @@ def main():
                ["bus_b_pan",   0, 1.0, 0.5, 0.01],
                ["volume",      0, 1.0, 0.5, 0.01],
 
+               ["play_mode",   0, 2, 0, 1],
                ["glide_time",  0, 5.0, 0, 0.1],
-               ["bend_range",  0, 12.0, 0, 0.1],
-               # TODO poly and mono modes
+               ["pitchbend_range",  0, 24.0, 0, 0.1],
 
                ["chorus_on",     0, 1, 0, 1],
                ["chorus_t",      2.5, 25, 8.1, 0.1],

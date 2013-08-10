@@ -4,6 +4,8 @@
 // TODO replace with vectors
 #define CHARS static const char*
 
+CHARS modes[] = {"Poly", "Mono", "Legato"};
+
 // checkbox content
 CHARS osc_types[] = {
         // V
@@ -42,8 +44,8 @@ CHARS env_labels[] = {"Env 1", "Env 2", "Env 3", "Env 4", "Env 5"};
 CHARS mod_src_labels[] = {
         "-",
         "Mod", "Press", "Key", "Velo",
-        "LFO 0", "LFO 0+", "LFO 1", "LFO 1+", "LFO 2", "LFO 2+", "LFO 3", "LFO 3+",
-        "Env 1", "Env 2", "Env 3", "Env 4", "Env 5"};
+        "LFO 0", "LFO 0+", "LFO 1", "LFO 1+", "LFO 2", "LFO 2+", "LFO 3", "LFO 3+", "LFO 4", "LFO 4+",
+        "Env 1", "Env 2", "Env 3", "Env 4"};
 
 CHARS mod_target_labels[]  = {
         "-",
@@ -59,12 +61,12 @@ CHARS mod_target_labels[]  = {
         "LFO 1 Sp", "LFO 1 Amp",
         "LFO 2 Sp", "LFO 2 Amp",
         "LFO 3 Sp", "LFO 3 Amp",
+        "LFO 4 Sp", "LFO 4 Amp",
         // env
         "Env 1 Sp", "Env 1 Amp",
         "Env 2 Sp", "Env 2 Amp",
         "Env 3 Sp", "Env 3 Amp",
         "Env 4 Sp", "Env 4 Amp",
-        "Env 5 Sp", "Env 5 Amp",
         // bus
         "Bus A Pan", "Bus B Pan"};
 

@@ -81,7 +81,7 @@ void rogueSynth::update() {
     data.bus_b_pan   = v(p_bus_b_pan);
     data.volume      = v(p_volume); // scale
     data.glide_time  = v(p_glide_time);
-    data.bend_range  = v(p_bend_range);
+    data.bend_range  = v(p_pitchbend_range);
 
     const float rate = sample_rate;
 
