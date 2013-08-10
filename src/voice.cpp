@@ -52,6 +52,8 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
         return;
     }
 
+    bool was_off = m_key == lvtk::INVALID_KEY;
+
     // store key that turned this voice on (used in 'get_key')
     m_key = key;
     m_velocity = velocity;
@@ -65,10 +67,12 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
     for (int i = 0; i < NDCF; i++) configFilter(i);
 
     // trigger on
-    for (int i = 0; i < NLFO; i++) lfos[i].on();
-    for (int i = 0; i < NENV; i++) envs[i].on();
-    for (int i = 0; i < NOSC; i++) {
-        if (!data->oscs[i].free) oscs[i].resetPhase();
+    if (was_off || data->playmode != LEGATO) {
+        for (int i = 0; i < NLFO; i++) lfos[i].on();
+        for (int i = 0; i < NENV; i++) envs[i].on();
+        for (int i = 0; i < NOSC; i++) {
+            if (!data->oscs[i].free) oscs[i].resetPhase();
+        }
     }
 
     in_sustain = false;

@@ -19,6 +19,9 @@
 namespace rogue {
 
 class rogueVoice : public lvtk::Voice {
+
+    enum {POLY, MONO, LEGATO};
+
     private:
       SynthData* data;
       Osc oscs[NOSC];
