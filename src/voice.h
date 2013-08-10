@@ -20,7 +20,6 @@ namespace rogue {
 
 class rogueVoice : public lvtk::Voice {
     private:
-      float volume = 1.0f;
       SynthData* data;
       Osc oscs[NOSC];
       Filter filters[NDCF];
@@ -55,7 +54,6 @@ class rogueVoice : public lvtk::Voice {
 
     public:
       rogueVoice(double, SynthData*);
-      void set_volume(float v) { volume = v; }
       void on(unsigned char key, unsigned char velocity);
       void off(unsigned char velocity);
       void reset(void);

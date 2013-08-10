@@ -43,33 +43,18 @@ rogueSynth::rogueSynth(double rate)
 }
 
 unsigned rogueSynth::find_free_voice(unsigned char key, unsigned char velocity) {
-    //is this a retriggered note?
-    if (false) { // TODO find a proper mode for this
+    //take the next free voice if
+    // ... notes are sustained but not this new one
+    // ... notes are not sustained
+    if (data.playmode == POLY) {
         for (int i = 0; i < NVOICES; i++) {
-            if ((voices[i]->get_key() == key) && (voices[i]->is_sustained())) {
+            if (voices[i]->get_key() == lvtk::INVALID_KEY) {
                 return i;
             }
         }
     }
 
-    //take the next free voice if
-    // ... notes are sustained but not this new one
-    // ... notes are not sustained
-    for (int i = 0; i < NVOICES; i++) {
-        if (voices[i]->get_key() == lvtk::INVALID_KEY) {
-            return i;
-        }
-    }
-
-    //TODO: steal quietest note if all voices are used up
     return 0;
-}
-
-void rogueSynth::set_volume(float value) {
-    for (int v=0; v < NVOICES; v++) {
-        voices[v]->set_volume(value);
-    }
-
 }
 
 //parameter change
@@ -80,6 +65,7 @@ void rogueSynth::update() {
     data.bus_b_level = v(p_bus_b_level); // scale
     data.bus_b_pan   = v(p_bus_b_pan);
     data.volume      = v(p_volume); // scale
+    data.playmode   = v(p_play_mode);
     data.glide_time  = v(p_glide_time);
     data.bend_range  = v(p_pitchbend_range);
 
@@ -270,8 +256,8 @@ void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
         voices[ find_free_voice(data[1], data[2]) ]->on(data[1], data[2]);
         break;
 
-    case 0xE0:
-        // TODO: pitch bend
+    case 0xE0: // pitchbend
+        this->data.pitch_bend = this->data.bend_range * float(128 * data[1] + data[2] - 8192) / 8192.0;
         break;
 
     //controller
@@ -283,7 +269,7 @@ void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
             break;
 
         case 0x07:  //volume
-            set_volume(0.00002f * (float)(data[2] * data[2]));
+            // TODO
             break;
 
         case 0x40:  //sustain pedal

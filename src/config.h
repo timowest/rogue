@@ -72,6 +72,8 @@ struct SynthData {
     EnvData envs[NENV];
     ModulationData mods[NMOD];
 
+    float pitch_bend;
+    bool playmode;
     float bus_a_level, bus_a_pan;
     float bus_b_level, bus_b_pan;
     float volume;

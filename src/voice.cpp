@@ -199,7 +199,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         float f = 440.0;
         float pmod = modulate(0.0f, M_OSC1_P + 4 * i, pitch_mod);
         if (oscData.tracking) {
-            f = midi2hz(float(m_key) + oscData.coarse + oscData.fine + pmod);
+            f = midi2hz(float(m_key) + oscData.coarse + oscData.fine + data->pitch_bend + pmod);
         } else if (pmod > 0.0f) {
             f = midi2hz(69.0f + pmod);
         }
@@ -414,7 +414,6 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
 
 void rogueVoice::reset() {
     std::cout << "reset " << int(m_key) << std::endl;
-    volume = 1.0f;
     m_key = lvtk::INVALID_KEY;
     in_sustain = false;
     std::memset(mod, 0, sizeof(float) * NMOD);

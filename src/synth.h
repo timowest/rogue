@@ -30,13 +30,14 @@ namespace rogue {
 
 class rogueSynth : public lvtk::Synth<rogueVoice, rogueSynth> {
 
+    enum {POLY, MONO, LEGATO};
+
   public:
     rogueSynth(double);
     unsigned find_free_voice(unsigned char, unsigned char);
     void handle_midi(uint32_t, unsigned char*);
     void pre_process(uint32_t from, uint32_t to);
     void post_process(uint32_t from, uint32_t to);
-    void set_volume(float);
     void update();
 
     template <typename T>
