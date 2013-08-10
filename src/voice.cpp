@@ -52,13 +52,23 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
         return;
     }
 
-    bool was_off = m_key == lvtk::INVALID_KEY;
+    unsigned char old_key = m_key;
 
     // store key that turned this voice on (used in 'get_key')
     m_key = key;
     m_velocity = velocity;
+    this->velocity = velocity;
     mod[M_KEY] = midi2f(key);
     mod[M_VEL] = midi2f(velocity);
+
+    // glide
+    if (data->playmode == LEGATO && old_key != lvtk::INVALID_KEY) {
+        glide_step = (float(key) - this->key) / (data->glide_time * sample_rate);
+        glide_target = key;
+    } else {
+        glide_step = 0.0;
+        this->key = glide_target = key;
+    }
 
     // config
     for (int i = 0; i < NLFO; i++) configLFO(i);
@@ -67,7 +77,7 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
     for (int i = 0; i < NDCF; i++) configFilter(i);
 
     // trigger on
-    if (was_off || data->playmode != LEGATO) {
+    if (old_key == lvtk::INVALID_KEY || data->playmode != LEGATO) {
         for (int i = 0; i < NLFO; i++) lfos[i].on();
         for (int i = 0; i < NENV; i++) envs[i].on();
         for (int i = 0; i < NOSC; i++) {
@@ -203,7 +213,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         float f = 440.0;
         float pmod = modulate(0.0f, M_OSC1_P + 4 * i, pitch_mod);
         if (oscData.tracking) {
-            f = midi2hz(float(m_key) + oscData.coarse + oscData.fine + data->pitch_bend + pmod);
+            f = midi2hz(key + oscData.coarse + oscData.fine + data->pitch_bend + pmod);
         } else if (pmod > 0.0f) {
             f = midi2hz(69.0f + pmod);
         }
@@ -273,11 +283,11 @@ void rogueVoice::configFilter(int i) {
     float f = 1.0;
     // key to f
     if (filterData.key_to_f != 0.0f) {
-        f *= std::pow(SEMITONE, filterData.key_to_f * float(m_key - 69));
+        f *= std::pow(SEMITONE, filterData.key_to_f * (key - 69.0));
     }
     // vel to f
     if (filterData.vel_to_f != 0.0f) {
-        f *= std::pow(SEMITONE, filterData.vel_to_f * float(m_velocity - 64));
+        f *= std::pow(SEMITONE, filterData.vel_to_f * (velocity - 64.0));
     }
     filter.key_vel_to_f = f;
 }
@@ -335,6 +345,14 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
         return;
     }
 
+    if (glide_step > 0.0) {
+        key += (to - from) * glide_step;
+        if (key >= glide_target) {
+            key = glide_target;
+            glide_step = 0.0f;
+        }
+    }
+
     // reset buses
     std::memset(bus_a, 0, sizeof(float) * BUFFER_SIZE);
     std::memset(bus_b, 0, sizeof(float) * BUFFER_SIZE);
@@ -362,7 +380,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     if (data->bus_a_level > 0.0f) {
         float l = data->bus_a_level * (1.0f - data->bus_a_pan);
         float r = data->bus_a_level * data->bus_a_pan;
-        for (int i = from; i< to; i++) {
+        for (int i = from; i < to; i++) {
             float sample = e_vol * bus_a[i];
             left[off + i]  += l * sample;
             right[off + i] += r * sample;
@@ -375,7 +393,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     if (data->bus_b_level > 0.0f) {
         float l = data->bus_b_level * (1.0f - data->bus_b_pan);
         float r = data->bus_b_level * data->bus_b_pan;
-        for (int i = from; i< to; i++) {
+        for (int i = from; i < to; i++) {
             float sample = e_vol * bus_b[i];
             left[off + i]  += l * sample;
             right[off + i] += r * sample;
@@ -388,7 +406,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     if (data->filters[0].on && data->filters[0].level > 0.0f) {
         float l = data->filters[0].level * (1.0f - data->filters[0].pan);
         float r = data->filters[0].level * data->filters[0].pan;
-        for (int i = from; i< to; i++) {
+        for (int i = from; i < to; i++) {
             float sample = e_vol * filters[0].buffer[i];
             left[off + i]  += l * sample;
             right[off + i] += r * sample;
@@ -401,7 +419,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     if (data->filters[1].on && data->filters[1].level > 0.0f) {
         float l = data->filters[1].level * (1.0f - data->filters[1].pan);
         float r = data->filters[1].level * data->filters[1].pan;
-        for (int i = from; i< to; i++) {
+        for (int i = from; i < to; i++) {
             float sample = e_vol * filters[1].buffer[i];
             left[off + i]  += l * sample;
             right[off + i] += r * sample;
@@ -419,6 +437,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
 void rogueVoice::reset() {
     std::cout << "reset " << int(m_key) << std::endl;
     m_key = lvtk::INVALID_KEY;
+    key = m_key;
     in_sustain = false;
     std::memset(mod, 0, sizeof(float) * NMOD);
 

@@ -29,6 +29,7 @@ class rogueVoice : public lvtk::Voice {
       LFO lfos[NLFO];
       Env envs[NENV];
 
+      float glide_target;
       float* buffers[4];
       float bus_a[BUFFER_SIZE], bus_b[BUFFER_SIZE];
       float mod[M_SIZE];
@@ -37,6 +38,7 @@ class rogueVoice : public lvtk::Voice {
     protected:
       float sample_rate;
       unsigned char m_key, m_velocity;
+      float key, velocity, glide_step;
 
       template<class Function>
       float modulate(float init, int target, Function fn);
