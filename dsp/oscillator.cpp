@@ -522,14 +522,18 @@ void Virtual::fm3(float* output, int samples) {
         if (phase < (0.25 - inc)) {
             // do nothing
         } else if (phase < 0.25) {
+            // fade out
             y *= (0.25 - phase) / inc;
         } else if (phase < (0.25 + inc)) {
+            // fade in (inverted)
             y *= (0.25 - phase) / inc;
         } else if (phase < (0.75 - inc)) {
             y *= -1.0;
         } else if (phase < 0.75) {
+            // fade out
             y *= (phase - 0.75) / inc;
         } else if (phase < (0.75 + inc)) {
+            // fade in
             y *= (phase - 0.75) / inc;
         }
         output[i] = y;
@@ -542,7 +546,8 @@ void Virtual::fm4(float* output, int samples) {
         if (phase < 0.5) {
             output[i] = SIN(2.0f * phase);
         } else if (phase < (0.5 + inc)) {
-            output[i] = SIN(2.0f * phase) * (0.5 + inc - phase) / inc;
+            // fade out
+            output[i] = SIN(2.0f * phase) * ((0.5 + inc) - phase) / inc;
         } else {
             output[i] = 0.0;
         }
@@ -555,7 +560,8 @@ void Virtual::fm5(float* output, int samples) {
         if (phase < 0.5) {
             output[i] = SIN(phase);
         } else if (phase < (0.5 + inc)) {
-            output[i] = SIN(phase) * (0.5 + inc - phase) / inc;
+            // fade out
+            output[i] = SIN(phase) * ((0.5 + inc) - phase) / inc;
         } else {
             output[i] = 0.0;
         }
@@ -566,8 +572,19 @@ void Virtual::fm6(float* output, int samples) {
     PHASE_LOOP_PM(
         if (phase < 0.25f) {
             output[i] = SIN(2.0 * phase);
-        } else if (phase > 0.5f && phase < 0.75f) {
+        } else if (phase < (0.25 + inc)) {
+            // fade out
+            output[i] = SIN(2.0 * phase) * ((0.25 + inc) - phase) / inc;
+        } else if (phase < (0.5 - inc)) {
+            output[i] = 0.0;
+        } else if (phase < 0.5) {
+            // fade in
+            output[i] = SIN(2.0 * (phase - 0.25)) * (phase - (0.5 - inc)) / inc;
+        } else if (phase < 0.75f) {
             output[i] = SIN(2.0 * (phase - 0.25));
+        } else if (phase < (0.75f + inc)) {
+            // fade out
+            output[i] = SIN(2.0 * (phase - 0.25)) * ((0.75 + inc) - phase) / inc;
         } else {
             output[i] = 0.0f;
         }
@@ -576,11 +593,26 @@ void Virtual::fm6(float* output, int samples) {
 
 void Virtual::fm7(float* output, int samples) {
     PHASE_LOOP_PM(
-        if (phase < 0.25 || phase > 0.5 && phase < 0.75) {
-            output[i] = SIN(phase);
+        float y = SIN(phase);
+        if (phase < 0.25f) {
+            // do nothing;
+        } else if (phase < (0.25 + inc)) {
+            // fade out
+            y *= ((0.25 + inc) - phase) / inc;
+        } else if (phase < (0.5 - inc)) {
+            y = 0.0f;
+        } else if (phase < 0.5) {
+            // fade in
+            y *= (phase - (0.5 - inc)) / inc;
+        } else if (phase < 0.75f) {
+            // do nithing
+        } else if (phase < (0.75f + inc)) {
+            // fade out
+            y *= ((0.75 + inc) - phase) / inc;
         } else {
-            output[i] = 0.0f;
+            y = 0.0f;
         }
+        output[i] = y;
     )
 }
 
