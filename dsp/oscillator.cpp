@@ -540,18 +540,25 @@ void Virtual::fm3(float* output, int samples) {
 void Virtual::fm4(float* output, int samples) {
     PHASE_LOOP_PM(
         float y = 0.0;
-        if (phase < (0.5 - inc)) {
+        if (phase < 0.5) {
             y = SIN(2.0f * phase);
-        } else if (phase < 0.5) {
-            y = SIN(2.0f * phase) * (0.5 - phase) / inc;
+        } else if (phase < (0.5 + inc)) {
+            y = SIN(2.0f * phase) * (0.5 + inc - phase) / inc;
         }
         output[i] = y;
     )
 }
 
+// bandlimited
 void Virtual::fm5(float* output, int samples) {
     PHASE_LOOP_PM(
-        output[i] = phase < 0.5f ? SIN(phase) : 0.0f;
+        float y = 0.0;
+        if (phase < 0.5) {
+            y = SIN(phase);
+        } else if (phase < (0.5 + inc)) {
+            y = SIN(phase) * (0.5 + inc - phase) / inc;
+        }
+        output[i] = y;
     )
 }
 
