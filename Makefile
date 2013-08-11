@@ -51,10 +51,10 @@ gui: src/rogue.gen src/gui/config.gen
 	$(CXX) -g -std=c++11 src/gui/test.cpp $(QT) $(LVTK_UI) $(FFTW) -Idsp -Isrc -o qttest.out 
 	
 tests: src/rogue.gen
-	$(CXX) -g -std=c++11 test/dsp_tests.cpp $(SNDFILE) $(FAST) -Idsp -o dsp_tests.out
+	$(CXX) -g -std=c++11 test/tests.cpp $(SNDFILE) $(FAST) -Idsp -Itest -o tests.out
 	$(CXX) -g -std=c++11 test/voice_tests.cpp $(SNDFILE) $(LVTK) -Idsp -Isrc -o voice_tests.out
 	$(CXX) -g -std=c++11 test/fftw_tests.cpp $(FFTW) -o fftw_tests.out
 	mkdir -p wavs
-	./dsp_tests.out	
+	./tests.out	
 	./voice_tests.out
 	./fftw_tests.out
