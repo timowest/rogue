@@ -79,7 +79,7 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
     // trigger on
     for (int i = 0; i < NLFO; i++) lfos[i].on();
     for (int i = 0; i < NENV; i++) envs[i].on();
-    if (old_key == lvtk::INVALID_KEY || data->playmode != LEGATO) {
+    if (old_key == lvtk::INVALID_KEY || data->playmode == POLY) {
         for (int i = 0; i < NOSC; i++) {
             if (!data->oscs[i].free) oscs[i].resetPhase();
         }
