@@ -257,7 +257,7 @@ void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
         break;
 
     case 0xE0: // pitchbend
-        this->data.pitch_bend = this->data.bend_range * float(128 * data[1] + data[2] - 8192) / 8192.0;
+        this->data.pitch_bend = this->data.bend_range * float(128 * data[2] + data[1] - 8192) / 8192.0;
         break;
 
     //controller
