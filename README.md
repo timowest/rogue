@@ -17,3 +17,9 @@ Dependencies
 * lvtk http://lvtoolkit.org/
 * Qt4 http://qt-project.org/
 * fftw3 http://www.fftw.org/
+
+Installation
+
+    make
+    sudo make install    
+    make run ; if you have jalv installed
