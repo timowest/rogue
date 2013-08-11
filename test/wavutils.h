@@ -1,3 +1,11 @@
+#ifndef WAVUTILS
+#define WAVUTILS
+
+#define SR 44100.0
+#define SIZE 44100
+#define DOUBLE_SIZE 88200
+#define CHANNELS 1
+
 void write_wav(char* filename, float* buffer) {
     static const int FORMAT = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
     SndfileHandle outfile(filename, SFM_WRITE, FORMAT, CHANNELS, SR);
@@ -41,3 +49,5 @@ int count_clicks(float* buffer) {
     }
     return clicks;
 }
+
+#endif

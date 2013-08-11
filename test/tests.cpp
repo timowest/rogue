@@ -7,11 +7,6 @@
 
 #include <iostream>
 
-#define SR 44100.0
-#define SIZE 44100
-#define DOUBLE_SIZE 88200
-#define CHANNELS 1
-
 #include "wavutils.h"
 #include "oscillator_test.h"
 #include "filter_test.h"

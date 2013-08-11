@@ -1,3 +1,5 @@
+#include "wavutils.h"
+
 void envelope_test() {
     char filename[50];
     float buffer[SIZE];

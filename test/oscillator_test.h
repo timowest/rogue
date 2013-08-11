@@ -1,3 +1,5 @@
+#include "wavutils.h"
+
 void oscillator_test() {
     char filename[50];
     float buffer[SIZE];
