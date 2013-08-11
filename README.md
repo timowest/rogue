@@ -11,7 +11,8 @@ Features
 * 4 AHDSR envelopes with customizable curve
 * 4 LFOs
 * 20 Modulation matrix slots
-* Effects: Chorus, Phaser, Delay and Reverb (based on CAPS http://www.quitte.de/dsp/caps.html)
+* Effects: Chorus, Phaser, Delay and Reverb 
+ * based on CAPS http://www.quitte.de/dsp/caps.html)
 * Qt4 based UI
 
 Dependencies
