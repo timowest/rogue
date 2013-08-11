@@ -401,6 +401,7 @@ void Virtual::el_alpha1(float* output, int samples) {
     float f = freq;
     float p = phase;
     freq = 2.0f * freq;
+    phase = fmod(2.0f * phase, 1.0);
     el_pulse(output, samples);
 
     // saw
@@ -425,6 +426,7 @@ void Virtual::el_alpha2(float* output, int samples) {
     float f = freq;
     float p = phase;
     freq = 4.0f * freq;
+    phase = fmod(4.0f * phase, 1.0);
     el_pulse(output, samples);
 
     // saw
@@ -449,6 +451,7 @@ void Virtual::el_beta1(float* output, int samples) {
     float f = freq;
     float p = phase;
     freq = 2.0f * freq;
+    phase = fmod(2.0f * phase, 1.0);
     el_pulse(output, samples);
 
     // saw
@@ -466,6 +469,7 @@ void Virtual::el_beta2(float* output, int samples) {
     float f = freq;
     float p = phase;
     freq = 4.0f * freq;
+    phase = fmod(4.0f * phase, 1.0);
     el_pulse(output, samples);
 
     // saw
