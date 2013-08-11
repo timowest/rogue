@@ -4,7 +4,9 @@ rogue
 multimode softsynth with LV2 interface
 
 Features
-* 4 oscillators with Virtual Analog, Phase Distortion, FM and other waveforms
+* 4 oscillators with 
+ * Virtual Analog, Phase Distortion, FM and other waveforms
+ * PWM, PM, Sync, RM and AM modulation
 * 2 filters with Moog and SVF style modes
 * 4 AHDSR envelopes with customizable curve
 * 4 LFOs
