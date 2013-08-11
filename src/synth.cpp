@@ -65,7 +65,7 @@ void rogueSynth::update() {
     data.bus_b_level = v(p_bus_b_level); // scale
     data.bus_b_pan   = v(p_bus_b_pan);
     data.volume      = v(p_volume); // scale
-    data.playmode   = v(p_play_mode);
+    data.playmode    = v(p_play_mode);
     data.glide_time  = v(p_glide_time);
     data.bend_range  = v(p_pitchbend_range);
 

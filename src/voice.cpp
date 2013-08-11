@@ -64,7 +64,7 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
     // glide
     if (data->playmode == LEGATO && old_key != lvtk::INVALID_KEY) {
         glide_step = (float(key) - this->key) / (data->glide_time * sample_rate);
-        glide_target = key;
+        glide_target = float(key);
     } else {
         glide_step = 0.0;
         this->key = glide_target = key;
@@ -345,9 +345,10 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
         return;
     }
 
-    if (glide_step > 0.0) {
+    if (glide_step != 0.0f) {
         key += (to - from) * glide_step;
-        if (key >= glide_target) {
+        if ((glide_step > 0.0 && key >= glide_target) ||
+            (glide_step < 0.0 && key <= glide_target)) {
             key = glide_target;
             glide_step = 0.0f;
         }

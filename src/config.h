@@ -73,7 +73,7 @@ struct SynthData {
     ModulationData mods[NMOD];
 
     float pitch_bend;
-    bool playmode;
+    int playmode;
     float bus_a_level, bus_a_pan;
     float bus_b_level, bus_b_pan;
     float volume;
