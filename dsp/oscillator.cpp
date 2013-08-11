@@ -455,12 +455,25 @@ void Virtual::el_beta1(float* output, int samples) {
     el_pulse(output, samples);
 
     // saw
+    bool bl = pm == 0.0f;
     phase = p;
     freq = f;
     PHASE_LOOP_PM(
         float pulse = 0.5f * (output[i] + 1.0f);
         float phase2 = fmod(phase + 0.5, 1.0f);
-        output[i] = gb(phase * pulse + phase2 * (1.0f - pulse));
+        float mod1 = 0.0;
+        float mod2 = 0.0;
+        if (phase < inc) { // start
+            mod1 = polyblep(phase / inc);
+        } else if (phase > (1.0f - inc)) { // end
+            mod1 = polyblep( (phase - 1.0) / inc);
+        }
+        if (phase2 < inc) {
+            mod2 = polyblep(phase2 / inc);
+        } else if (phase2 > (1.0f - inc)) {
+            mod2 = polyblep( (phase2 - 1.0) / inc);
+        }
+        output[i] = gb((phase - mod1) * pulse + (phase2 - mod2) * (1.0f - pulse));
     )
 }
 
@@ -478,7 +491,19 @@ void Virtual::el_beta2(float* output, int samples) {
     PHASE_LOOP_PM(
         float pulse = 0.5f * (output[i] + 1.0f);
         float phase2 = fmod(phase + 0.5, 1.0f);
-        output[i] = gb(phase * pulse + phase2 * (1.0f - pulse));
+        float mod1 = 0.0;
+        float mod2 = 0.0;
+        if (phase < inc) { // start
+            mod1 = polyblep(phase / inc);
+        } else if (phase > (1.0f - inc)) { // end
+            mod1 = polyblep( (phase - 1.0) / inc);
+        }
+        if (phase2 < inc) {
+            mod2 = polyblep(phase2 / inc);
+        } else if (phase2 > (1.0f - inc)) {
+            mod2 = polyblep( (phase2 - 1.0) / inc);
+        }
+        output[i] = gb((phase - mod1) * pulse + (phase2 - mod2) * (1.0f - pulse));
     )
 }
 
