@@ -568,64 +568,56 @@ void Virtual::fm5(float* output, int samples) {
     )
 }
 
+static float bandlimit_fm678(float y, float phase, float inc) {
+    if (phase < 0.25f) {
+        // do nothing;
+    } else if (phase < (0.25 + inc)) {
+        // fade out
+        y *= ((0.25 + inc) - phase) / inc;
+    } else if (phase < (0.5 - inc)) {
+        y = 0.0f;
+    } else if (phase < 0.5) {
+        // fade in
+        y *= (phase - (0.5 - inc)) / inc;
+    } else if (phase < 0.75f) {
+        // do nothing
+    } else if (phase < (0.75f + inc)) {
+        // fade out
+        y *= ((0.75 + inc) - phase) / inc;
+    } else {
+        y = 0.0f;
+    }
+    return y;
+}
+
+// bandlimited
 void Virtual::fm6(float* output, int samples) {
     PHASE_LOOP_PM(
+        float y = 0.0f;
         if (phase < 0.25f) {
-            output[i] = SIN(2.0 * phase);
-        } else if (phase < (0.25 + inc)) {
-            // fade out
-            output[i] = SIN(2.0 * phase) * ((0.25 + inc) - phase) / inc;
-        } else if (phase < (0.5 - inc)) {
-            output[i] = 0.0;
-        } else if (phase < 0.5) {
-            // fade in
-            output[i] = SIN(2.0 * (phase - 0.25)) * (phase - (0.5 - inc)) / inc;
-        } else if (phase < 0.75f) {
-            output[i] = SIN(2.0 * (phase - 0.25));
-        } else if (phase < (0.75f + inc)) {
-            // fade out
-            output[i] = SIN(2.0 * (phase - 0.25)) * ((0.75 + inc) - phase) / inc;
-        } else {
-            output[i] = 0.0f;
+            y = SIN(2.0 * phase);
+        } else if (phase > 0.5f && phase < 0.75f) {
+            y = SIN(2.0 * (phase - 0.25));
         }
+        output[i] = bandlimit_fm678(y, phase, inc);
     )
 }
 
+// bandlimited
 void Virtual::fm7(float* output, int samples) {
     PHASE_LOOP_PM(
-        float y = SIN(phase);
-        if (phase < 0.25f) {
-            // do nothing;
-        } else if (phase < (0.25 + inc)) {
-            // fade out
-            y *= ((0.25 + inc) - phase) / inc;
-        } else if (phase < (0.5 - inc)) {
-            y = 0.0f;
-        } else if (phase < 0.5) {
-            // fade in
-            y *= (phase - (0.5 - inc)) / inc;
-        } else if (phase < 0.75f) {
-            // do nithing
-        } else if (phase < (0.75f + inc)) {
-            // fade out
-            y *= ((0.75 + inc) - phase) / inc;
-        } else {
-            y = 0.0f;
-        }
-        output[i] = y;
+        const float y = SIN(phase);
+        output[i] = bandlimit_fm678(y, phase, inc);
     )
 }
 
+// bandlimited
 void Virtual::fm8(float* output, int samples) {
     PHASE_LOOP_PM(
-        if (phase < 0.25 || phase > 0.5 && phase < 0.75) {
-            output[i] = SIN(fmod(phase, 0.25f));
-        } else {
-            output[i] = 0.0f;
-        }
+        const float y = fabs(SIN(fmod(phase, 0.5f)));
+        output[i] = bandlimit_fm678(y, phase, inc);
     )
 }
-
 
 void Virtual::process(float* output, int samples) {
     switch (type) {
