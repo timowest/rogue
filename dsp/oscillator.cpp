@@ -404,10 +404,19 @@ void Virtual::el_alpha1(float* output, int samples) {
     el_pulse(output, samples);
 
     // saw
+    bool bl = pm == 0.0f;
     phase = p;
     freq = f;
     PHASE_LOOP_PM(
-        output[i] = phase * (output[i] + 1.0) - 1.0f;
+        float mod = 0.0f;
+        if (!bl) {
+            // no polyblep
+        } else if (phase < inc) { // start
+            mod = polyblep(phase / inc);
+        } else if (phase > (1.0f - inc)) { // end
+            mod = polyblep( (phase - 1.0) / inc);
+        }
+        output[i] = (phase - mod) * (output[i] + 1.0) - 1.0f;
     )
 }
 
@@ -419,10 +428,19 @@ void Virtual::el_alpha2(float* output, int samples) {
     el_pulse(output, samples);
 
     // saw
+    bool bl = pm == 0.0f;
     phase = p;
     freq = f;
     PHASE_LOOP_PM(
-        output[i] = phase * (output[i] + 1.0) - 1.0f;
+        float mod = 0.0f;
+        if (!bl) {
+            // no polyblep
+        } else if (phase < inc) { // start
+            mod = polyblep(phase / inc);
+        } else if (phase > (1.0f - inc)) { // end
+            mod = polyblep( (phase - 1.0) / inc);
+        }
+        output[i] = (phase - mod) * (output[i] + 1.0) - 1.0f;
     )
 }
 
@@ -497,10 +515,24 @@ void Virtual::fm2(float* output, int samples) {
     )
 }
 
+// bandlimited
 void Virtual::fm3(float* output, int samples) {
     PHASE_LOOP_PM(
         float y = SIN(phase);
-        output[i] = (phase > 0.25 && phase < 0.75) ? -y : y;
+        if (phase < (0.25 - inc)) {
+            // do nothing
+        } else if (phase < 0.25) {
+            y *= (0.25 - phase) / inc;
+        } else if (phase < (0.25 + inc)) {
+            y *= (0.25 - phase) / inc;
+        } else if (phase < (0.75 - inc)) {
+            y *= -1.0;
+        } else if (phase < 0.75) {
+            y *= (phase - 0.75) / inc;
+        } else if (phase < (0.75 + inc)) {
+            y *= (phase - 0.75) / inc;
+        }
+        output[i] = y;
     )
 }
 
