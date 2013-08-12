@@ -101,6 +101,7 @@ void rogueSynth::update() {
         int off = i * DCF_OFF;
         data.filters[i].on       = v(p_filter1_on + off);
         data.filters[i].type     = v(p_filter1_type + off);
+        data.filters[i].source   = v(p_filter1_source + off);
         data.filters[i].freq     = v(p_filter1_freq + off);
         data.filters[i].q        = v(p_filter1_q + off);
         data.filters[i].distortion = v(p_filter1_distortion + off);
