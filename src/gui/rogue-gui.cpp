@@ -34,6 +34,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
     Q_OBJECT
 
+    QWidget dummyParent;
     Widget* widgets[p_n_ports];
     QLabel* labels[p_n_ports];
 
@@ -876,10 +877,10 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         for (int i = 0; i < 4; i++) updateLfo(i);
 
         // create dummy widgets for unused controls of osc1
-        createDial(p_osc1_input);
-        createDial(p_osc1_pm);
-        createDial(p_osc1_sync);
-        createDial(p_osc1_out_mod);
+        ((QDial*)createDial(p_osc1_input))->setParent(&dummyParent);
+        ((QDial*)createDial(p_osc1_pm))->setParent(&dummyParent);
+        ((QDial*)createDial(p_osc1_sync))->setParent(&dummyParent);
+        ((QDial*)createDial(p_osc1_out_mod))->setParent(&dummyParent);
 
         for (int i = 3; i < p_n_ports; i++) {
             if (!widgets[i])
@@ -894,11 +895,6 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
             fftwf_free(fftOut[i]);
             fftwf_destroy_plan(fftPlan[i]);
         }
-
-        delete widgets[p_osc1_input];
-        delete widgets[p_osc1_pm];
-        delete widgets[p_osc1_sync];
-        delete widgets[p_osc1_out_mod];
     }
 };
 
