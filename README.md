@@ -20,6 +20,7 @@ Dependencies
 * lvtk http://lvtoolkit.org/
 * Qt4 http://qt-project.org/
 * fftw3 http://www.fftw.org/
+* Python with python-rdflib
 
 Installation
 
