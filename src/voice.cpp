@@ -347,6 +347,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
 
     if (glide_step != 0.0f) {
         key += (to - from) * glide_step;
+        // TODO use counter for this instead
         if ((glide_step > 0.0 && key >= glide_target) ||
             (glide_step < 0.0 && key <= glide_target)) {
             key = glide_target;
