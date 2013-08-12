@@ -19,8 +19,7 @@ $(BUNDLE): manifest.ttl rogue.ttl presets.ttl rogue.so rogue-gui.so presets styl
 rogue.so: $(SOURCES) src/rogue.gen
 	$(CXX) $(FLAGS) $(FAST) -shared $(SOURCES) $(LVTK) -Idsp -Isrc -Ifx -Ifx/dsp -o $@
 	
-rogue-gui.so: $(SOURCES_UI) src/rogue.gen src/gui/config.gen
-	moc src/gui/rogue-gui.cpp > src/gui/rogue-gui.mcpp
+rogue-gui.so: $(SOURCES_UI) src/rogue.gen src/gui/config.gen src/gui/rogue-gui.mcpp
 	$(CXX) $(FLAGS) -g -shared $(SOURCES_UI) $(QT) $(LVTK) $(LVTK_UI) $(FFTW) -Idsp -Isrc -o $@	
 
 src/rogue.gen: rogue.ttl
@@ -36,6 +35,9 @@ presets.ttl:
 src/gui/config.gen:
 	./confgen.py
 
+src/gui/rogue-gui.mcpp:
+	moc src/gui/rogue-gui.cpp > src/gui/rogue-gui.mcpp
+
 install: $(BUNDLE)
 	mkdir -p $(INSTALL_DIR)
 	rm -rf $(INSTALL_DIR)/$(BUNDLE)
@@ -45,10 +47,9 @@ run:
 	jalv.qt http://www.github.com/timowest/rogue
 
 clean:
-	rm -rf $(BUNDLE) *.so src/rogue.gen src/gui/config.gen presets.ttl rogue.ttl wavs *.out presets/*
+	rm -rf $(BUNDLE) *.so src/rogue.gen src/gui/config.gen src/gui/rogue-gui.mcpp presets.ttl rogue.ttl wavs *.out presets/*
 
-gui: src/rogue.gen src/gui/config.gen
-	moc src/gui/rogue-gui.cpp > src/gui/rogue-gui.mcpp
+gui: src/rogue.gen src/gui/config.gen src/gui/rogue-gui.mcpp	
 	$(CXX) -g -std=c++11 src/gui/test.cpp $(QT) $(LVTK_UI) $(FFTW) -Idsp -Isrc -o qttest.out 
 	
 tests: src/rogue.gen
