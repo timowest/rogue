@@ -889,7 +889,6 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     }
 
     ~rogueGUI() {
-        // TODO delete widgets that are not managed by Qt
         for (int i = 0; i < 2; i++) {
             fftwf_free(fftIn[i]);
             fftwf_free(fftOut[i]);
