@@ -20,6 +20,7 @@ rogue.so: $(SOURCES) src/rogue.gen
 	$(CXX) $(FLAGS) $(FAST) -shared $(SOURCES) $(LVTK) -Idsp -Isrc -Ifx -Ifx/dsp -o $@
 	
 rogue-gui.so: $(SOURCES_UI) src/rogue.gen src/gui/config.gen
+	moc src/gui/rogue-gui.cpp > src/gui/rogue-gui.mcpp
 	$(CXX) $(FLAGS) -g -shared $(SOURCES_UI) $(QT) $(LVTK) $(LVTK_UI) $(FFTW) -Idsp -Isrc -o $@	
 
 src/rogue.gen: rogue.ttl
