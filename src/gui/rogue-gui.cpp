@@ -852,7 +852,11 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         connect(&lfoMapper, SIGNAL(mapped(int)), SLOT(updateLfo(int)));
 
         // styles
-        QFile file("styles/stylesheet.qss");
+        QString stylesheetPath("styles/stylesheet.qss");
+        if (bundle_path()) {
+            stylesheetPath.prepend(bundle_path());
+        }
+        QFile file(stylesheetPath);
         file.open(QFile::ReadOnly);
         QString styleSheet = QLatin1String(file.readAll());
         container().setStyleSheet(styleSheet);
