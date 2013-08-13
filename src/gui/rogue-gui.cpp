@@ -859,6 +859,10 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         QFile file(stylesheetPath);
         file.open(QFile::ReadOnly);
         QString styleSheet = QLatin1String(file.readAll());
+        if (bundle_path()) {
+            QString replacement(bundle_path());
+            styleSheet.replace("url(","url("+replacement+"/");
+        }
         container().setStyleSheet(styleSheet);
 
         osc.setSamplerate(OSC_WIDTH);
