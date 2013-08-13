@@ -19,7 +19,7 @@ class CustomDial : public QDial, public Widget {
 
     static const int FULL = 5760;
     static const int HALF = 2880;
-    float min, max, pos0, step;
+    float min, max, default_val, pos0, step;
     int origin_y, origin_val, range;
 
   protected:
@@ -100,10 +100,16 @@ class CustomDial : public QDial, public Widget {
         //d->doNotEmit = false;
     }
 
+    void mouseDoubleClickEvent(QMouseEvent* e) {
+        e->accept();
+        setSliderPosition(default_val);
+    }
+
   public:
     CustomDial(float _min, float _max, float _step, float _value) : QDial() {
         min = _min / _step;
         max = _max / _step;
+        default_val = _value / _step;
         step = _step;
         pos0 = ((min > 0.0 ? min : 0.0) - min) / (max - min);
         setRange(min, max);
