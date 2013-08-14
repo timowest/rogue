@@ -361,14 +361,34 @@ void Virtual::el_pulse2(float* output, int samples) {
     )
 }
 
-// TODO polyblep
+// polyblep
 void Virtual::el_pulse_saw(float* output, int samples) {
+    bool bl = pm == 0.0f;
     PWIDTH_LOOP_PM(
-        float p2 = pd(phase, width);
         if (phase < width) {
-            output[i] = 2.0f * p2;
+            float p2 = phase / width;
+            float inc2 = inc / width;
+            float mod = 0.0f;
+            if (!bl) {
+                // no polyblep
+            } else if (p2 < inc2) { // start
+                //mod = polyblep(p2 / inc2);
+            } else if (p2 > (1.0f - inc2)) { // end
+                mod = polyblep( (p2 - 1.0) / inc2);
+            }
+            output[i] = p2 - mod;
         } else {
-            output[i] = -2.0f * (p2 - 0.5f);
+            float p2 = (phase - width) / (1.0 - width);
+            float inc2 = inc / (1.0 - width);
+            float mod = 0.0f;
+            if (!bl) {
+                // no polyblep
+            } else if (p2 < inc2) { // start
+                //mod = polyblep(p2 / inc2);
+            } else if (p2 > (1.0f - inc2)) { // end
+                mod = polyblep( (p2 - 1.0) / inc2);
+            }
+            output[i] = -(p2 - mod);
         }
     )
 }
