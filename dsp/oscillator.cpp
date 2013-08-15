@@ -38,8 +38,8 @@
 
 #define PWIDTH_LOOP(calc) \
     float inc = freq / sample_rate; \
-    float width = wf; \
-    float w_step = (wt - wf) / (float)samples; \
+    float width = norm_width(wf, inc); \
+    float w_step = (norm_width(wt, inc) - width) / (float)samples; \
     for (int i = 0; i < samples; i++) { \
         calc \
         phase = fmod(phase + inc, 1.0f); \
@@ -48,8 +48,8 @@
 
 #define PWIDTH_LOOP_PM(calc) \
     float inc = freq / sample_rate; \
-    float width = wf; \
-    float w_step = (wt - wf) / (float)samples; \
+    float width = norm_width(wf, inc); \
+    float w_step = (norm_width(wt, inc) - width) / (float)samples; \
     for (int i = 0; i < samples; i++) { \
         float phase = pmod(this->phase, i); \
         calc \
@@ -104,6 +104,16 @@ static float pd(float x, float w) {
         return 0.5f * x / w;
     } else {
         return 0.5f + 0.5f * (x - w) / (1.0f - w);
+    }
+}
+
+static float norm_width(float w, float inc) {
+    if (w < inc) {
+        return inc;
+    } else if (w > (1.0 - inc)) {
+        return 1.0 - inc;
+    } else {
+        return w;
     }
 }
 
