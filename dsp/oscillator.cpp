@@ -255,8 +255,6 @@ void Virtual::pd_half_sine(float* output, int samples) {
 
     PMOD_LOOP_BOTH(
         output[i] = gb(SIN(0.5f * pd(phase, mod)));
-        phase = fmod(phase + inc, 1.0f);
-        mod += m_step;
     )
 }
 

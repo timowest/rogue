@@ -36,10 +36,16 @@ void filter_test() {
             moog.setCoefficients(1000.0, float(j) * 0.1);
             moog.process(noise, buffer, SIZE);
 
+            bool zero = true;
+            for (int i = 0; i < SIZE; i++) {
+                zero &= buffer[i] == 0.0f;
+            }
+            if (zero) {
+                error("moog is silent");
+            }
+
             sprintf(filename, "wavs/moog_%i%i.wav", i, j);
             write_wav(filename, buffer);
-
-            // TODO verify that output is not zero
         }
     }
 
@@ -51,10 +57,16 @@ void filter_test() {
             svf.setCoefficients(1000.0, float(j) * 0.1);
             svf.process(noise, buffer, SIZE);
 
+            bool zero = true;
+            for (int i = 0; i < SIZE; i++) {
+                zero &= buffer[i] == 0.0f;
+            }
+            if (zero) {
+                error("svf is silent");
+            }
+
             sprintf(filename, "wavs/svf_%i%i.wav", i, j);
             write_wav(filename, buffer);
-
-            // TODO verify that output is not zero
         }
     }
 
@@ -66,10 +78,16 @@ void filter_test() {
             svf2.setCoefficients(1000.0, float(j) * 0.1);
             svf2.process(noise, buffer, SIZE);
 
+            bool zero = true;
+            for (int i = 0; i < SIZE; i++) {
+                zero &= buffer[i] == 0.0f;
+            }
+            if (zero) {
+                error("svf2 is silent");
+            }
+
             sprintf(filename, "wavs/svf2_%i%i.wav", i, j);
             write_wav(filename, buffer);
-
-            // TODO verify that output is not zero
         }
     }
 }

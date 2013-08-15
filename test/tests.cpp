@@ -7,6 +7,10 @@
 
 #include <iostream>
 
+static void error(const char* text) {
+    std::cout << text << std::endl;
+}
+
 #include "wavutils.h"
 #include "oscillator_test.h"
 #include "filter_test.h"
@@ -22,5 +26,6 @@ int main() {
     filter_test();
     envelope_test();
     lfo_test();
+
     return 0;
 }
