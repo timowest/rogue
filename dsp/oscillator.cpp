@@ -678,7 +678,7 @@ void Virtual::fm4(float* output, int samples) {
 // bandlimited
 void Virtual::fm5(float* output, int samples) {
     if (pm > 0.0) {
-        PHASE_LOOP(
+        PHASE_LOOP_PM(
             output[i] = phase < 0.5f ? SIN(phase) : 0.0f;
         )
     } else {
