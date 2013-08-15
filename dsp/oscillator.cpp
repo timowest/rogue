@@ -264,50 +264,62 @@ void Virtual::pd_half_sine(float* output, int samples) {
 
 // polyblep
 void Virtual::el_saw(float* output, int samples) {
-    bool bl = pm == 0.0f;
-    PHASE_LOOP_BOTH( // TODO optimize
-        float mod = 0.0f;
-        if (!bl) {
-            // no polyblep
-        } else if (phase < inc) { // start
-            mod = polyblep(phase / inc);
-        } else if (phase > (1.0f - inc)) { // end
-            mod = polyblep( (phase - 1.0) / inc);
-        }
-        output[i] = gb(phase - mod);
-    )
+    if (pm > 0.0) {
+        PHASE_LOOP_PM(
+            output[i] = gb(phase);
+        )
+    } else {
+        // with bandlimiting
+        PHASE_LOOP(
+            float mod = 0.0f;
+            if (phase < inc) { // start
+                mod = polyblep(phase / inc);
+            } else if (phase > (1.0f - inc)) { // end
+                mod = polyblep( (phase - 1.0) / inc);
+            }
+            output[i] = gb(phase - mod);
+        )
+    }
 }
 
 // polyblep
 void Virtual::el_double_saw(float* output, int samples) {
-    bool bl = pm == 0.0f;
-    PWIDTH_LOOP_BOTH( // TODO optimize
-        float p2;
-         if (phase < width) {
-             p2 = phase / width;
-         } else {
-             p2 = (phase - width) / (1.0f - width);
-         }
-        float mod = 0.0f;
-        if (!bl) {
-            // no polyblep
-        } else if (phase < width) {
-            float inc2 = inc / width;
-            if (p2 < inc2) { // start
-                mod = polyblep(p2 / inc2);
-            } else if (p2 > (1.0f - inc2)) { // end
-                mod = polyblep((p2 - 1.0f) / inc2);
+    if (pm > 0.0) {
+        PWIDTH_LOOP_PM(
+            if (phase < width) {
+                output[i] = gb(phase / width);
+            } else {
+                output[i] = gb((phase - width) / (1.0f - width));
             }
-        } else {
-            float inc2 = inc / (1.0f - width);
-            if (p2 < inc2) {
-                mod = polyblep(p2 / inc2);
-            } else if (p2 > (1.0f - inc2)) {
-                mod = polyblep((p2 - 1.0f) / inc2);
+        )
+    } else {
+        // with bandlimiting
+        PWIDTH_LOOP(
+            float p2;
+             if (phase < width) {
+                 p2 = phase / width;
+             } else {
+                 p2 = (phase - width) / (1.0f - width);
+             }
+            float mod = 0.0f;
+            if (phase < width) {
+                float inc2 = inc / width;
+                if (p2 < inc2) { // start
+                    mod = polyblep(p2 / inc2);
+                } else if (p2 > (1.0f - inc2)) { // end
+                    mod = polyblep((p2 - 1.0f) / inc2);
+                }
+            } else {
+                float inc2 = inc / (1.0f - width);
+                if (p2 < inc2) {
+                    mod = polyblep(p2 / inc2);
+                } else if (p2 > (1.0f - inc2)) {
+                    mod = polyblep((p2 - 1.0f) / inc2);
+                }
             }
-        }
-        output[i] = gb(p2 - mod);
-    )
+            output[i] = gb(p2 - mod);
+        )
+    }
 }
 
 void Virtual::el_tri(float* output, int samples) {
@@ -332,13 +344,15 @@ void Virtual::el_tri3(float* output, int samples) {
 
 // polyblep
 void Virtual::el_pulse(float* output, int samples) {
-    float inc2 = freq / sample_rate;
-    bool bl = wf > inc2 && wf < (1.0f - inc2) && pm == 0.0f;
-
-    PWIDTH_LOOP_BOTH( // TODO optimize
-        float p2 = phase < width ? 0.0f : 1.0f;
-        float mod = 0.0f;
-        if (bl) {
+    if (pm > 0.0f) {
+        PWIDTH_LOOP_PM(
+            output[i] = phase < width ? -1.0f : 1.0f;
+        )
+    } else {
+        // with bandlimiting
+        PWIDTH_LOOP(
+            float p2 = phase < width ? 0.0f : 1.0f;
+            float mod = 0.0f;
             if (phase < width) {
                 if (phase < inc) { // start
                     mod = polyblep(phase / inc);
@@ -352,9 +366,9 @@ void Virtual::el_pulse(float* output, int samples) {
                     mod = -polyblep( (phase - width) / inc);
                 }
             }
-        }
-        output[i] = gb(p2 - mod);
-    )
+            output[i] = gb(p2 - mod);
+        )
+    }
 }
 
 // TODO polyblep
@@ -369,57 +383,66 @@ void Virtual::el_pulse2(float* output, int samples) {
 
 // polyblep
 void Virtual::el_pulse_saw(float* output, int samples) {
-    bool bl = pm == 0.0f;
-    PWIDTH_LOOP_BOTH( // TODO optimize
-        if (phase < width) {
-            float p2 = phase / width;
-            float inc2 = inc / width;
-            float mod = 0.0f;
-            if (!bl) {
-                // no polyblep
-            } else if (p2 < inc2) { // start
-                //mod = polyblep(p2 / inc2);
-            } else if (p2 > (1.0f - inc2)) { // end
-                mod = polyblep( (p2 - 1.0) / inc2);
+    if (pm > 0.0f) {
+        PWIDTH_LOOP_PM(
+            if (phase < width) {
+                output[i] = phase / width;
+            } else {
+                output[i] = (width - phase) / (1.0 - width);
             }
-            output[i] = p2 - mod;
-        } else {
-            float p2 = (phase - width) / (1.0 - width);
-            float inc2 = inc / (1.0 - width);
-            float mod = 0.0f;
-            if (!bl) {
-                // no polyblep
-            } else if (p2 < inc2) { // start
-                //mod = polyblep(p2 / inc2);
-            } else if (p2 > (1.0f - inc2)) { // end
-                mod = polyblep( (p2 - 1.0) / inc2);
+        )
+    } else {
+        // with bandlimiting
+        PWIDTH_LOOP(
+            if (phase < width) {
+                float p2 = phase / width;
+                float inc2 = inc / width;
+                float mod = 0.0f;
+                if (p2 < inc2) { // start
+                    //mod = polyblep(p2 / inc2);
+                } else if (p2 > (1.0f - inc2)) { // end
+                    mod = polyblep( (p2 - 1.0) / inc2);
+                }
+                output[i] = p2 - mod;
+            } else {
+                float p2 = (phase - width) / (1.0 - width);
+                float inc2 = inc / (1.0 - width);
+                float mod = 0.0f;
+                if (p2 < inc2) { // start
+                    //mod = polyblep(p2 / inc2);
+                } else if (p2 > (1.0f - inc2)) { // end
+                    mod = polyblep( (p2 - 1.0) / inc2);
+                }
+                output[i] = -(p2 - mod);
             }
-            output[i] = -(p2 - mod);
-        }
-    )
+        )
+    }
 }
 
 // polyblep
-// TODO optimize
 void Virtual::el_slope(float* output, int samples) {
-    bool bl = pm == 0.0f;
-    PWIDTH_LOOP_BOTH( // TODO optimize
-        float p2 = gvslope(phase, width);
-        float mod = 0.0f;
-        float inc2 = inc / (1.0f - width);
-        if (!bl) {
-            // no polyblep
-        } else if (phase < inc) {        // start
-            mod = polyblep(phase / inc);
-        } else if (p2 > (1.0f - inc2)) { // end
-            mod = polyblep( (p2 - 1.0f) / inc2);
-        } else if (phase < width && phase > (width - inc)) {
-            mod = width * polyblep( (p2 - width) / inc);
-        } else if (phase > width && p2 < inc2) {
-            mod = width * polyblep(p2 / inc2);
-        }
-        output[i] = gb(p2 - mod);
-    )
+    if (pm > 0.0f) {
+        PWIDTH_LOOP_PM(
+            output[i] = gb(gvslope(phase, width));
+        )
+    } else {
+        // with bandlimiting
+        PWIDTH_LOOP(
+            float p2 = gvslope(phase, width);
+            float mod = 0.0f;
+            float inc2 = inc / (1.0f - width);
+            if (phase < inc) {        // start
+                mod = polyblep(phase / inc);
+            } else if (p2 > (1.0f - inc2)) { // end
+                mod = polyblep( (p2 - 1.0f) / inc2);
+            } else if (phase < width && phase > (width - inc)) {
+                mod = width * polyblep( (p2 - width) / inc);
+            } else if (phase > width && p2 < inc2) {
+                mod = width * polyblep(p2 / inc2);
+            }
+            output[i] = gb(p2 - mod);
+        )
+    }
 }
 
 void Virtual::el_alpha1(float* output, int samples) {
@@ -431,20 +454,25 @@ void Virtual::el_alpha1(float* output, int samples) {
     el_pulse(output, samples);
 
     // saw
-    bool bl = pm == 0.0f;
     phase = p;
     freq = f;
-    PHASE_LOOP_BOTH( // TODO Optimize
-        float mod = 0.0f;
-        if (!bl) {
-            // no polyblep
-        } else if (phase < inc) { // start
-            mod = polyblep(phase / inc);
-        } else if (phase > (1.0f - inc)) { // end
-            mod = polyblep( (phase - 1.0) / inc);
-        }
-        output[i] = (phase - mod) * (output[i] + 1.0) - 1.0f;
-    )
+    if (pm > 0.0) {
+        PHASE_LOOP_PM(
+            output[i] = phase * (output[i] + 1.0) - 1.0f;
+        )
+    } else {
+        // with bandlimiting
+        PHASE_LOOP(
+            float mod = 0.0f;
+            if (phase < inc) { // start
+                mod = polyblep(phase / inc);
+            } else if (phase > (1.0f - inc)) { // end
+                mod = polyblep( (phase - 1.0) / inc);
+            }
+            output[i] = (phase - mod) * (output[i] + 1.0) - 1.0f;
+        )
+    }
+
 }
 
 void Virtual::el_alpha2(float* output, int samples) {
@@ -456,20 +484,24 @@ void Virtual::el_alpha2(float* output, int samples) {
     el_pulse(output, samples);
 
     // saw
-    bool bl = pm == 0.0f;
     phase = p;
     freq = f;
-    PHASE_LOOP_BOTH( // TODO Optimize
-        float mod = 0.0f;
-        if (!bl) {
-            // no polyblep
-        } else if (phase < inc) { // start
-            mod = polyblep(phase / inc);
-        } else if (phase > (1.0f - inc)) { // end
-            mod = polyblep( (phase - 1.0) / inc);
-        }
-        output[i] = (phase - mod) * (output[i] + 1.0) - 1.0f;
-    )
+    if (pm > 0.0) {
+        PHASE_LOOP_PM(
+            output[i] = phase * (output[i] + 1.0) - 1.0f;
+        )
+    } else {
+        // with bandlimiting
+        PHASE_LOOP(
+            float mod = 0.0f;
+            if (phase < inc) { // start
+                mod = polyblep(phase / inc);
+            } else if (phase > (1.0f - inc)) { // end
+                mod = polyblep( (phase - 1.0) / inc);
+            }
+            output[i] = (phase - mod) * (output[i] + 1.0) - 1.0f;
+        )
+    }
 }
 
 void Virtual::el_beta1(float* output, int samples) {
@@ -481,26 +513,35 @@ void Virtual::el_beta1(float* output, int samples) {
     el_pulse(output, samples);
 
     // saw
-    bool bl = pm == 0.0f;
     phase = p;
     freq = f;
-    PHASE_LOOP_BOTH( // TODO Optimize
-        float pulse = 0.5f * (output[i] + 1.0f);
-        float phase2 = fmod(phase + 0.5, 1.0f);
-        float mod1 = 0.0;
-        float mod2 = 0.0;
-        if (phase < inc) { // start
-            mod1 = polyblep(phase / inc);
-        } else if (phase > (1.0f - inc)) { // end
-            mod1 = polyblep( (phase - 1.0) / inc);
-        }
-        if (phase2 < inc) {
-            mod2 = polyblep(phase2 / inc);
-        } else if (phase2 > (1.0f - inc)) {
-            mod2 = polyblep( (phase2 - 1.0) / inc);
-        }
-        output[i] = gb((phase - mod1) * pulse + (phase2 - mod2) * (1.0f - pulse));
-    )
+    if (pm > 0.0) {
+        PHASE_LOOP_PM(
+            float pulse = 0.5f * (output[i] + 1.0f);
+            float phase2 = fmod(phase + 0.5, 1.0f);
+            output[i] = gb(phase * pulse + phase2 * (1.0f - pulse));
+        )
+    } else {
+        // with bandlimiting
+        PHASE_LOOP(
+            float pulse = 0.5f * (output[i] + 1.0f);
+            float phase2 = fmod(phase + 0.5, 1.0f);
+            float mod1 = 0.0;
+            float mod2 = 0.0;
+            if (phase < inc) { // start
+                mod1 = polyblep(phase / inc);
+            } else if (phase > (1.0f - inc)) { // end
+                mod1 = polyblep( (phase - 1.0) / inc);
+            }
+            if (phase2 < inc) {
+                mod2 = polyblep(phase2 / inc);
+            } else if (phase2 > (1.0f - inc)) {
+                mod2 = polyblep( (phase2 - 1.0) / inc);
+            }
+            output[i] = gb((phase - mod1) * pulse + (phase2 - mod2) * (1.0f - pulse));
+        )
+    }
+
 }
 
 void Virtual::el_beta2(float* output, int samples) {
@@ -514,23 +555,32 @@ void Virtual::el_beta2(float* output, int samples) {
     // saw
     phase = p;
     freq = f;
-    PHASE_LOOP_BOTH( // TODO Optimize
-        float pulse = 0.5f * (output[i] + 1.0f);
-        float phase2 = fmod(phase + 0.5, 1.0f);
-        float mod1 = 0.0;
-        float mod2 = 0.0;
-        if (phase < inc) { // start
-            mod1 = polyblep(phase / inc);
-        } else if (phase > (1.0f - inc)) { // end
-            mod1 = polyblep( (phase - 1.0) / inc);
-        }
-        if (phase2 < inc) {
-            mod2 = polyblep(phase2 / inc);
-        } else if (phase2 > (1.0f - inc)) {
-            mod2 = polyblep( (phase2 - 1.0) / inc);
-        }
-        output[i] = gb((phase - mod1) * pulse + (phase2 - mod2) * (1.0f - pulse));
-    )
+    if (pm > 0.0) {
+        PHASE_LOOP_PM(
+            float pulse = 0.5f * (output[i] + 1.0f);
+            float phase2 = fmod(phase + 0.5, 1.0f);
+            output[i] = gb(phase * pulse + phase2 * (1.0f - pulse));
+        )
+    } else {
+        // with bandlimiting
+        PHASE_LOOP(
+            float pulse = 0.5f * (output[i] + 1.0f);
+            float phase2 = fmod(phase + 0.5, 1.0f);
+            float mod1 = 0.0;
+            float mod2 = 0.0;
+            if (phase < inc) { // start
+                mod1 = polyblep(phase / inc);
+            } else if (phase > (1.0f - inc)) { // end
+                mod1 = polyblep( (phase - 1.0) / inc);
+            }
+            if (phase2 < inc) {
+                mod2 = polyblep(phase2 / inc);
+            } else if (phase2 > (1.0f - inc)) {
+                mod2 = polyblep( (phase2 - 1.0) / inc);
+            }
+            output[i] = gb((phase - mod1) * pulse + (phase2 - mod2) * (1.0f - pulse));
+        )
+    }
 }
 
 void Virtual::el_pulse_tri(float* output, int samples) {
@@ -572,55 +622,79 @@ void Virtual::fm2(float* output, int samples) {
 
 // bandlimited
 void Virtual::fm3(float* output, int samples) {
-    PHASE_LOOP_BOTH(
-        float y = SIN(phase);
-        if (phase < (0.25 - inc)) {
-            // do nothing
-        } else if (phase < 0.25) {
-            // fade out
-            y *= (0.25 - phase) / inc;
-        } else if (phase < (0.25 + inc)) {
-            // fade in (inverted)
-            y *= (0.25 - phase) / inc;
-        } else if (phase < (0.75 - inc)) {
-            y *= -1.0;
-        } else if (phase < 0.75) {
-            // fade out
-            y *= (phase - 0.75) / inc;
-        } else if (phase < (0.75 + inc)) {
-            // fade in
-            y *= (phase - 0.75) / inc;
-        }
-        output[i] = y;
-    )
+    if (pm > 0.0) {
+        PHASE_LOOP_PM(
+            float y = SIN(phase);
+            output[i] = (phase > 0.25 && phase < 0.75) ? -y : y;
+        )
+    } else {
+        // with bandlimiting
+        PHASE_LOOP(
+            float y = SIN(phase);
+            if (phase < (0.25 - inc)) {
+                // do nothing
+            } else if (phase < 0.25) {
+                // fade out
+                y *= (0.25 - phase) / inc;
+            } else if (phase < (0.25 + inc)) {
+                // fade in (inverted)
+                y *= (0.25 - phase) / inc;
+            } else if (phase < (0.75 - inc)) {
+                y *= -1.0;
+            } else if (phase < 0.75) {
+                // fade out
+                y *= (phase - 0.75) / inc;
+            } else if (phase < (0.75 + inc)) {
+                // fade in
+                y *= (phase - 0.75) / inc;
+            }
+            output[i] = y;
+        )
+    }
 }
 
 // bandlimited
 void Virtual::fm4(float* output, int samples) {
-    PHASE_LOOP_BOTH(
-        if (phase < 0.5) {
-            output[i] = SIN(2.0f * phase);
-        } else if (phase < (0.5 + inc)) {
-            // fade out
-            output[i] = SIN(2.0f * phase) * ((0.5 + inc) - phase) / inc;
-        } else {
-            output[i] = 0.0;
-        }
-    )
+    if (pm > 0.0) {
+        PHASE_LOOP_PM(
+            output[i] = phase < 0.5f ? SIN(2.0f * phase) : 0.0f;
+        )
+    } else {
+        // with bandlimiting
+        PHASE_LOOP(
+            if (phase < 0.5) {
+                output[i] = SIN(2.0f * phase);
+            } else if (phase < (0.5 + inc)) {
+                // fade out
+                output[i] = SIN(2.0f * phase) * ((0.5 + inc) - phase) / inc;
+            } else {
+                output[i] = 0.0;
+            }
+        )
+    }
+
 }
 
 // bandlimited
 void Virtual::fm5(float* output, int samples) {
-    PHASE_LOOP_BOTH(
-        if (phase < 0.5) {
-            output[i] = SIN(phase);
-        } else if (phase < (0.5 + inc)) {
-            // fade out
-            output[i] = SIN(phase) * ((0.5 + inc) - phase) / inc;
-        } else {
-            output[i] = 0.0;
-        }
-    )
+    if (pm > 0.0) {
+        PHASE_LOOP(
+            output[i] = phase < 0.5f ? SIN(phase) : 0.0f;
+        )
+    } else {
+        // with bandlimiting
+        PHASE_LOOP(
+            if (phase < 0.5) {
+                output[i] = SIN(phase);
+            } else if (phase < (0.5 + inc)) {
+                // fade out
+                output[i] = SIN(phase) * ((0.5 + inc) - phase) / inc;
+            } else {
+                output[i] = 0.0;
+            }
+        )
+    }
+
 }
 
 static float bandlimit_fm678(float y, float phase, float inc) {
@@ -647,31 +721,69 @@ static float bandlimit_fm678(float y, float phase, float inc) {
 
 // bandlimited
 void Virtual::fm6(float* output, int samples) {
-    PHASE_LOOP_BOTH(
-        float y = 0.0f;
-        if (phase < 0.25f) {
-            y = SIN(2.0 * phase);
-        } else if (phase > 0.5f && phase < 0.75f) {
-            y = SIN(2.0 * (phase - 0.25));
-        }
-        output[i] = bandlimit_fm678(y, phase, inc);
-    )
+    if (pm > 0.0) {
+        PHASE_LOOP_PM(
+            if (phase < 0.25f) {
+                 output[i] = SIN(2.0 * phase);
+             } else if (phase > 0.5f && phase < 0.75f) {
+                 output[i] = SIN(2.0 * (phase - 0.25));
+             } else {
+                 output[i] = 0.0f;
+             }
+        )
+    } else {
+        // with bandlimiting
+        PHASE_LOOP(
+            float y = 0.0f;
+            if (phase < 0.25f) {
+                y = SIN(2.0 * phase);
+            } else if (phase > 0.5f && phase < 0.75f) {
+                y = SIN(2.0 * (phase - 0.25));
+            }
+            output[i] = bandlimit_fm678(y, phase, inc);
+        )
+    }
+
 }
 
 // bandlimited
 void Virtual::fm7(float* output, int samples) {
-    PHASE_LOOP_BOTH(
-        const float y = SIN(phase);
-        output[i] = bandlimit_fm678(y, phase, inc);
-    )
+    if (pm > 0.0) {
+        PHASE_LOOP_PM(
+            if (phase < 0.25 || phase > 0.5 && phase < 0.75) {
+                output[i] = SIN(phase);
+            } else {
+                output[i] = 0.0f;
+            }
+        )
+    } else {
+        // with bandlimiting
+        PHASE_LOOP(
+            const float y = SIN(phase);
+            output[i] = bandlimit_fm678(y, phase, inc);
+        )
+    }
+
 }
 
 // bandlimited
 void Virtual::fm8(float* output, int samples) {
-    PHASE_LOOP_BOTH(
-        const float y = fabs(SIN(fmod(phase, 0.5f)));
-        output[i] = bandlimit_fm678(y, phase, inc);
-    )
+    if (pm > 0.0) {
+        PHASE_LOOP_PM(
+            if (phase < 0.25 || phase > 0.5 && phase < 0.75) {
+                output[i] = SIN(fmod(phase, 0.25f));
+            } else {
+                output[i] = 0.0f;
+            }
+        )
+    } else {
+        // with bandlimiting
+        PHASE_LOOP(
+            const float y = fabs(SIN(fmod(phase, 0.5f)));
+            output[i] = bandlimit_fm678(y, phase, inc);
+        )
+    }
+
 }
 
 void Virtual::process(float* output, int samples) {
