@@ -140,8 +140,9 @@ void rogueVoice::configLFO(int i) {
     LFO& lfo = lfos[i];
 
     float f = lfoData.freq;
-    // key to f
-    f *= modulate(1.0f, M_LFO1_S + 2 * i, multiply_mod);
+    // speed modulation
+    f *= modulate(1.0f, M_LFO1_S + 2 * i, add_mod);
+    if (f < 0.0) f = 0.0;
 
     // NOTE: lfos can't modulate each other's freq
     lfo.lfo.setType(lfoData.type);
@@ -315,7 +316,8 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
         f *= std::pow(SEMITONE, 24 * fmod);
 
         // res modulation
-        float q = limit(filterData.q + modulate(0.0f, M_DCF1_Q + 4 * i, add_mod), 0, 1);
+        float q = filterData.q + modulate(0.0f, M_DCF1_Q + 4 * i, add_mod);
+        if (q < 0.0) q = 0.0;
 
         // process
         float* source = buffers[filterData.source];
