@@ -18,6 +18,7 @@ struct Osc {
     dsp::AS as;
     dsp::Noise noise;
     float buffer[BUFFER_SIZE];
+    float sync[BUFFER_SIZE];
     float prev_level;
     float width_prev = 0.5f;
 
@@ -44,15 +45,15 @@ struct Osc {
         noise.setSamplerate(r);
     }
 
-    void setModulation(int type, float* _input, float _pm, bool _sync) {
+    void setModulation(int type, float* _input, float* _input_s, float _pm, bool _sync) {
         if (type < 34) {
-            virt.setModulation(_input, _pm, _sync);
+            virt.setModulation(_input, _input_s, _pm, _sync);
         } else if (type < 37) {
-            as.setModulation(_input, _pm, _sync);
+            as.setModulation(_input, _input_s, _pm, _sync);
         }
     }
 
-    void process(int type, float freq, float wf, float wt, float* buffer, int samples) {
+    void process(int type, float freq, float wf, float wt, float* buffer, float* sync, int samples) {
         dsp::Oscillator* osc;
         if (type < 34) {
             osc = &virt;
@@ -66,7 +67,7 @@ struct Osc {
         osc->setType(type);
         osc->setFreq(freq);
         osc->setWidth(wf, wt);
-        osc->process(buffer, samples);
+        osc->process(buffer, sync, samples);
     }
 };
 

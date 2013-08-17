@@ -26,7 +26,7 @@ void filter_test() {
     float noise[SIZE];
     no.setFreq(1000.0);
     no.setType(0);
-    no.process(noise, SIZE);
+    no.process(noise, buffer, SIZE);
 
     // moog
     for (int i = 0; i < 8; i++) {

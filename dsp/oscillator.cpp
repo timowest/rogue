@@ -12,7 +12,7 @@
 
 #define COS(x) cos_.linear(x)
 
-#define CASE(a,b) case a: b(output, samples); break;
+#define CASE(a,b) case a: b(output, out_sync, samples); break;
 
 #define PHASE_LOOP(calc) \
     float inc = freq / sample_rate; \
@@ -119,7 +119,7 @@ static float norm_width(float w, float inc) {
 
 // VA
 
-void Virtual::va_highpass(float* output, int samples) {
+void Virtual::va_highpass(float* output, float* out_sync, int samples) {
     float b = 2.0f - COS((0.602f * freq) / sample_rate);
     float c2 = b - sqrt(b*b - 1.0f);
 
@@ -130,30 +130,30 @@ void Virtual::va_highpass(float* output, int samples) {
     }
 }
 
-void Virtual::va_saw(float* output, int samples) {
+void Virtual::va_saw(float* output, float* out_sync, int samples) {
     // saw
-    el_saw(output, samples);
+    el_saw(output, out_sync, samples);
     // highpass
     //va_highpass(output, samples);
 }
 
-void Virtual::va_tri_saw(float* output, int samples) {
+void Virtual::va_tri_saw(float* output, float* out_sync, int samples) {
     // tri
-    el_tri(output, samples);
+    el_tri(output, out_sync, samples);
     // highpass
     //va_highpass(output, samples);
 }
 
-void Virtual::va_pulse(float* output, int samples) {
+void Virtual::va_pulse(float* output, float* out_sync, int samples) {
     // pulse
-    el_pulse(output, samples);
+    el_pulse(output, out_sync, samples);
     // highpass
     //va_highpass(output, samples);
 }
 
 // PD
 
-void Virtual::pd_saw(float* output, int samples) {
+void Virtual::pd_saw(float* output, float* out_sync, int samples) {
     float mod = 0.5f - wf * 0.5;
     float m_step = 0.5f * (wf - wt) / (float)samples;
 
@@ -162,7 +162,7 @@ void Virtual::pd_saw(float* output, int samples) {
     )
 }
 
-void Virtual::pd_square(float* output, int samples) {
+void Virtual::pd_square(float* output, float* out_sync, int samples) {
     float mod = 0.5f - wf * 0.5;
     float m_step = 0.5f * (wf - wt) / (float)samples;
 
@@ -181,7 +181,7 @@ void Virtual::pd_square(float* output, int samples) {
     )
 }
 
-void Virtual::pd_pulse(float* output, int samples) {
+void Virtual::pd_pulse(float* output, float* out_sync, int samples) {
     float mod = 1.0f - wf;
     float m_step = (wf - wt) / (float)samples;
 
@@ -191,7 +191,7 @@ void Virtual::pd_pulse(float* output, int samples) {
     )
 }
 
-void Virtual::pd_double_sine(float* output, int samples) {
+void Virtual::pd_double_sine(float* output, float* out_sync, int samples) {
     float mod = 1.0f - wf;
     float m_step = (wf - wt) / (float)samples;
 
@@ -207,7 +207,7 @@ void Virtual::pd_double_sine(float* output, int samples) {
     )
 }
 
-void Virtual::pd_saw_pulse(float* output, int samples) {
+void Virtual::pd_saw_pulse(float* output, float* out_sync, int samples) {
     float mod = 1.0f - wf;
     float m_step = (wf - wt) / (float)samples;
 
@@ -223,7 +223,7 @@ void Virtual::pd_saw_pulse(float* output, int samples) {
     )
 }
 
-void Virtual::pd_res1(float* output, int samples) {
+void Virtual::pd_res1(float* output, float* out_sync, int samples) {
     float mod = expf(wf * 6.0f * (float)M_LN2);
     float modt = expf(wt * 6.0f * (float)M_LN2);
     float m_step = (modt - mod) / (float)samples;
@@ -235,7 +235,7 @@ void Virtual::pd_res1(float* output, int samples) {
     )
 }
 
-void Virtual::pd_res2(float* output, int samples) {
+void Virtual::pd_res2(float* output, float* out_sync, int samples) {
     float mod = expf(wf * 6.0f * (float)M_LN2);
     float modt = expf(wt * 6.0f * (float)M_LN2);
     float m_step = (modt - mod) / (float)samples;
@@ -247,7 +247,7 @@ void Virtual::pd_res2(float* output, int samples) {
     )
 }
 
-void Virtual::pd_res3(float* output, int samples) {
+void Virtual::pd_res3(float* output, float* out_sync, int samples) {
     float mod = expf(wf * 6.0f * (float)M_LN2);
     float modt = expf(wt * 6.0f * (float)M_LN2);
     float m_step = (modt - mod) / (float)samples;
@@ -259,7 +259,7 @@ void Virtual::pd_res3(float* output, int samples) {
     )
 }
 
-void Virtual::pd_half_sine(float* output, int samples) {
+void Virtual::pd_half_sine(float* output, float* out_sync, int samples) {
     float mod = 0.5f + wf * 0.5;
     float m_step = 0.5f * (wt - wf) / (float)samples;
 
@@ -271,7 +271,7 @@ void Virtual::pd_half_sine(float* output, int samples) {
 // EL
 
 // polyblep
-void Virtual::el_saw(float* output, int samples) {
+void Virtual::el_saw(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
         PHASE_LOOP_PM(
             output[i] = gb(phase);
@@ -291,7 +291,7 @@ void Virtual::el_saw(float* output, int samples) {
 }
 
 // polyblep
-void Virtual::el_double_saw(float* output, int samples) {
+void Virtual::el_double_saw(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
         PWIDTH_LOOP_PM(
             if (phase < width) {
@@ -330,20 +330,20 @@ void Virtual::el_double_saw(float* output, int samples) {
     }
 }
 
-void Virtual::el_tri(float* output, int samples) {
+void Virtual::el_tri(float* output, float* out_sync, int samples) {
     PWIDTH_LOOP_BOTH(
         output[i] = gb(gtri(phase, width));
     )
 }
 
-void Virtual::el_tri2(float* output, int samples) {
+void Virtual::el_tri2(float* output, float* out_sync, int samples) {
     PWIDTH_LOOP_BOTH(
         float p = gtri(phase, width);
         output[i] = gb(p * sqrt(p) + p * (1.0-p));
     )
 }
 
-void Virtual::el_tri3(float* output, int samples) {
+void Virtual::el_tri3(float* output, float* out_sync, int samples) {
     PWIDTH_LOOP_BOTH(
         float p = gtri(phase, width);
         output[i] = gb(phase < width ? sqrt(p) : p*p*p);
@@ -351,7 +351,7 @@ void Virtual::el_tri3(float* output, int samples) {
 }
 
 // polyblep
-void Virtual::el_pulse(float* output, int samples) {
+void Virtual::el_pulse(float* output, float* out_sync, int samples) {
     if (pm > 0.0f) {
         PWIDTH_LOOP_PM(
             output[i] = phase < width ? -1.0f : 1.0f;
@@ -380,7 +380,7 @@ void Virtual::el_pulse(float* output, int samples) {
 }
 
 // TODO polyblep
-void Virtual::el_pulse2(float* output, int samples) {
+void Virtual::el_pulse2(float* output, float* out_sync, int samples) {
     PWIDTH_LOOP_BOTH( // TODO optimize
         float min = 0.5f - 0.5f * width;
         float max = 0.5f + 0.5f * width;
@@ -390,7 +390,7 @@ void Virtual::el_pulse2(float* output, int samples) {
 }
 
 // polyblep
-void Virtual::el_pulse_saw(float* output, int samples) {
+void Virtual::el_pulse_saw(float* output, float* out_sync, int samples) {
     if (pm > 0.0f) {
         PWIDTH_LOOP_PM(
             if (phase < width) {
@@ -428,7 +428,7 @@ void Virtual::el_pulse_saw(float* output, int samples) {
 }
 
 // polyblep
-void Virtual::el_slope(float* output, int samples) {
+void Virtual::el_slope(float* output, float* out_sync, int samples) {
     if (pm > 0.0f) {
         PWIDTH_LOOP_PM(
             output[i] = gb(gvslope(phase, width));
@@ -453,13 +453,13 @@ void Virtual::el_slope(float* output, int samples) {
     }
 }
 
-void Virtual::el_alpha1(float* output, int samples) {
+void Virtual::el_alpha1(float* output, float* out_sync, int samples) {
     // pulse
     float f = freq;
     float p = phase;
     freq = 2.0f * freq;
     phase = fmod(2.0f * phase, 1.0);
-    el_pulse(output, samples);
+    el_pulse(output, out_sync, samples);
 
     // saw
     phase = p;
@@ -483,13 +483,13 @@ void Virtual::el_alpha1(float* output, int samples) {
 
 }
 
-void Virtual::el_alpha2(float* output, int samples) {
+void Virtual::el_alpha2(float* output, float* out_sync, int samples) {
     // pulse
     float f = freq;
     float p = phase;
     freq = 4.0f * freq;
     phase = fmod(4.0f * phase, 1.0);
-    el_pulse(output, samples);
+    el_pulse(output, out_sync, samples);
 
     // saw
     phase = p;
@@ -512,13 +512,13 @@ void Virtual::el_alpha2(float* output, int samples) {
     }
 }
 
-void Virtual::el_beta1(float* output, int samples) {
+void Virtual::el_beta1(float* output, float* out_sync, int samples) {
     // pulse
     float f = freq;
     float p = phase;
     freq = 2.0f * freq;
     phase = fmod(2.0f * phase, 1.0);
-    el_pulse(output, samples);
+    el_pulse(output, out_sync, samples);
 
     // saw
     phase = p;
@@ -552,13 +552,13 @@ void Virtual::el_beta1(float* output, int samples) {
 
 }
 
-void Virtual::el_beta2(float* output, int samples) {
+void Virtual::el_beta2(float* output, float* out_sync, int samples) {
     // pulse
     float f = freq;
     float p = phase;
     freq = 4.0f * freq;
     phase = fmod(4.0f * phase, 1.0);
-    el_pulse(output, samples);
+    el_pulse(output, out_sync, samples);
 
     // saw
     phase = p;
@@ -591,10 +591,10 @@ void Virtual::el_beta2(float* output, int samples) {
     }
 }
 
-void Virtual::el_pulse_tri(float* output, int samples) {
+void Virtual::el_pulse_tri(float* output, float* out_sync, int samples) {
     // pulse2
     float p = phase;
-    el_pulse2(output, samples);
+    el_pulse2(output, out_sync, samples);
 
     // tri
     phase = p;
@@ -604,7 +604,7 @@ void Virtual::el_pulse_tri(float* output, int samples) {
 }
 
 // copied from lmms triple oscillator
-void Virtual::el_exp(float* output, int samples) {
+void Virtual::el_exp(float* output, float* out_sync, int samples) {
     PHASE_LOOP_BOTH(
         if (phase > 0.5f) {
             output[i] = -1.0 + 8.0 * (1.0 - phase) * (1.0 - phase);
@@ -616,20 +616,20 @@ void Virtual::el_exp(float* output, int samples) {
 
 // FM
 
-void Virtual::fm1(float* output, int samples) {
+void Virtual::fm1(float* output, float* out_sync, int samples) {
     PHASE_LOOP_BOTH(
         output[i] = SIN(phase);
     )
 }
 
-void Virtual::fm2(float* output, int samples) {
+void Virtual::fm2(float* output, float* out_sync, int samples) {
     PHASE_LOOP_BOTH(
         output[i] = SIN(0.5f * phase);
     )
 }
 
 // bandlimited
-void Virtual::fm3(float* output, int samples) {
+void Virtual::fm3(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
         PHASE_LOOP_PM(
             float y = SIN(phase);
@@ -662,7 +662,7 @@ void Virtual::fm3(float* output, int samples) {
 }
 
 // bandlimited
-void Virtual::fm4(float* output, int samples) {
+void Virtual::fm4(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
         PHASE_LOOP_PM(
             output[i] = phase < 0.5f ? SIN(2.0f * phase) : 0.0f;
@@ -674,7 +674,7 @@ void Virtual::fm4(float* output, int samples) {
                 output[i] = SIN(2.0f * phase);
             } else if (phase < (0.5 + inc)) {
                 // fade out
-                output[i] = SIN(2.0f * phase) * ((0.5 + inc) - phase) / inc;
+                output[i] = SIN(2.0f * phase - 1.0f) * ((0.5 + inc) - phase) / inc;
             } else {
                 output[i] = 0.0;
             }
@@ -684,7 +684,7 @@ void Virtual::fm4(float* output, int samples) {
 }
 
 // bandlimited
-void Virtual::fm5(float* output, int samples) {
+void Virtual::fm5(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
         PHASE_LOOP_PM(
             output[i] = phase < 0.5f ? SIN(phase) : 0.0f;
@@ -728,7 +728,7 @@ static float bandlimit_fm678(float y, float phase, float inc) {
 }
 
 // bandlimited
-void Virtual::fm6(float* output, int samples) {
+void Virtual::fm6(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
         PHASE_LOOP_PM(
             if (phase < 0.25f) {
@@ -755,7 +755,7 @@ void Virtual::fm6(float* output, int samples) {
 }
 
 // bandlimited
-void Virtual::fm7(float* output, int samples) {
+void Virtual::fm7(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
         PHASE_LOOP_PM(
             if (phase < 0.25 || phase > 0.5 && phase < 0.75) {
@@ -775,7 +775,7 @@ void Virtual::fm7(float* output, int samples) {
 }
 
 // bandlimited
-void Virtual::fm8(float* output, int samples) {
+void Virtual::fm8(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
         PHASE_LOOP_PM(
             if (phase < 0.25 || phase > 0.5 && phase < 0.75) {
@@ -794,7 +794,7 @@ void Virtual::fm8(float* output, int samples) {
 
 }
 
-void Virtual::process(float* output, int samples) {
+void Virtual::process(float* output, float* out_sync, int samples) {
     switch (type) {
     // va
     CASE(VA_SAW, va_saw)
@@ -839,7 +839,7 @@ void Virtual::process(float* output, int samples) {
 
 // AS
 
-void AS::saw(float* output, int samples) {
+void AS::saw(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     // TODO take sr into account
     float max = 20.0f * wt;
@@ -854,7 +854,7 @@ void AS::saw(float* output, int samples) {
     }
 }
 
-void AS::square(float* output, int samples) {
+void AS::square(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     // TODO take sr into account
     float max = 40.0f * wt;
@@ -869,7 +869,7 @@ void AS::square(float* output, int samples) {
     }
 }
 
-void AS::impulse(float* output, int samples) {
+void AS::impulse(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     // TODO take sr into account
     float max = 20.0f * wt;
@@ -885,7 +885,7 @@ void AS::impulse(float* output, int samples) {
     }
 }
 
-void AS::process(float* output, int samples) {
+void AS::process(float* output, float* out_sync, int samples) {
     switch (type) {
     CASE(SAW, saw)
     CASE(SQUARE, square)
@@ -895,9 +895,10 @@ void AS::process(float* output, int samples) {
 
 // Noise
 
-void Noise::process(float* output, int samples) {
+void Noise::process(float* output, float* out_sync, int samples) {
     for (int i = 0; i < samples; i++) {
         output[i] =  (2.0f * rand() / (RAND_MAX + 1.0f) - 1.0f);
+        out_sync[i] = 0.0;
     }
 
     if (type == PINK) {

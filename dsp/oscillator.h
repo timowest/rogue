@@ -22,6 +22,7 @@ class Oscillator {
 
     // audio modulation
     float* input;
+    float* input_sync;
     float pm = 0.0f;
     bool sync;
 
@@ -41,8 +42,9 @@ class Oscillator {
         return phase2;
     }
 
-    void setModulation(float* _input, float _pm, bool _sync) {
+    void setModulation(float* _input, float* _input_s, float _pm, bool _sync) {
         input = _input;
+        input_sync = _input_s;
         pm = _pm;
         sync = _sync;
     }
@@ -68,7 +70,7 @@ class Oscillator {
         phase = start;
     }
 
-    virtual void process(float* output, int samples) = 0;
+    virtual void process(float* output, float* out_sync, int samples) = 0;
 };
 
 /** Virtual
@@ -92,50 +94,50 @@ class Virtual : public Oscillator {
 
   public:
     // VA
-    void va_highpass(float* output, int samples);
-    void va_saw(float* output, int samples);
-    void va_tri_saw(float* output, int samples);
-    void va_pulse(float* output, int samples);
+    void va_highpass(float* output, float* sync, int samples);
+    void va_saw(float* output, float* sync, int samples);
+    void va_tri_saw(float* output, float* sync, int samples);
+    void va_pulse(float* output, float* sync, int samples);
 
     // PD
-    void pd_saw(float* output, int samples);
-    void pd_square(float* output, int samples);
-    void pd_pulse(float* output, int samples);
-    void pd_double_sine(float* output, int samples);
-    void pd_saw_pulse(float* output, int samples);
-    void pd_res1(float* output, int samples);
-    void pd_res2(float* output, int samples);
-    void pd_res3(float* output, int samples);
-    void pd_half_sine(float* output, int samples);
+    void pd_saw(float* output, float* sync, int samples);
+    void pd_square(float* output, float* sync, int samples);
+    void pd_pulse(float* output, float* sync, int samples);
+    void pd_double_sine(float* output, float* sync, int samples);
+    void pd_saw_pulse(float* output, float* sync, int samples);
+    void pd_res1(float* output, float* sync, int samples);
+    void pd_res2(float* output, float* sync, int samples);
+    void pd_res3(float* output, float* sync, int samples);
+    void pd_half_sine(float* output, float* sync, int samples);
 
     // EL
-    void el_saw(float* output, int samples);
-    void el_double_saw(float* output, int samples);
-    void el_tri(float* output, int samples);
-    void el_tri2(float* output, int samples);
-    void el_tri3(float* output, int samples);
-    void el_pulse(float* output, int samples);
-    void el_pulse2(float* output, int samples);
-    void el_pulse_saw(float* output, int samples);
-    void el_slope(float* output, int samples);
-    void el_alpha1(float* output, int samples);
-    void el_alpha2(float* output, int samples);
-    void el_beta1(float* output, int samples);
-    void el_beta2(float* output, int samples);
-    void el_pulse_tri(float* output, int samples);
-    void el_exp(float* output, int samples);
+    void el_saw(float* output, float* sync, int samples);
+    void el_double_saw(float* output, float* sync, int samples);
+    void el_tri(float* output, float* sync, int samples);
+    void el_tri2(float* output, float* sync, int samples);
+    void el_tri3(float* output, float* sync, int samples);
+    void el_pulse(float* output, float* sync, int samples);
+    void el_pulse2(float* output, float* sync, int samples);
+    void el_pulse_saw(float* output, float* sync, int samples);
+    void el_slope(float* output, float* sync, int samples);
+    void el_alpha1(float* output, float* sync, int samples);
+    void el_alpha2(float* output, float* sync, int samples);
+    void el_beta1(float* output, float* sync, int samples);
+    void el_beta2(float* output, float* sync, int samples);
+    void el_pulse_tri(float* output, float* sync, int samples);
+    void el_exp(float* output, float* sync, int samples);
 
     // FM
-    void fm1(float* output, int samples);
-    void fm2(float* output, int samples);
-    void fm3(float* output, int samples);
-    void fm4(float* output, int samples);
-    void fm5(float* output, int samples);
-    void fm6(float* output, int samples);
-    void fm7(float* output, int samples);
-    void fm8(float* output, int samples);
+    void fm1(float* output, float* sync, int samples);
+    void fm2(float* output, float* sync, int samples);
+    void fm3(float* output, float* sync, int samples);
+    void fm4(float* output, float* sync, int samples);
+    void fm5(float* output, float* sync, int samples);
+    void fm6(float* output, float* sync, int samples);
+    void fm7(float* output, float* sync, int samples);
+    void fm8(float* output, float* sync, int samples);
 
-    void process(float* output, int samples);
+    void process(float* output, float* sync, int samples);
 
 };
 
@@ -149,11 +151,11 @@ class AS : public Oscillator {
     enum {SAW, SQUARE, IMPULSE};
 
   public:
-    void saw(float* output, int samples);
-    void square(float* output, int samples);
-    void impulse(float* output, int samples);
+    void saw(float* output, float* sync, int samples);
+    void square(float* output, float* sync, int samples);
+    void impulse(float* output, float* sync, int samples);
 
-    void process(float* output, int samples);
+    void process(float* output, float* sync, int samples);
 };
 
 /**
@@ -173,7 +175,7 @@ class Noise : public Oscillator {
         filter.setSamplerate(r);
     }
 
-    void process(float* output, int samples);
+    void process(float* output, float* sync, int samples);
 };
 
 }

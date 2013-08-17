@@ -45,6 +45,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     dsp::LFO lfo;
     dsp::AHDSR env;
 
+    float sync_buffer[OSC_WIDTH];
     WaveDisplay* osc_wd[4];
     WaveDisplay* filter_wd[2];
     WaveDisplay* env_wd[4];
@@ -694,7 +695,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         osc.resetPhase();
         float* buffer = osc_wd[i]->getSamples();
         int width = OSC_WIDTH;
-        osc.process(type, 1.0f, w, w, buffer, width);
+        osc.process(type, 1.0f, w, w, buffer, sync_buffer, width);
         if (inv) {
             for (int j = 0; j < width; j++) buffer[j] *= -1.0;
         }
