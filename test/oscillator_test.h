@@ -7,6 +7,7 @@ void oscillator_test() {
     float buffer2[SIZE];
     float buffer3[SIZE];
     float sync[SIZE];
+    float sync2[SIZE];
 
     for (int i = 0; i < SIZE; i++) {
         buffer2[i] = 0.0;
@@ -54,6 +55,15 @@ void oscillator_test() {
         }
 
         sprintf(filename, "wavs/osc/vapm_%i.wav", i);
+        write_wav(filename, buffer3);
+
+        // with sync
+        va.reset();
+        va.setFreq(220.0f);
+        va.setModulation(buffer2, sync, 0.0, true);
+        va.process(buffer3, sync2, SIZE);
+
+        sprintf(filename, "wavs/osc/vasc_%i.wav", i);
         write_wav(filename, buffer3);
     }
 
