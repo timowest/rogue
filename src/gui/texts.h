@@ -44,7 +44,7 @@ CHARS env_labels[] = {"Env 1", "Env 2", "Env 3", "Env 4", "Env 5"};
 CHARS mod_src_labels[] = {
         "-",
         "Mod", "Press", "Key", "Velo",
-        "LFO 0", "LFO 0+", "LFO 1", "LFO 1+", "LFO 2", "LFO 2+", "LFO 3", "LFO 3+", "LFO 4", "LFO 4+",
+        "LFO 1", "LFO 1+", "LFO 2", "LFO 2+", "LFO 3", "LFO 3+", "LFO 4", "LFO 4+",
         "Env 1", "Env 2", "Env 3", "Env 4"};
 
 CHARS mod_target_labels[]  = {

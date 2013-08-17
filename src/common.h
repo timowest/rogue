@@ -35,8 +35,6 @@ enum {
   M_KEY, // key / 127.0
   M_VEL, // vel / 127.0
   // lfo
-  M_LFO0_BI,
-  M_LFO0_UN,
   M_LFO1_BI,
   M_LFO1_UN,
   M_LFO2_BI,

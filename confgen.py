@@ -177,7 +177,7 @@ def main():
             ["curve"      , 0, 1.0, 0.5, 0.01],
             ["retrigger"  , 0, 1, 0, 1]] # toggled
                         
-    mods = [["src"        , 0, 18, 0, 1],
+    mods = [["src"        , 0, 16, 0, 1],
             ["target"     , 0, 43, 0, 1],
             ["amount"     , -1.0, 1.0, 0, 0.01]]        
 
