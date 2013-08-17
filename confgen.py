@@ -206,7 +206,7 @@ def main():
                ["volume",      0, 1.0, 0.5, 0.01],
 
                ["play_mode",   0, 2, 0, 1],
-               ["glide_time",  0, 5.0, 0, 0.1],
+               ["glide_time",  0, 5.0, 0, 0.01],
                ["pitchbend_range",  0, 24.0, 0, 0.1],
 
                ["chorus_on",     0, 1, 0, 1],
