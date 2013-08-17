@@ -15,14 +15,16 @@
 #define CASE(a,b) case a: b(output, out_sync, samples); break;
 
 #define NORM_PHASE() \
+    float os = -1.0; \
     if (phase > 1.0f) { \
         phase -= 1.0f; \
-        out_sync[i] = phase / inc; \
+        os = phase / inc; \
     } \
-    if (sync && input_sync[i] > 0.0) { \
+    if (sync && input_sync[i] >= 0.0) { \
         phase = input_sync[i] * inc; \
-        out_sync[i] = phase / inc; \
-    }
+        os = phase / inc; \
+    } \
+    out_sync[i] = os;
 
 #define PHASE_LOOP(calc) \
     float inc = freq / sample_rate; \
@@ -299,7 +301,7 @@ void Virtual::el_saw(float* output, float* out_sync, int samples) {
             if (phase < inc) { // start
                 mod = polyblep(phase / inc);
             } else if (phase > (1.0f - inc)) { // end
-                mod = polyblep( (phase - 1.0) / inc);
+                mod = polyblep((phase - 1.0) / inc);
             }
             output[i] = gb(phase - mod);
         )
@@ -861,12 +863,13 @@ void AS::saw(float* output, float* out_sync, int samples) {
     float max = 20.0f * wt;
 
     for (int i = 0.; i < samples; i++) {
+        NORM_PHASE()
         float y = 0.0f;
         for (float j = 1; j < max; j++) {
             y += SIN(fmod(j * phase, 1.0f)) * 1.0/j;
         }
         output[i] = -2.0f/M_PI * y;
-        phase = fmod(phase + inc, 1.0f);
+        phase += inc;
     }
 }
 
@@ -876,12 +879,13 @@ void AS::square(float* output, float* out_sync, int samples) {
     float max = 40.0f * wt;
 
     for (int i = 0; i < samples; i++) {
+        NORM_PHASE()
         float y = 0.0f;
         for (float j = 1; j < max; j += 2.0f) {
             y += SIN(fmod(j * phase, 1.0f)) * 1.0/j;
         }
         output[i] = 4.0/M_PI * y;
-        phase = fmod(phase + inc, 1.0f);
+        phase += inc;
     }
 }
 
@@ -891,13 +895,14 @@ void AS::impulse(float* output, float* out_sync, int samples) {
     float max = 20.0f * wt;
 
     for (int i = 0; i < samples; i++) {
+        NORM_PHASE()
         float y = 0.0f;
         for (float j = 1; j < max; j++) {
             y += SIN(fmod(j * phase, 1.0f));
         }
         // TODO take max into account
         output[i] = 0.05 * y;
-        phase = fmod(phase + inc, 1.0f);
+        phase += inc;
     }
 }
 
@@ -914,7 +919,7 @@ void AS::process(float* output, float* out_sync, int samples) {
 void Noise::process(float* output, float* out_sync, int samples) {
     for (int i = 0; i < samples; i++) {
         output[i] =  (2.0f * rand() / (RAND_MAX + 1.0f) - 1.0f);
-        out_sync[i] = 0.0;
+        out_sync[i] = -1.0;
     }
 
     if (type == PINK) {

@@ -11,7 +11,7 @@ void oscillator_test() {
 
     for (int i = 0; i < SIZE; i++) {
         buffer2[i] = 0.0;
-        sync[i] = 0.0;
+        sync[i] = -1.0;
     }
 
     dsp::Virtual va;
@@ -29,11 +29,16 @@ void oscillator_test() {
     // va
     for (int i = 0; i < 34; i++) {
         va.reset();
+        va.setFreq(440.0f);
         va.setType(i);
         va.setModulation(buffer2, buffer2, 0.0, false);
         va.process(buffer, sync, SIZE);
         if (count_clicks(buffer) > 0) {
             sprintf(msg, "va click error %i", i);
+            error(msg);
+        }
+        if (count_resets(sync) == 0) {
+            sprintf(msg, "va no resets %i", i);
             error(msg);
         }
 
@@ -44,6 +49,10 @@ void oscillator_test() {
         va.reset();
         va.setModulation(buffer2, buffer2, 0.1, false);
         va.process(buffer3, sync, SIZE);
+        if (count_resets(sync) == 0) {
+            sprintf(msg, "va no resets %i", i);
+            error(msg);
+        }
 
         int diff = 0;
         for (int j = 0; j < SIZE; j++) {
@@ -78,6 +87,10 @@ void oscillator_test() {
         as.process(buffer, sync, SIZE);
         if (count_clicks(buffer) > 0) {
             sprintf(msg, "as click error %i", i);
+            error(msg);
+        }
+        if (count_resets(sync) == 0) {
+            sprintf(msg, "as no resets %i", i);
             error(msg);
         }
 

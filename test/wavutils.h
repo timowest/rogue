@@ -50,4 +50,12 @@ int count_clicks(float* buffer) {
     return clicks;
 }
 
+int count_resets(float* sync) {
+    int resets = 0;
+    for (int i = 0; i< SIZE; i++) {
+        if (sync[i] >= 0.0) resets++;
+    }
+    return resets;
+}
+
 #endif
