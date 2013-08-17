@@ -44,7 +44,7 @@ void filter_test() {
                 error("moog is silent");
             }
 
-            sprintf(filename, "wavs/moog_%i%i.wav", i, j);
+            sprintf(filename, "wavs/filter/moog_%i%i.wav", i, j);
             write_wav(filename, buffer);
         }
     }
@@ -65,7 +65,7 @@ void filter_test() {
                 error("svf is silent");
             }
 
-            sprintf(filename, "wavs/svf_%i%i.wav", i, j);
+            sprintf(filename, "wavs/filter/svf_%i%i.wav", i, j);
             write_wav(filename, buffer);
         }
     }
@@ -86,7 +86,7 @@ void filter_test() {
                 error("svf2 is silent");
             }
 
-            sprintf(filename, "wavs/svf2_%i%i.wav", i, j);
+            sprintf(filename, "wavs/filter/svf2_%i%i.wav", i, j);
             write_wav(filename, buffer);
         }
     }

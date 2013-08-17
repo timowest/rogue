@@ -18,7 +18,7 @@ void lfo_test() {
             buffer[j] = lfo.tick();
         }
 
-        sprintf(filename, "wavs/lfo_%i.wav", i);
+        sprintf(filename, "wavs/lfo/lfo_%i.wav", i);
         write_wav(filename, buffer);
     }
 }

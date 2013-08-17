@@ -14,19 +14,31 @@
 
 #define CASE(a,b) case a: b(output, out_sync, samples); break;
 
+#define NORM_PHASE() \
+    if (phase > 1.0f) { \
+        phase -= 1.0f; \
+        out_sync[i] = phase / inc; \
+    } \
+    if (sync && input_sync[i] > 0.0) { \
+        phase = input_sync[i] * inc; \
+        out_sync[i] = phase / inc; \
+    }
+
 #define PHASE_LOOP(calc) \
     float inc = freq / sample_rate; \
     for (int i = 0; i < samples; i++) { \
+        NORM_PHASE() \
         calc \
-        phase = fmod(phase + inc, 1.0f); \
+        phase += inc; \
     }
 
 #define PHASE_LOOP_PM(calc) \
     float inc = freq / sample_rate; \
     for (int i = 0; i < samples; i++) { \
+        NORM_PHASE() \
         float phase = pmod(this->phase, i); \
         calc \
-        this->phase = fmod(this->phase + inc, 1.0f); \
+        this->phase += inc; \
     }
 
 #define PHASE_LOOP_BOTH(calc) \
@@ -41,8 +53,9 @@
     float width = norm_width(wf, inc); \
     float w_step = (norm_width(wt, inc) - width) / (float)samples; \
     for (int i = 0; i < samples; i++) { \
+        NORM_PHASE() \
         calc \
-        phase = fmod(phase + inc, 1.0f); \
+        phase += inc; \
         width += w_step; \
     }
 
@@ -51,9 +64,10 @@
     float width = norm_width(wf, inc); \
     float w_step = (norm_width(wt, inc) - width) / (float)samples; \
     for (int i = 0; i < samples; i++) { \
+        NORM_PHASE() \
         float phase = pmod(this->phase, i); \
         calc \
-        this->phase = fmod(this->phase + inc, 1.0f); \
+        this->phase += inc; \
         width += w_step; \
     }
 
@@ -67,17 +81,19 @@
 #define PMOD_LOOP(calc) \
     float inc = freq / sample_rate; \
     for (int i = 0; i < samples; i++) { \
+        NORM_PHASE() \
         calc \
-        phase = fmod(phase + inc, 1.0f); \
+        phase += inc; \
         mod += m_step; \
     }
 
 #define PMOD_LOOP_PM(calc) \
     float inc = freq / sample_rate; \
     for (int i = 0; i < samples; i++) { \
+        NORM_PHASE() \
         float phase = pmod(this->phase, i); \
         calc \
-        this->phase = fmod(this->phase + inc, 1.0f); \
+        this->phase += inc; \
         mod += m_step; \
     }
 

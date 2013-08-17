@@ -36,7 +36,7 @@ void oscillator_test() {
             error(msg);
         }
 
-        sprintf(filename, "wavs/va_%i.wav", i);
+        sprintf(filename, "wavs/osc/va_%i.wav", i);
         write_wav(filename, buffer);
 
         // not bandlimited
@@ -53,7 +53,7 @@ void oscillator_test() {
             std::cout << msg << std::endl;
         }
 
-        sprintf(filename, "wavs/vapm_%i.wav", i);
+        sprintf(filename, "wavs/osc/vapm_%i.wav", i);
         write_wav(filename, buffer3);
     }
 
@@ -67,7 +67,7 @@ void oscillator_test() {
             error(msg);
         }
 
-        sprintf(filename, "wavs/as_%i.wav", i);
+        sprintf(filename, "wavs/osc/as_%i.wav", i);
         write_wav(filename, buffer);
     }
 
@@ -77,7 +77,7 @@ void oscillator_test() {
         no.setType(i);
         no.process(buffer, sync, SIZE);
 
-        sprintf(filename, "wavs/no_%i.wav", i);
+        sprintf(filename, "wavs/osc/no_%i.wav", i);
         write_wav(filename, buffer);
     }
 }

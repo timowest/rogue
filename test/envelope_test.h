@@ -20,7 +20,7 @@ void envelope_test() {
         for (int j = 0.5* SIZE; j < SIZE; j++) {
             buffer[j] = env.tick();
         }
-        sprintf(filename, "wavs/env_%i.wav", i);
+        sprintf(filename, "wavs/env/env_%i.wav", i);
         write_wav(filename, buffer);
     }
 
@@ -35,7 +35,7 @@ void envelope_test() {
     for (int j = 0.5* SIZE; j < SIZE; j++) {
         buffer[j] = env.tick();
     }
-    sprintf(filename, "wavs/env_pre_%i.wav", 0);
+    sprintf(filename, "wavs/env/env_pre_%i.wav", 0);
     write_wav(filename, buffer);
 
     // retrigger
@@ -57,6 +57,6 @@ void envelope_test() {
     for (int j = 0.75 * SIZE; j < SIZE; j++) {
         buffer[j] = env.tick();
     }
-    sprintf(filename, "wavs/env_retrigger_%i.wav", 0);
+    sprintf(filename, "wavs/env/env_retrigger_%i.wav", 0);
     write_wav(filename, buffer);
 }
