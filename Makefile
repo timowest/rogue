@@ -58,5 +58,5 @@ tests: src/rogue.gen
 	$(CXX) -g -std=c++0x test/fftw_tests.cpp $(FFTW) -o fftw_tests.out
 	mkdir -p wavs wavs/osc wavs/filter wavs/env wavs/lfo
 	./tests.out	
-	./voice_tests.out
+	./voice_tests.out > /dev/null
 	./fftw_tests.out

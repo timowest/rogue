@@ -65,6 +65,10 @@ void oscillator_test() {
 
         sprintf(filename, "wavs/osc/vasc_%i.wav", i);
         write_wav(filename, buffer3);
+        if (count_clicks(buffer3) > 0) {
+            sprintf(msg, "va sync click error %i", i);
+            error(msg);
+        }
     }
 
     // as
