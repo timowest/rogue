@@ -24,7 +24,7 @@ class Oscillator {
     float* input;
     float* input_sync;
     float pm = 0.0f;
-    bool sync;
+    bool sync = false;
 
   public:
     void setType(int t) { type = t; }

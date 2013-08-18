@@ -1,7 +1,6 @@
 #include "wavutils.h"
 
 void oscillator_test() {
-    char msg[50];
     char filename[50];
     float buffer[SIZE];
     float buffer2[SIZE];
@@ -34,12 +33,10 @@ void oscillator_test() {
         va.setModulation(buffer2, buffer2, 0.0, false);
         va.process(buffer, sync, SIZE);
         if (count_clicks(buffer) > 0) {
-            sprintf(msg, "va click error %i", i);
-            error(msg);
+            error("va click error %i", i);
         }
         if (count_resets(sync) == 0) {
-            sprintf(msg, "va no resets %i", i);
-            error(msg);
+            error("va no resets %i", i);
         }
 
         sprintf(filename, "wavs/osc/va_%i.wav", i);
@@ -50,8 +47,7 @@ void oscillator_test() {
         va.setModulation(buffer2, buffer2, 0.1, false);
         va.process(buffer3, sync, SIZE);
         if (count_resets(sync) == 0) {
-            sprintf(msg, "va no resets %i", i);
-            error(msg);
+            error("va no resets %i", i);
         }
 
         int diff = 0;
@@ -59,8 +55,7 @@ void oscillator_test() {
             if (buffer[j] != buffer3[j]) diff++;
         }
         if (diff > 2000 && (i < 20 || i > 23)) {
-            sprintf(msg, "too many diffs: %i %i", i, diff);
-            std::cout << msg << std::endl;
+            error("too many diffs: %i %i", i, diff);
         }
 
         sprintf(filename, "wavs/osc/vapm_%i.wav", i);
@@ -75,8 +70,7 @@ void oscillator_test() {
         sprintf(filename, "wavs/osc/vasc_%i.wav", i);
         write_wav(filename, buffer3);
         if (count_clicks(buffer3) > 0) {
-            sprintf(msg, "va sync click error %i", i);
-            error(msg);
+            error("va sync click error %i", i);
         }
     }
 
@@ -86,12 +80,10 @@ void oscillator_test() {
         as.setType(i);
         as.process(buffer, sync, SIZE);
         if (count_clicks(buffer) > 0) {
-            sprintf(msg, "as click error %i", i);
-            error(msg);
+            error("as click error %i", i);
         }
         if (count_resets(sync) == 0) {
-            sprintf(msg, "as no resets %i", i);
-            error(msg);
+            error("as no resets %i", i);
         }
 
         sprintf(filename, "wavs/osc/as_%i.wav", i);
