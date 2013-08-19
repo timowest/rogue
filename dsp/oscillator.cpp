@@ -14,33 +14,31 @@
 
 #define CASE(a,b) case a: b(output, out_sync, samples); break;
 
-#define NORM_PHASE() \
-    float os = -1.0; \
-    if (phase > 1.0f) { \
-        phase -= 1.0f; \
-        os = phase / inc; \
-    } \
+#define INC_PHASE() \
+    phase += inc; \
     if (sync && input_sync[i] >= 0.0) { \
         phase = input_sync[i] * inc; \
-        os = phase / inc; \
-    } \
-    out_sync[i] = os;
+        out_sync[i] = phase / inc; \
+    }  else if (phase > 1.0f) { \
+        phase -= 1.0f; \
+        out_sync[i] = phase / inc; \
+    } else { \
+        out_sync[i] = -1.0; \
+    }
 
 #define PHASE_LOOP(calc) \
     float inc = freq / sample_rate; \
     for (int i = 0; i < samples; i++) { \
-        NORM_PHASE() \
+        INC_PHASE() \
         calc \
-        phase += inc; \
     }
 
 #define PHASE_LOOP_PM(calc) \
     float inc = freq / sample_rate; \
     for (int i = 0; i < samples; i++) { \
-        NORM_PHASE() \
+        INC_PHASE() \
         float phase = pmod(this->phase, i); \
         calc \
-        this->phase += inc; \
     }
 
 #define PHASE_LOOP_BOTH(calc) \
@@ -55,9 +53,8 @@
     float width = norm_width(wf, inc); \
     float w_step = (norm_width(wt, inc) - width) / (float)samples; \
     for (int i = 0; i < samples; i++) { \
-        NORM_PHASE() \
+        INC_PHASE() \
         calc \
-        phase += inc; \
         width += w_step; \
     }
 
@@ -66,10 +63,9 @@
     float width = norm_width(wf, inc); \
     float w_step = (norm_width(wt, inc) - width) / (float)samples; \
     for (int i = 0; i < samples; i++) { \
-        NORM_PHASE() \
+        INC_PHASE() \
         float phase = pmod(this->phase, i); \
         calc \
-        this->phase += inc; \
         width += w_step; \
     }
 
@@ -83,19 +79,17 @@
 #define PMOD_LOOP(calc) \
     float inc = freq / sample_rate; \
     for (int i = 0; i < samples; i++) { \
-        NORM_PHASE() \
+        INC_PHASE() \
         calc \
-        phase += inc; \
         mod += m_step; \
     }
 
 #define PMOD_LOOP_PM(calc) \
     float inc = freq / sample_rate; \
     for (int i = 0; i < samples; i++) { \
-        NORM_PHASE() \
+        INC_PHASE() \
         float phase = pmod(this->phase, i); \
         calc \
-        this->phase += inc; \
         mod += m_step; \
     }
 
@@ -863,13 +857,12 @@ void AS::saw(float* output, float* out_sync, int samples) {
     float max = 20.0f * wt;
 
     for (int i = 0.; i < samples; i++) {
-        NORM_PHASE()
+        INC_PHASE()
         float y = 0.0f;
         for (float j = 1; j < max; j++) {
             y += SIN(fmod(j * phase, 1.0f)) * 1.0/j;
         }
         output[i] = -2.0f/M_PI * y;
-        phase += inc;
     }
 }
 
@@ -879,13 +872,12 @@ void AS::square(float* output, float* out_sync, int samples) {
     float max = 40.0f * wt;
 
     for (int i = 0; i < samples; i++) {
-        NORM_PHASE()
+        INC_PHASE()
         float y = 0.0f;
         for (float j = 1; j < max; j += 2.0f) {
             y += SIN(fmod(j * phase, 1.0f)) * 1.0/j;
         }
         output[i] = 4.0/M_PI * y;
-        phase += inc;
     }
 }
 
@@ -895,14 +887,13 @@ void AS::impulse(float* output, float* out_sync, int samples) {
     float max = 20.0f * wt;
 
     for (int i = 0; i < samples; i++) {
-        NORM_PHASE()
+        INC_PHASE()
         float y = 0.0f;
         for (float j = 1; j < max; j++) {
             y += SIN(fmod(j * phase, 1.0f));
         }
         // TODO take max into account
         output[i] = 0.05 * y;
-        phase += inc;
     }
 }
 
