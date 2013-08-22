@@ -453,9 +453,10 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
 void rogueVoice::reset() {
     std::cout << "reset " << int(m_key) << std::endl;
     m_key = lvtk::INVALID_KEY;
+
     key = m_key;
     in_sustain = false;
-    std::memset(mod, 0, sizeof(float) * NMOD);
+    std::memset(mod, 0, sizeof(float) * M_SIZE);
 
     for (int i = 0; i < NLFO; i++) lfos[i].reset();
     for (int i = 0; i < NENV; i++) envs[i].reset();

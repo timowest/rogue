@@ -61,9 +61,9 @@ class rogueVoice : public lvtk::Voice {
       rogueVoice(double, SynthData*);
       void on(unsigned char key, unsigned char velocity);
       void off(unsigned char velocity);
-      void reset(void);
-      bool is_sustained(void) { return in_sustain; }
-      unsigned char get_key(void) const { return m_key; }
+      void reset();
+      bool is_sustained() { return in_sustain; }
+      unsigned char get_key() const { return m_key; }
 
       // generates the sound for this voice
       void render(uint32_t, uint32_t);
