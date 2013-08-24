@@ -21,7 +21,7 @@
     if (sync && input_sync[i] >= 0.0) { \
         phase = input_sync[i] * inc; \
         out_sync[i] = phase / inc; \
-    }  else if (phase > 1.0f) { \
+    }  else if (phase >= 1.0f) { \
         phase -= 1.0f; \
         out_sync[i] = phase / inc; \
     } else { \
