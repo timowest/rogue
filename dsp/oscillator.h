@@ -94,7 +94,6 @@ class Virtual : public Oscillator {
 
   public:
     // VA
-    void va_highpass(float* output, float* sync, int samples);
     void va_saw(float* output, float* sync, int samples);
     void va_tri_saw(float* output, float* sync, int samples);
     void va_pulse(float* output, float* sync, int samples);
