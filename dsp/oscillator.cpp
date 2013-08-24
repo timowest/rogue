@@ -307,6 +307,7 @@ void Virtual::el_tri(float* output, float* out_sync, int samples) {
     )
 }
 
+// TODO remove
 void Virtual::el_tri2(float* output, float* out_sync, int samples) {
     PWIDTH_LOOP_BOTH(
         float p = gtri(phase, width);
@@ -314,6 +315,7 @@ void Virtual::el_tri2(float* output, float* out_sync, int samples) {
     )
 }
 
+// TODO remove
 void Virtual::el_tri3(float* output, float* out_sync, int samples) {
     PWIDTH_LOOP_BOTH(
         float p = gtri(phase, width);
@@ -459,6 +461,7 @@ void Virtual::el_alpha2(float* output, float* out_sync, int samples) {
     }
 }
 
+// TODO remove
 void Virtual::el_beta1(float* output, float* out_sync, int samples) {
     // pulse
     float f = freq;
@@ -489,6 +492,7 @@ void Virtual::el_beta1(float* output, float* out_sync, int samples) {
 
 }
 
+// TODO remove
 void Virtual::el_beta2(float* output, float* out_sync, int samples) {
     // pulse
     float f = freq;
