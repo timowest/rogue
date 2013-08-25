@@ -870,10 +870,11 @@ void AS::saw(float* output, float* out_sync, int samples) {
     for (uint j = 2; j < max; j++) {
         phase = fmod(j * p, 1.0f);
         float inc2 = j * inc;
+        float scale = 1.0/j;
         for (uint i = 0; i < samples; i++) {
            phase += inc2;
            if (phase >= 1.0f) phase -= 1.0f;
-           output[i] += SIN(phase);
+           output[i] += scale * SIN(phase);
        }
     }
 
@@ -881,6 +882,8 @@ void AS::saw(float* output, float* out_sync, int samples) {
     for (uint i = 0; i < samples; i++) {
         output[i] *= -2.0f/M_PI;
     }
+
+    phase = p;
 }
 
 void AS::square(float* output, float* out_sync, int samples) {
@@ -897,10 +900,11 @@ void AS::square(float* output, float* out_sync, int samples) {
     for (uint j = 3; j < max; j += 2) {
         phase = fmod(j * p, 1.0f);
         float inc2 = j * inc;
+        float scale = 1.0/j;
         for (uint i = 0; i < samples; i++) {
            phase += inc2;
            if (phase >= 1.0f) phase -= 1.0f;
-           output[i] += SIN(phase);
+           output[i] += scale * SIN(phase);
        }
     }
 
@@ -908,6 +912,8 @@ void AS::square(float* output, float* out_sync, int samples) {
     for (uint i = 0; i < samples; i++) {
         output[i] *= 4.0/M_PI;
     }
+
+    phase = p;
 }
 
 // TODO remove
