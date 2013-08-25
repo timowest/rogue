@@ -55,8 +55,12 @@ gui: src/rogue.gen src/gui/config.gen src/gui/rogue-gui.mcpp
 tests: src/rogue.gen
 	$(CXX) -g -std=c++0x test/tests.cpp $(SNDFILE) $(FAST) -Idsp -Itest -o tests.out
 	$(CXX) -g -std=c++0x test/voice_tests.cpp $(SNDFILE) $(LVTK) -Idsp -Isrc -o voice_tests.out
-	$(CXX) -g -std=c++0x test/fftw_tests.cpp $(FFTW) -o fftw_tests.out
+	$(CXX) -g -std=c++0x test/fftw_tests.cpp $(FFTW) -o fftw_tests.out	
 	mkdir -p wavs wavs/osc wavs/filter wavs/env wavs/lfo
 	./tests.out	
 	./voice_tests.out > /dev/null
 	./fftw_tests.out
+	
+perf_tests: src/rogue.gen	
+	$(CXX) -g -std=c++0x -fopenmp test/perf_tests.cpp $(FAST) -Idsp -Itest -o perf_tests.out
+	./perf_tests.out
