@@ -3,7 +3,7 @@ INSTALL_DIR = /usr/local/lib/lv2
 
 SOURCES = dsp/*.cpp src/*.cpp fx/*.cc
 SOURCES_UI = dsp/lfo.cpp dsp/tables.cpp dsp/filter.cpp dsp/oscillator.cpp dsp/envelope.cpp src/gui/rogue-gui.cpp
-FLAGS = -fPIC -DPIC -std=c++0x 
+FLAGS = -fPIC -DPIC -std=c++11 
 FAST = -Ofast -ffast-math
 LVTK = `pkg-config --cflags --libs lvtk-plugin-1`
 LVTK_UI = `pkg-config --cflags --libs lvtk-ui-1`
@@ -50,17 +50,17 @@ clean:
 	rm -rf $(BUNDLE) *.so src/rogue.gen src/gui/config.gen src/gui/rogue-gui.mcpp presets.ttl rogue.ttl wavs *.out presets/*
 
 gui: src/rogue.gen src/gui/config.gen src/gui/rogue-gui.mcpp	
-	$(CXX) -g -std=c++0x src/gui/test.cpp $(QT) $(LVTK_UI) $(FFTW) -Idsp -Isrc -o qttest.out 
+	$(CXX) -g -std=c++11 src/gui/test.cpp $(QT) $(LVTK_UI) $(FFTW) -Idsp -Isrc -o qttest.out 
 	
 tests: src/rogue.gen
-	$(CXX) -g -std=c++0x test/tests.cpp $(SNDFILE) $(FAST) -Idsp -Itest -o tests.out
-	$(CXX) -g -std=c++0x test/voice_tests.cpp $(SNDFILE) $(LVTK) -Idsp -Isrc -o voice_tests.out
-	$(CXX) -g -std=c++0x test/fftw_tests.cpp $(FFTW) -o fftw_tests.out	
+	$(CXX) -g -std=c++11 test/tests.cpp $(SNDFILE) $(FAST) -Idsp -Itest -o tests.out
+	$(CXX) -g -std=c++11 test/voice_tests.cpp $(SNDFILE) $(LVTK) -Idsp -Isrc -o voice_tests.out
+	$(CXX) -g -std=c++11 test/fftw_tests.cpp $(FFTW) -o fftw_tests.out	
 	mkdir -p wavs wavs/osc wavs/filter wavs/env wavs/lfo
 	./tests.out	
 	./voice_tests.out > /dev/null
 	./fftw_tests.out
 	
 perf_tests: src/rogue.gen	
-	$(CXX) -g -std=c++0x -fopenmp test/perf_tests.cpp $(FAST) -Idsp -Itest -o perf_tests.out
+	$(CXX) -g -std=c++11 -fopenmp test/perf_tests.cpp $(FAST) -Idsp -Itest -o perf_tests.out
 	./perf_tests.out
