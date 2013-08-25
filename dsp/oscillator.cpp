@@ -856,6 +856,7 @@ void Virtual::process(float* output, float* out_sync, int samples) {
 
 // AS
 
+// TODO add pm support
 void AS::saw(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float p = phase;
@@ -886,6 +887,7 @@ void AS::saw(float* output, float* out_sync, int samples) {
     phase = p;
 }
 
+// TODO add pm support
 void AS::square(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float p = phase;
@@ -910,15 +912,41 @@ void AS::square(float* output, float* out_sync, int samples) {
 
     // normalize
     for (uint i = 0; i < samples; i++) {
-        output[i] *= 4.0/M_PI;
+        output[i] *= -4.0/M_PI;
     }
 
     phase = p;
 }
 
+// TODO replace with triangle
 // TODO remove
 void AS::impulse(float* output, float* out_sync, int samples) {
-    // TODO remove
+    float inc = freq / sample_rate;
+    float p = phase;
+    int max = 40.0f * wt;
+
+    // first
+    for (uint i = 0; i < samples; i++) {
+        INC_PHASE()
+        output[i] = SIN(phase);
+    }
+    // others
+    for (uint j = 2; j < max; j++) {
+        phase = fmod(j * p, 1.0f);
+        float inc2 = j * inc;
+        for (uint i = 0; i < samples; i++) {
+           phase += inc2;
+           if (phase >= 1.0f) phase -= 1.0f;
+           output[i] += SIN(phase);
+       }
+    }
+
+    // normalize
+    for (uint i = 0; i < samples; i++) {
+        output[i] *= 0.05;
+    }
+
+    phase = p;
 }
 
 void AS::process(float* output, float* out_sync, int samples) {
