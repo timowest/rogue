@@ -674,7 +674,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     }
 
     // UI to host
-    Q_SLOT void portChange(uint p) {
+    Q_SLOT void portChange(int p) {
         float val = widgets[p]->get_value();
 #ifndef ROGUI_UI_TEST
         write_control(p, val);
@@ -685,7 +685,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         }
     }
 
-    Q_SLOT void updateOsc(uint i) {
+    Q_SLOT void updateOsc(int i) {
         uint type = (uint)widgets[p_osc1_type + i * OSC_OFF]->get_value();
         float s = widgets[p_osc1_start + i * OSC_OFF]->get_value();
         float w = widgets[p_osc1_width + i * OSC_OFF]->get_value();
@@ -702,7 +702,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         osc_wd[i]->repaint();
     }
 
-    Q_SLOT void updateFilter(uint i) {
+    Q_SLOT void updateFilter(int i) {
         uint type = (int)widgets[p_filter1_type + i * DCF_OFF]->get_value();
         float f = widgets[p_filter1_freq + i * DCF_OFF]->get_value();
         float q = widgets[p_filter1_q + i * DCF_OFF]->get_value();
@@ -743,7 +743,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         filter_wd[i]->repaint();
     }
 
-    Q_SLOT void updateEnv(uint i) {
+    Q_SLOT void updateEnv(int i) {
         float pre = widgets[p_env1_pre_delay + i * ENV_OFF]->get_value();
         float a = widgets[p_env1_attack + i * ENV_OFF]->get_value();
         float h = widgets[p_env1_hold + i * ENV_OFF]->get_value();
@@ -770,7 +770,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         env_wd[i]->repaint();
     }
 
-    Q_SLOT void updateLfo(uint i) {
+    Q_SLOT void updateLfo(int i) {
         uint type = (int)widgets[p_lfo1_type + i * LFO_OFF]->get_value();
         float s = widgets[p_lfo1_start + i * LFO_OFF]->get_value();
         float w = widgets[p_lfo1_width + i * LFO_OFF]->get_value();

@@ -11,7 +11,7 @@
 
 namespace dsp {
 
-static float polyblep_values[8001];
+static float polyblep_values[16001];
 
 static float polyblep_slow(float t) {
     if (t > 0.0f) {
@@ -22,15 +22,15 @@ static float polyblep_slow(float t) {
 }
 
 static int init_polyblep() {
-    for (uint i = 0; i < 8001; i++) {
-        polyblep_values[i] = polyblep_slow((i - 4000) / 4000.0f);
+    for (int i = 0; i < 16001; i++) {
+        polyblep_values[i] = polyblep_slow((i - 8000) / 8000.0f);
     }
 }
 
 static int polyblep_inited = init_polyblep();
 
 static float polyblep(float t) {
-    return polyblep_values[int(4000 * t) + 4000];
+    return polyblep_values[int(8000 * t) + 8000];
 }
 
 static float saw_polyblep(float p, float inc) {
