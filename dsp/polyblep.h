@@ -22,8 +22,8 @@ static float polyblep_slow(float t) {
 }
 
 static int init_polyblep() {
-    for (int i = 0; i < 16001; i++) {
-        polyblep_values[i] = polyblep_slow((i - 8000) / 8000.0f);
+    for (uint i = 0; i < 16001; i++) {
+        polyblep_values[i] = polyblep_slow((int(i) - 8000) / 8000.0f);
     }
 }
 

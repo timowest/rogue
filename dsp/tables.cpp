@@ -59,7 +59,7 @@ tanhtable tanh_;
 
 tanhtable::tanhtable() {
     for (uint i = 0; i < 16001; i++) {
-        values[i] = tanh(float(i - 8000) / 1600.0f);
+        values[i] = tanh(float(int(i) - 8000) / 1600.0f);
     }
 }
 
