@@ -62,5 +62,5 @@ tests: src/rogue.gen
 	./fftw_tests.out
 	
 perf_tests: src/rogue.gen	
-	$(CXX) -g -std=c++11 -fopenmp test/perf_tests.cpp $(FAST) -Idsp -Itest -o perf_tests.out
+	$(CXX) -std=c++11 -fopenmp test/perf_tests.cpp $(FAST) -Idsp -Itest -o perf_tests.out
 	./perf_tests.out

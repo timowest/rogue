@@ -16,10 +16,9 @@
 
 #define CASE(a,b) case a: b(output, out_sync, samples); break;
 
-// TODO provide also version without sync
-#define INC_PHASE() \
+#define INC_PHASE_SYNC() \
     phase += inc; \
-    if (sync && input_sync[i] >= 0.0) { \
+    if (input_sync[i] >= 0.0) { \
         phase = input_sync[i] * inc; \
         out_sync[i] = phase / inc; \
     }  else if (phase >= 1.0f) { \
@@ -29,10 +28,36 @@
         out_sync[i] = -1.0; \
     }
 
+#define INC_PHASE() \
+    phase += inc; \
+    if (phase >= 1.0f) { \
+        phase -= 1.0f; \
+        out_sync[i] = phase / inc; \
+    } else { \
+        out_sync[i] = -1.0; \
+    }
+
+// phase loop
+
+#define PHASE_LOOP_SYNC(calc) \
+    float inc = freq / sample_rate; \
+    for (uint i = 0; i < samples; i++) { \
+        INC_PHASE_SYNC() \
+        calc \
+    }
+
 #define PHASE_LOOP(calc) \
     float inc = freq / sample_rate; \
     for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
+        calc \
+    }
+
+#define PHASE_LOOP_PM_SYNC(calc) \
+    float inc = freq / sample_rate; \
+    for (uint i = 0; i < samples; i++) { \
+        INC_PHASE_SYNC() \
+        float phase = pmod(this->phase, i); \
         calc \
     }
 
@@ -46,9 +71,27 @@
 
 #define PHASE_LOOP_BOTH(calc) \
     if (pm > 0.0f) { \
-        PHASE_LOOP_PM(calc) \
+        if (sync) { \
+            PHASE_LOOP_PM_SYNC(calc) \
+        } else { \
+            PHASE_LOOP_PM(calc) \
+        } \
+    } else if (sync) { \
+        PHASE_LOOP_SYNC(calc) \
     } else { \
         PHASE_LOOP(calc) \
+    }
+
+// pwdith loop
+
+#define PWIDTH_LOOP_SYNC(calc) \
+    float inc = freq / sample_rate; \
+    float width = norm_width(wf, inc); \
+    float w_step = (norm_width(wt, inc) - width) / (float)samples; \
+    for (uint i = 0; i < samples; i++) { \
+        INC_PHASE_SYNC() \
+        calc \
+        width += w_step; \
     }
 
 #define PWIDTH_LOOP(calc) \
@@ -57,6 +100,17 @@
     float w_step = (norm_width(wt, inc) - width) / (float)samples; \
     for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
+        calc \
+        width += w_step; \
+    }
+
+#define PWIDTH_LOOP_PM_SYNC(calc) \
+    float inc = freq / sample_rate; \
+    float width = norm_width(wf, inc); \
+    float w_step = (norm_width(wt, inc) - width) / (float)samples; \
+    for (uint i = 0; i < samples; i++) { \
+        INC_PHASE_SYNC() \
+        float phase = pmod(this->phase, i); \
         calc \
         width += w_step; \
     }
@@ -74,15 +128,40 @@
 
 #define PWIDTH_LOOP_BOTH(calc) \
     if (pm > 0.0f) { \
-        PWIDTH_LOOP_PM(calc) \
+        if (sync) { \
+            PWIDTH_LOOP_PM_SYNC(calc) \
+        } else { \
+            PWIDTH_LOOP_PM(calc) \
+        } \
+     } else if (sync) { \
+        PWIDTH_LOOP_SYNC(calc) \
     } else { \
         PWIDTH_LOOP(calc) \
+    }
+
+// pmod loop
+
+#define PMOD_LOOP_SYNC(calc) \
+    float inc = freq / sample_rate; \
+    for (uint i = 0; i < samples; i++) { \
+        INC_PHASE_SYNC() \
+        calc \
+        mod += m_step; \
     }
 
 #define PMOD_LOOP(calc) \
     float inc = freq / sample_rate; \
     for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
+        calc \
+        mod += m_step; \
+    }
+
+#define PMOD_LOOP_PM_SYNC(calc) \
+    float inc = freq / sample_rate; \
+    for (uint i = 0; i < samples; i++) { \
+        INC_PHASE_SYNC() \
+        float phase = pmod(this->phase, i); \
         calc \
         mod += m_step; \
     }
@@ -98,7 +177,13 @@
 
 #define PMOD_LOOP_BOTH(calc) \
     if (pm > 0.0f) { \
-        PMOD_LOOP_PM(calc) \
+        if (sync) { \
+            PMOD_LOOP_PM_SYNC(calc) \
+        } else { \
+            PMOD_LOOP_PM(calc) \
+        } \
+    } else if (sync) { \
+        PMOD_LOOP_SYNC(calc) \
     } else { \
         PMOD_LOOP(calc) \
     }
@@ -266,7 +351,7 @@ void Virtual::el_saw(float* output, float* out_sync, int samples) {
     } else {
         // with bandlimiting
         PHASE_LOOP(
-            float mod = saw_polyblep(phase, 1.0f, inc);
+            float mod = saw_polyblep(phase, inc);
             output[i] = gb(phase - mod);
         )
     }
@@ -293,9 +378,9 @@ void Virtual::el_double_saw(float* output, float* out_sync, int samples) {
             }
             float mod = 0.0f;
             if (phase < width) {
-                mod = saw_polyblep(p2, 1.0, inc / width);
+                mod = saw_polyblep(p2, inc / width);
             } else {
-                mod = saw_polyblep(p2, 1.0f, inc / (1.0f - width));
+                mod = saw_polyblep(p2, inc / (1.0f - width));
             }
             output[i] = gb(p2 - mod);
         )
@@ -431,7 +516,7 @@ void Virtual::el_alpha1(float* output, float* out_sync, int samples) {
     } else {
         // with bandlimiting
         PHASE_LOOP(
-            float mod = saw_polyblep(phase, 1.0, inc);
+            float mod = saw_polyblep(phase, inc);
             output[i] = (phase - mod) * (output[i] + 1.0) - 1.0f;
         )
     }
@@ -456,7 +541,7 @@ void Virtual::el_alpha2(float* output, float* out_sync, int samples) {
     } else {
         // with bandlimiting
         PHASE_LOOP(
-            float mod = saw_polyblep(phase, 1.0f, inc);
+            float mod = saw_polyblep(phase, inc);
             output[i] = (phase - mod) * (output[i] + 1.0) - 1.0f;
         )
     }
@@ -485,8 +570,8 @@ void Virtual::el_beta1(float* output, float* out_sync, int samples) {
         PHASE_LOOP(
             float pulse = 0.5f * (output[i] + 1.0f);
             float phase2 = fmod(phase + 0.5, 1.0f);
-            float mod1 = saw_polyblep(phase, 1.0f, inc);
-            float mod2 = saw_polyblep(phase2, 1.0f, inc);
+            float mod1 = saw_polyblep(phase, inc);
+            float mod2 = saw_polyblep(phase2, inc);
             output[i] = gb((phase - mod1) * pulse + (phase2 - mod2) * (1.0f - pulse));
         )
     }
@@ -516,8 +601,8 @@ void Virtual::el_beta2(float* output, float* out_sync, int samples) {
         PHASE_LOOP(
             float pulse = 0.5f * (output[i] + 1.0f);
             float phase2 = fmod(phase + 0.5, 1.0f);
-            float mod1 = saw_polyblep(phase, 1.0f, inc);
-            float mod2 = saw_polyblep(phase2, 1.0f, inc);
+            float mod1 = saw_polyblep(phase, inc);
+            float mod2 = saw_polyblep(phase2, inc);
             output[i] = gb((phase - mod1) * pulse + (phase2 - mod2) * (1.0f - pulse));
         )
     }

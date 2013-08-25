@@ -28,6 +28,24 @@ int main() {
     no.setSamplerate(SR);
     no.setFreq(440.0f);
 
+    dsp::MoogFilter moog;
+    moog.setSamplerate(SR);
+    moog.setCoefficients(1000.0, 0.5);
+
+    dsp::StateVariableFilter svf;
+    svf.setSamplerate(SR);
+    svf.setCoefficients(1000.0, 0.5);
+
+    dsp::StateVariableFilter2 svf2;
+    svf2.setSamplerate(SR);
+    svf2.setCoefficients(1000.0, 0.5);
+
+    // noise input
+    float noise[SIZE];
+    no.setFreq(1000.0);
+    no.setType(0);
+    no.process(noise, buffer, SIZE);
+
     // va
     for (int i = 0; i < 34; i++) {
         va.reset();
@@ -62,5 +80,41 @@ int main() {
         }
         double end = omp_get_wtime();
         log("no", i, end - start);
+    }
+
+    // moog
+    for (int i = 0; i < 8; i++) {
+        moog.clear();
+        moog.setType(i);
+        double start = omp_get_wtime();
+        for (int j = 0; j < ITERATIONS; j++) {
+            moog.process(noise, buffer, SIZE);
+        }
+        double end = omp_get_wtime();
+        log("moog", i, end - start);
+    }
+
+    // svf
+    for (int i = 0; i < 4; i++) {
+        svf.clear();
+        svf.setType(i);
+        double start = omp_get_wtime();
+        for (int j = 0; j < ITERATIONS; j++) {
+            svf.process(noise, buffer, SIZE);
+        }
+        double end = omp_get_wtime();
+        log("svf", i, end - start);
+    }
+
+    // svf2
+    for (int i = 0; i < 4; i++) {
+        svf2.clear();
+        svf2.setType(i);
+        double start = omp_get_wtime();
+        for (int j = 0; j < ITERATIONS; j++) {
+            svf2.process(noise, buffer, SIZE);
+        }
+        double end = omp_get_wtime();
+        log("svf2", i, end - start);
     }
 }

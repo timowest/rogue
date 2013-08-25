@@ -31,12 +31,12 @@ static float polyblep(float t) {
     return polyblep_values[int(4000 * t) + 4000];
 }
 
-static float saw_polyblep(float p, float max, float inc) {
+static float saw_polyblep(float p, float inc) {
     float mod = 0.0f;
     if (p < inc) { // start
         mod = polyblep(p / inc);
-    } else if (p > (max - inc)) { // end
-        mod = polyblep((p - max) / inc);
+    } else if (p > (1.0f - inc)) { // end
+        mod = polyblep((p - 1.0f) / inc);
     }
     return mod;
 }
