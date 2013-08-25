@@ -867,6 +867,8 @@ void AS::saw(float* output, float* out_sync, int samples) {
         INC_PHASE()
         output[i] = SIN(phase);
     }
+    float end = phase;
+
     // others
     for (uint j = 2; j < max; j++) {
         phase = fmod(j * p, 1.0f);
@@ -884,7 +886,7 @@ void AS::saw(float* output, float* out_sync, int samples) {
         output[i] *= -2.0f/M_PI;
     }
 
-    phase = p;
+    phase = end;
 }
 
 // TODO add pm support
@@ -898,6 +900,8 @@ void AS::square(float* output, float* out_sync, int samples) {
         INC_PHASE()
         output[i] = SIN(phase);
     }
+    float end = phase;
+
     // others
     for (uint j = 3; j < max; j += 2) {
         phase = fmod(j * p, 1.0f);
@@ -915,7 +919,7 @@ void AS::square(float* output, float* out_sync, int samples) {
         output[i] *= -4.0/M_PI;
     }
 
-    phase = p;
+    phase = end;
 }
 
 // TODO replace with triangle
@@ -930,6 +934,8 @@ void AS::impulse(float* output, float* out_sync, int samples) {
         INC_PHASE()
         output[i] = SIN(phase);
     }
+    float end = phase;
+
     // others
     for (uint j = 2; j < max; j++) {
         phase = fmod(j * p, 1.0f);
@@ -946,7 +952,7 @@ void AS::impulse(float* output, float* out_sync, int samples) {
         output[i] *= 0.05;
     }
 
-    phase = p;
+    phase = end;
 }
 
 void AS::process(float* output, float* out_sync, int samples) {
