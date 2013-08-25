@@ -64,11 +64,20 @@ tanhtable::tanhtable() {
 }
 
 float tanhtable::fast(float val) {
-    // XXX doesn't check for boundaries
+    if (val > 5.0f) {
+        return 1.0f;
+    } else if (val < -5.0f) {
+        return -1.0f;
+    }
     return values[int(1600.0f * (val + 5.0f))];
 }
 
 float tanhtable::linear(float val) {
+    if (val > 5.0f) {
+        return 1.0f;
+    } else if (val < -5.0f) {
+        return -1.0f;
+    }
     float pos = 1600.0f * (val + 5.0f);
     float rem = pos - floor(pos);
     return rem * values[int(pos + 1)] + (1.0f - rem) * values[int(pos)];
