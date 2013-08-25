@@ -23,7 +23,7 @@ rogueSynth::rogueSynth(double rate)
     }
 
     ::Plugin* effects[] = {&chorus, &phaser, &delay, &reverb};
-    for (int i = 0; i < 4; i++) {
+    for (uint i = 0; i < 4; i++) {
     	// instantiate
     	effects[i]->fs = rate;
     	effects[i]->over_fs = 1.0/rate;
@@ -47,7 +47,7 @@ unsigned rogueSynth::find_free_voice(unsigned char key, unsigned char velocity) 
     // ... notes are sustained but not this new one
     // ... notes are not sustained
     if (data.playmode == POLY) {
-        for (int i = 0; i < NVOICES; i++) {
+        for (uint i = 0; i < NVOICES; i++) {
             if (voices[i]->get_key() == lvtk::INVALID_KEY) {
                 return i;
             }
@@ -74,7 +74,7 @@ void rogueSynth::update() {
     // XXX skip conf copying if element is off?
 
     // oscs
-    for (int i = 0; i < NOSC; i++) {
+    for (uint i = 0; i < NOSC; i++) {
         int off = i * OSC_OFF;
         data.oscs[i].on          = v(p_osc1_on + off);
         data.oscs[i].type        = v(p_osc1_type + off);
@@ -97,7 +97,7 @@ void rogueSynth::update() {
     }
 
     // filters
-    for (int i = 0; i < NDCF; i++) {
+    for (uint i = 0; i < NDCF; i++) {
         int off = i * DCF_OFF;
         data.filters[i].on       = v(p_filter1_on + off);
         data.filters[i].type     = v(p_filter1_type + off);
@@ -113,7 +113,7 @@ void rogueSynth::update() {
     }
 
     // lfos
-    for (int i = 0; i < NLFO; i++) {
+    for (uint i = 0; i < NLFO; i++) {
         int off = i * LFO_OFF;
         data.lfos[i].on          = v(p_lfo1_on + off);
         data.lfos[i].type        = v(p_lfo1_type + off);
@@ -126,7 +126,7 @@ void rogueSynth::update() {
     }
 
     // envs
-    for (int i = 0; i < NENV; i++) {
+    for (uint i = 0; i < NENV; i++) {
         int off = i * ENV_OFF;
         data.envs[i].on          = v(p_env1_on + off);
         data.envs[i].pre_delay   = v(p_env1_pre_delay + off) * rate;
@@ -140,12 +140,18 @@ void rogueSynth::update() {
     }
 
     // mods
-    for (int i = 0; i < NMOD; i++) {
+    int mod_count = 0;
+    for (uint i = 0; i < NMOD; i++) {
         int off = i * MOD_OFF;
         data.mods[i].src         = v(p_mod1_src + off);
         data.mods[i].target      = v(p_mod1_target + off);
         data.mods[i].amount      = v(p_mod1_amount + off);
+        if (data.mods[i].src > 0 && data.mods[i].target > 0) {
+            mod_count = i + 1;
+        }
     }
+
+    data.mod_count = mod_count;
 }
 
 void rogueSynth::pre_process(uint32_t from, uint32_t to) {
@@ -228,7 +234,7 @@ void rogueSynth::post_process(uint32_t from, uint32_t to) {
     }
 
     // volume
-    for (int i = 0; i < samples; i++) {
+    for (uint i = 0; i < samples; i++) {
         left[i] = data.volume * left[i];
         right[i] = data.volume * right[i];
     }
@@ -246,7 +252,7 @@ void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
     //receive on all channels
     switch(data[0] & 0xf0) {
     case 0x80: //note off
-        for (int i = 0; i < NVOICES; ++i) {
+        for (uint i = 0; i < NVOICES; ++i) {
             if (voices[i]->get_key() == data[1]) {
                 voices[i]->off(data[2]);
            }
@@ -282,7 +288,7 @@ void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
         case 0x78:
         //all notes off
         case 0x7b:
-            for (int v = 0; v < NVOICES; v++) {
+            for (uint v = 0; v < NVOICES; v++) {
                 voices[v]->reset();
             }
             break;

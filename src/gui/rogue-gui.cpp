@@ -77,7 +77,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
     QComboBox* createSelect(int p, const char** texts, int size) {
         CustomComboBox* box = new CustomComboBox();
-        for (int i = 0; i < size; i++) {
+        for (uint i = 0; i < size; i++) {
             box->addItem(texts[i]);
         }
         mapper.setMapping(box, p);
@@ -592,7 +592,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
     QWidget* createMod(QWidget* parent, int off) {
         QGridLayout* grid = new QGridLayout(parent);
-        for (int j = 0; j < 10; j += 2) {
+        for (uint j = 0; j < 10; j += 2) {
             grid->addWidget(createSelect(p_mod1_src + off, mod_src_labels, M_SIZE), j, 0);
             grid->addWidget(createSelect(p_mod1_target + off, mod_target_labels, M_TARGET_SIZE), j + 1, 0);
             grid->addWidget(createDial(p_mod1_amount + off), j, 1, 2, 1);
@@ -697,7 +697,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         int width = OSC_WIDTH;
         osc.process(type, 1.0f, w, w, buffer, sync_buffer, width);
         if (inv) {
-            for (int j = 0; j < width; j++) buffer[j] *= -1.0;
+            for (uint j = 0; j < width; j++) buffer[j] *= -1.0;
         }
         osc_wd[i]->repaint();
     }
@@ -710,7 +710,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         int width = 2 * DCF_WIDTH;
         float* in = fftIn[i];
         float* out = fftOut[i];
-        for (int j = 0; j < width; j++) in[j] = 0;
+        for (uint j = 0; j < width; j++) in[j] = 0;
         in[width / 2] = 1.0;
 
         // filter
@@ -731,13 +731,13 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         // post process fft results
         float* samples = filter_wd[i]->getSamples();
         float max_val = 0.0;
-        for (int j = 0; j < DCF_WIDTH; j++) {
+        for (uint j = 0; j < DCF_WIDTH; j++) {
             samples[j] = sqrt(pow(out[j], 2) + pow(out[width - j], 2));
             max_val = std::max(max_val, samples[j]);
         }
         max_val /= 2.0;
         // normalize
-        for (int j = 0; j < (width/2); j++) {
+        for (uint j = 0; j < (width/2); j++) {
             samples[j] = samples[j] / max_val - 1.0;
         }
         filter_wd[i]->repaint();
@@ -760,7 +760,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         env.setCurve(curve);
         env.on();
         float* buffer = env_wd[i]->getSamples();
-        for (int j = 0; j < width; j++) {
+        for (uint j = 0; j < width; j++) {
             if (env.state() == 4) {
                 env.off();
             }
@@ -783,7 +783,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         float* buffer = lfo_wd[i]->getSamples();
         int width = LFO_WIDTH;
         float scale = inv ? -1.0 : 1.0;
-        for (int j = 0; j < width; j++) {
+        for (uint j = 0; j < width; j++) {
             buffer[j] = scale * lfo.tick();
         }
         lfo_wd[i]->repaint();
@@ -799,7 +799,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     }
 
     rogueGUI(const char* URI) {
-        for (int i = 0; i < p_n_ports; i++) {
+        for (uint i = 0; i < p_n_ports; i++) {
             labels[i] = 0;
         }
 
@@ -873,17 +873,17 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
         // fft
         const int fft_width = 2 * DCF_WIDTH;
-        for (int i = 0; i < 2; i++) {
+        for (uint i = 0; i < 2; i++) {
             fftIn[i] = (float*) fftwf_malloc(sizeof(float) * fft_width);
             fftOut[i] = (float*) fftwf_malloc(sizeof(float) * fft_width);
             fftPlan[i] = fftwf_plan_r2r_1d(fft_width, fftIn[i], fftOut[i], FFTW_R2HC, FFTW_MEASURE);
         }
 
         // update displays
-        for (int i = 0; i < 4; i++) updateOsc(i);
-        for (int i = 0; i < 2; i++) updateFilter(i);
-        for (int i = 0; i < 4; i++) updateEnv(i);
-        for (int i = 0; i < 4; i++) updateLfo(i);
+        for (uint i = 0; i < 4; i++) updateOsc(i);
+        for (uint i = 0; i < 2; i++) updateFilter(i);
+        for (uint i = 0; i < 4; i++) updateEnv(i);
+        for (uint i = 0; i < 4; i++) updateLfo(i);
 
         // create dummy widgets for unused controls of osc1
         ((QDial*)createDial(p_osc1_input))->setParent(&dummyParent);
@@ -891,14 +891,14 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         ((QDial*)createDial(p_osc1_sync))->setParent(&dummyParent);
         ((QDial*)createDial(p_osc1_out_mod))->setParent(&dummyParent);
 
-        for (int i = 3; i < p_n_ports; i++) {
+        for (uint i = 3; i < p_n_ports; i++) {
             if (!widgets[i])
                 std::cout << "Port "<< i << " not mapped!" << std::endl;
         }
     }
 
     ~rogueGUI() {
-        for (int i = 0; i < 2; i++) {
+        for (uint i = 0; i < 2; i++) {
             fftwf_free(fftIn[i]);
             fftwf_free(fftOut[i]);
             fftwf_destroy_plan(fftPlan[i]);

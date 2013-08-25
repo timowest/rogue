@@ -208,7 +208,7 @@ class WaveDisplay : public QFrame {
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing, true);
         //painter.setPen(QPen(QBrush("#000"), 1));
-        for (int i = 1; i < width; i++) {
+        for (uint i = 1; i < width; i++) {
             painter.drawLine(i-1, (-0.45 * samples[i-1] + 0.5) * height,
                              i,   (-0.45 * samples[i] + 0.5) * height);
 
@@ -219,7 +219,7 @@ class WaveDisplay : public QFrame {
     WaveDisplay(int w, int h) {
         setFixedSize(w, h);
         samples = new float[w];
-        for (int i = 0; i < w; i++) samples[i] = 0;
+        for (uint i = 0; i < w; i++) samples[i] = 0;
     }
 
     ~WaveDisplay() {

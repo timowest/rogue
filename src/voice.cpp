@@ -37,15 +37,15 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
     sample_rate = rate;
 
     // init elements
-    for (int i = 0; i < NOSC; i++) oscs[i] = Osc();
-    for (int i = 0; i < NDCF; i++) filters[i] = Filter();
-    for (int i = 0; i < NLFO; i++) lfos[i] = LFO();
-    for (int i = 0; i < NENV; i++) envs[i] = Env();
+    for (uint i = 0; i < NOSC; i++) oscs[i] = Osc();
+    for (uint i = 0; i < NDCF; i++) filters[i] = Filter();
+    for (uint i = 0; i < NLFO; i++) lfos[i] = LFO();
+    for (uint i = 0; i < NENV; i++) envs[i] = Env();
 
     // set sample rate
-    for (int i = 0; i < NOSC; i++) oscs[i].setSamplerate(rate);
-    for (int i = 0; i < NDCF; i++) filters[i].setSamplerate(rate);
-    for (int i = 0; i < NLFO; i++) lfos[0].setSamplerate(rate);
+    for (uint i = 0; i < NOSC; i++) oscs[i].setSamplerate(rate);
+    for (uint i = 0; i < NDCF; i++) filters[i].setSamplerate(rate);
+    for (uint i = 0; i < NLFO; i++) lfos[0].setSamplerate(rate);
 
     // set buffers
     buffers[0] = bus_a;
@@ -55,7 +55,7 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
 }
 
 void rogueVoice::on(unsigned char key, unsigned char velocity) {
-    std::cout << "on " << int(key) << " " << int(velocity) << std::endl;
+    //std::cout << "on " << int(key) << " " << int(velocity) << std::endl;
 
     if (velocity == 0) {
         off(0);
@@ -81,16 +81,16 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
     }
 
     // config
-    for (int i = 0; i < NLFO; i++) configLFO(i);
-    for (int i = 0; i < NENV; i++) configEnv(i);
-    for (int i = 0; i < NOSC; i++) configOsc(i);
-    for (int i = 0; i < NDCF; i++) configFilter(i);
+    for (uint i = 0; i < NLFO; i++) configLFO(i);
+    for (uint i = 0; i < NENV; i++) configEnv(i);
+    for (uint i = 0; i < NOSC; i++) configOsc(i);
+    for (uint i = 0; i < NDCF; i++) configFilter(i);
 
     // trigger on
-    for (int i = 0; i < NLFO; i++) lfos[i].on();
-    for (int i = 0; i < NENV; i++) envs[i].on();
+    for (uint i = 0; i < NLFO; i++) lfos[i].on();
+    for (uint i = 0; i < NENV; i++) envs[i].on();
     if (old_key == lvtk::INVALID_KEY || data->playmode == POLY) {
-        for (int i = 0; i < NOSC; i++) {
+        for (uint i = 0; i < NOSC; i++) {
             if (!data->oscs[i].free) oscs[i].resetPhase();
         }
     }
@@ -99,10 +99,11 @@ void rogueVoice::on(unsigned char key, unsigned char velocity) {
 }
 
 void rogueVoice::off(unsigned char velocity) {
-    std::cout << "off " << int(m_key) << " " << int(velocity) << std::endl;
+    //std::cout << "off " << int(m_key) << " " << int(velocity) << std::endl;
+
     // trigger off
-    for (int i = 0; i < NLFO; i++) lfos[i].off();
-    for (int i = 0; i < NENV; i++) envs[i].off();
+    for (uint i = 0; i < NLFO; i++) lfos[i].off();
+    for (uint i = 0; i < NENV; i++) envs[i].off();
 
     //Mark the voice to be turned off later. It may not be set to
     //INVALID_KEY yet, because the release sound still needs to be
@@ -126,7 +127,7 @@ static float add_mod(float v, float amt, float mval) {
 template<class Function>
 float rogueVoice::modulate(float init, int target, Function fn) {
     float v = init;
-    for (int i = 0; i < NMOD; i++) {
+    for (uint i = 0; i < data->mod_count; i++) {
         if (data->mods[i].target == target) {
             ModulationData& modData = data->mods[i];
             v = fn(v, modData.amount, mod[modData.src]);
@@ -251,7 +252,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         v *= modulate(1.0f, M_OSC1_AMP + 4 * i, multiply_mod);
         float step = (v - osc.prev_level) / float(samples);
         float l = osc.prev_level;
-        for (int i = from; i < to; i++) {
+        for (uint i = from; i < to; i++) {
             osc.buffer[i] *= l;
             l += step;
         }
@@ -262,17 +263,17 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
             float* in = oscs[oscData.input].buffer;
             switch (oscData.out_mod) {
             case 1: // Add
-                for (int i = from; i < to; i++) {
+                for (uint i = from; i < to; i++) {
                     osc.buffer[i] += in[i];
                 }
                 break;
             case 2: // RM
-                for (int i = from; i < to; i++) {
+                for (uint i = from; i < to; i++) {
                     osc.buffer[i] *= in[i];
                 }
                 break;
             case 3: // AM
-                for (int i = from; i < to; i++) {
+                for (uint i = from; i < to; i++) {
                     osc.buffer[i] *= 0.5f * (in[i] + 1.0f);
                 }
                 break;
@@ -280,7 +281,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
         }
 
         // copy to buffers
-        for (int i = from; i < to; i++) {
+        for (uint i = from; i < to; i++) {
             bus_a[i] += oscData.level_a * osc.buffer[i];
             bus_b[i] += oscData.level_b * osc.buffer[i];
         }
@@ -336,7 +337,7 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
         float v = modulate(1.0f, M_DCF1_AMP + 4 * i, multiply_mod);
         float step = (v - filter.prev_level) / float(to - from);
         float l = filter.prev_level;
-        for (int i = from; i < to; i++) {
+        for (uint i = from; i < to; i++) {
             filter.buffer[i] *= l;
             l += step;
         }
@@ -374,10 +375,10 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     std::memset(bus_b, 0, sizeof(float) * BUFFER_SIZE);
 
     // run elements
-    for (int i = 0; i < NLFO; i++) runLFO(i, from, to);
-    for (int i = 0; i < NENV; i++) runEnv(i, from, to);
-    for (int i = 0; i < NOSC; i++) runOsc(i, from, to);
-    for (int i = 0; i < NDCF; i++) runFilter(i, from, to);
+    for (uint i = 0; i < NLFO; i++) runLFO(i, from, to);
+    for (uint i = 0; i < NENV; i++) runEnv(i, from, to);
+    for (uint i = 0; i < NOSC; i++) runOsc(i, from, to);
+    for (uint i = 0; i < NDCF; i++) runFilter(i, from, to);
 
     float* left = p(p_left);
     float* right = p(p_right);
@@ -396,7 +397,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     if (data->bus_a_level > 0.0f) {
         float l = data->bus_a_level * (1.0f - data->bus_a_pan);
         float r = data->bus_a_level * data->bus_a_pan;
-        for (int i = from; i < to; i++) {
+        for (uint i = from; i < to; i++) {
             float sample = e_vol * bus_a[i];
             left[off + i]  += l * sample;
             right[off + i] += r * sample;
@@ -409,7 +410,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     if (data->bus_b_level > 0.0f) {
         float l = data->bus_b_level * (1.0f - data->bus_b_pan);
         float r = data->bus_b_level * data->bus_b_pan;
-        for (int i = from; i < to; i++) {
+        for (uint i = from; i < to; i++) {
             float sample = e_vol * bus_b[i];
             left[off + i]  += l * sample;
             right[off + i] += r * sample;
@@ -422,7 +423,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     if (data->filters[0].on && data->filters[0].level > 0.0f) {
         float l = data->filters[0].level * (1.0f - data->filters[0].pan);
         float r = data->filters[0].level * data->filters[0].pan;
-        for (int i = from; i < to; i++) {
+        for (uint i = from; i < to; i++) {
             float sample = e_vol * filters[0].buffer[i];
             left[off + i]  += l * sample;
             right[off + i] += r * sample;
@@ -435,7 +436,7 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
     if (data->filters[1].on && data->filters[1].level > 0.0f) {
         float l = data->filters[1].level * (1.0f - data->filters[1].pan);
         float r = data->filters[1].level * data->filters[1].pan;
-        for (int i = from; i < to; i++) {
+        for (uint i = from; i < to; i++) {
             float sample = e_vol * filters[1].buffer[i];
             left[off + i]  += l * sample;
             right[off + i] += r * sample;
@@ -451,17 +452,18 @@ void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
 }
 
 void rogueVoice::reset() {
-    std::cout << "reset " << int(m_key) << std::endl;
+    //std::cout << "reset " << int(m_key) << std::endl;
+
     m_key = lvtk::INVALID_KEY;
 
     key = m_key;
     in_sustain = false;
     std::memset(mod, 0, sizeof(float) * M_SIZE);
 
-    for (int i = 0; i < NLFO; i++) lfos[i].reset();
-    for (int i = 0; i < NENV; i++) envs[i].reset();
-    for (int i = 0; i < NOSC; i++) oscs[i].reset();
-    for (int i = 0; i < NDCF; i++) filters[i].reset();
+    for (uint i = 0; i < NLFO; i++) lfos[i].reset();
+    for (uint i = 0; i < NENV; i++) envs[i].reset();
+    for (uint i = 0; i < NOSC; i++) oscs[i].reset();
+    for (uint i = 0; i < NDCF; i++) filters[i].reset();
 }
 
 

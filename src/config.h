@@ -14,8 +14,8 @@
 namespace rogue {
 
 struct OscData {
-    bool on;
-    int type;
+    bool on = false;
+    int type = 0;
     bool inv, free, tracking;
     float ratio, coarse, fine;
     float start, width;
@@ -29,8 +29,8 @@ struct OscData {
 };
 
 struct FilterData {
-    bool on;
-    int type, source;
+    bool on = false;
+    int type = 0, source = 0;
     float freq, q, distortion;
     float level, pan;
 
@@ -40,8 +40,8 @@ struct FilterData {
 };
 
 struct LFOData {
-    bool on;
-    int type, reset_type;
+    bool on = false;
+    int type = 0, reset_type;
     bool inv;
     float freq;
     float start, width;
@@ -49,7 +49,7 @@ struct LFOData {
 };
 
 struct EnvData {
-    bool on;
+    bool on = false;
     float pre_delay;
     float attack, hold, decay, sustain, release;
     float curve;
@@ -61,8 +61,8 @@ struct DelaylineData {
 };
 
 struct ModulationData {
-    unsigned int src, target;
-    float amount;
+    unsigned int src = 0, target = 0;
+    float amount = 0.0;
 };
 
 struct SynthData {
@@ -71,6 +71,7 @@ struct SynthData {
     LFOData lfos[NLFO];
     EnvData envs[NENV];
     ModulationData mods[NMOD];
+    int mod_count;
 
     float pitch_bend;
     int playmode;

@@ -58,9 +58,14 @@ tests: src/rogue.gen
 	$(CXX) -g -std=c++11 test/fftw_tests.cpp $(FFTW) -o fftw_tests.out	
 	mkdir -p wavs wavs/osc wavs/filter wavs/env wavs/lfo
 	./tests.out	
-	./voice_tests.out > /dev/null
+	./voice_tests.out
 	./fftw_tests.out
 	
 perf_tests: src/rogue.gen	
 	$(CXX) -std=c++11 -fopenmp test/perf_tests.cpp $(FAST) -Idsp -Itest -o perf_tests.out
 	./perf_tests.out
+	
+voice_perf_tests: src/rogue.gen
+	$(CXX) -pg -std=c++11 -fopenmp test/voice_perf_tests.cpp $(FAST) $(LVTK) -Idsp -Isrc -o voice_perf_tests.out
+	./voice_perf_tests.out
+	gprof ./voice_perf_tests.out

@@ -8,6 +8,8 @@
 #ifndef ROGUE_COMMON_H
 #define ROGUE_COMMON_H
 
+#include <stdint.h>
+
 #define NOUTS    2       // number of outputs
 #define NVOICES 32       // max polyphony
 #define SILENCE 0.00001f  // voice choking
@@ -26,6 +28,8 @@
 #define LFO_OFF 8
 #define ENV_OFF 9
 #define MOD_OFF 3
+
+typedef uint32_t uint;
 
 // modulation sources
 enum {
