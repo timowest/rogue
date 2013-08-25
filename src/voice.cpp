@@ -136,7 +136,7 @@ float rogueVoice::modulate(float init, int target, Function fn) {
     return v;
 }
 
-void rogueVoice::configLFO(int i) {
+void rogueVoice::configLFO(uint i) {
     LFOData& lfoData = data->lfos[i];
     LFO& lfo = lfos[i];
 
@@ -154,7 +154,7 @@ void rogueVoice::configLFO(int i) {
     // TODO reset type
 }
 
-void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
+void rogueVoice::runLFO(uint i, uint from, uint to) {
     LFOData& lfoData = data->lfos[i];
     LFO& lfo = lfos[i];
     float v = 0.0f;
@@ -175,7 +175,7 @@ void rogueVoice::runLFO(int i, uint32_t from, uint32_t to) {
     lfo.current = v;
 }
 
-void rogueVoice::configEnv(int i) {
+void rogueVoice::configEnv(uint i) {
     EnvData& envData = data->envs[i];
     Env& env = envs[i];
 
@@ -194,7 +194,7 @@ void rogueVoice::configEnv(int i) {
     env.env.setAHDSR(a, h, d, s, r);
 }
 
-void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
+void rogueVoice::runEnv(uint i, uint from, uint to) {
     EnvData& envData = data->envs[i];
     Env& env = envs[i];
     float v = 0.0f;
@@ -210,18 +210,18 @@ void rogueVoice::runEnv(int i, uint32_t from, uint32_t to) {
     env.current = v;
 }
 
-void rogueVoice::configOsc(int i) {
+void rogueVoice::configOsc(uint i) {
     OscData& oscData = data->oscs[i];
     Osc& osc = oscs[i];
 
     osc.setStart(oscData.start);
 }
 
-void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
-    uint32_t samples = to - from;
+void rogueVoice::runOsc(uint i, uint from, uint to) {
     OscData& oscData = data->oscs[i];
     Osc& osc = oscs[i];
     if (oscData.on) {
+        uint samples = to - from;
         // pitch modulation
         float f = 440.0;
         float pmod = modulate(0.0f, M_OSC1_P + 4 * i, add_mod);
@@ -290,7 +290,7 @@ void rogueVoice::runOsc(int i, uint32_t from, uint32_t to) {
     }
 }
 
-void rogueVoice::configFilter(int i) {
+void rogueVoice::configFilter(uint i) {
     FilterData& filterData = data->filters[i];
     Filter& filter = filters[i];
 
@@ -306,11 +306,11 @@ void rogueVoice::configFilter(int i) {
     filter.key_vel_to_f = f;
 }
 
-void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
+void rogueVoice::runFilter(uint i, uint from, uint to) {
     FilterData& filterData = data->filters[i];
     Filter& filter = filters[i];
     if (filterData.on) {
-        int type = filterData.type;
+        uint type = filterData.type;
         float f = filterData.freq * filter.key_vel_to_f;
 
         // freq modulation
@@ -345,17 +345,17 @@ void rogueVoice::runFilter(int i, uint32_t from, uint32_t to) {
     }
 }
 
-void rogueVoice::render(uint32_t from, uint32_t to) {
-    uint32_t from_ = from % BUFFER_SIZE;
-    uint32_t off = from - from_;
+void rogueVoice::render(uint from, uint to) {
+    uint from_ = from % BUFFER_SIZE;
+    uint off = from - from_;
     while (off < to) {
-        render(from_, std::min(to - off, uint32_t(BUFFER_SIZE)), off);
+        render(from_, std::min(to - off, uint(BUFFER_SIZE)), off);
         off += BUFFER_SIZE;
         from_ = 0;
     }
 }
 
-void rogueVoice::render(uint32_t from, uint32_t to, uint32_t off) {
+void rogueVoice::render(uint from, uint to, uint off) {
     if (m_key == lvtk::INVALID_KEY) {
         return;
     }

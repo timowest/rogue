@@ -35,18 +35,18 @@ class rogueSynth : public lvtk::Synth<rogueVoice, rogueSynth> {
   public:
     rogueSynth(double);
     unsigned find_free_voice(unsigned char, unsigned char);
-    void handle_midi(uint32_t, unsigned char*);
-    void pre_process(uint32_t from, uint32_t to);
-    void post_process(uint32_t from, uint32_t to);
+    void handle_midi(uint, unsigned char*);
+    void pre_process(uint from, uint to);
+    void post_process(uint from, uint to);
     void update();
 
     template <typename T>
-    T v(uint32_t port) {
+    T v(uint port) {
         float* pv = p(port);
         return (T)pv;
     }
 
-    float v(uint32_t port) {
+    float v(uint port) {
         return *p(port);
     }
 

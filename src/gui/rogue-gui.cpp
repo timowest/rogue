@@ -25,12 +25,12 @@
 
 class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvtk::URID<true> > {
 
-    static const int OSC_WIDTH = 120;
-    static const int DCF_WIDTH = 120;
-    static const int ENV_WIDTH = 120;
-    static const int LFO_WIDTH = 120;
+    static const uint OSC_WIDTH = 120;
+    static const uint DCF_WIDTH = 120;
+    static const uint ENV_WIDTH = 120;
+    static const uint LFO_WIDTH = 120;
 
-    static const int WAVE_HEIGHT = 60;
+    static const uint WAVE_HEIGHT = 60;
 
     Q_OBJECT
 
@@ -56,7 +56,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     float* fftOut[2];
     fftwf_plan fftPlan[2];
 
-    QDial* createDial(int p, bool big = false) {
+    QDial* createDial(uint p, bool big = false) {
         int size = big ? 40 : 35;
         const port_meta_t& port = p_port_meta[p];
         CustomDial* dial = new CustomDial(port.min, port.max, port.step, port.default_value);
@@ -67,7 +67,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return dial;
     }
 
-    QLabel* createLabel(int p) {
+    QLabel* createLabel(uint p) {
         QLabel* label = new QLabel();
         label->setNum(p_port_meta[p].default_value);
         label->setProperty("num", QVariant(true));
@@ -75,7 +75,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return label;
     }
 
-    QComboBox* createSelect(int p, const char** texts, int size) {
+    QComboBox* createSelect(uint p, const char** texts, uint size) {
         CustomComboBox* box = new CustomComboBox();
         for (uint i = 0; i < size; i++) {
             box->addItem(texts[i]);
@@ -86,7 +86,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return box;
     }
 
-    QDoubleSpinBox* createSpin(int p) {
+    QDoubleSpinBox* createSpin(uint p) {
         const port_meta_t& port = p_port_meta[p];
         CustomSpinBox* spin = new CustomSpinBox();
         spin->setMinimum(port.min);
@@ -99,7 +99,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return spin;
     }
 
-    QRadioButton* createToggle(int p) {
+    QRadioButton* createToggle(uint p) {
         CustomRadioButton* button = new CustomRadioButton();
         button->setChecked(p_port_meta[p].default_value > 0.0);
         mapper.setMapping(button, p);
@@ -108,7 +108,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return button;
     }
 
-    QPushButton* createToggle(int p, const char* label) {
+    QPushButton* createToggle(uint p, const char* label) {
         CustomPushButton* button = new CustomPushButton();
         button->setText(label);
         button->setCheckable(true);
@@ -119,7 +119,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return button;
     }
 
-    void connectBox(int p, QGroupBox* box) {
+    void connectBox(uint p, QGroupBox* box) {
         mapper.setMapping(box, p);
         box->setChecked(p_port_meta[p].default_value > 0.0);
         connect(box, SIGNAL(toggled(bool)), &mapper, SLOT(map()));
@@ -290,20 +290,20 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return parent;
     }
 
-    QDial* connectToOsc(QDial* dial, int i) {
+    QDial* connectToOsc(QDial* dial, uint i) {
         oscMapper.setMapping(dial, i);
         connect(dial, SIGNAL(valueChanged(int)), &oscMapper, SLOT(map()));
         return dial;
     }
 
-    QPushButton* connectToOsc(QPushButton* button, int i) {
+    QPushButton* connectToOsc(QPushButton* button, uint i) {
         oscMapper.setMapping(button, i);
         connect(button, SIGNAL(toggled(bool)), &oscMapper, SLOT(map()));
         return button;
     }
 
-    QWidget* createOscillator(QGroupBox* parent, int i) {
-        int off = i * OSC_OFF;
+    QWidget* createOscillator(QGroupBox* parent, uint i) {
+        uint off = i * OSC_OFF;
         parent->setCheckable(true);
         connectBox(p_osc1_on + off, parent);
         QGridLayout* grid = new QGridLayout(parent);
@@ -384,7 +384,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return parent;
     }
 
-    QWidget* createMixer(QWidget* parent, int i) {
+    QWidget* createMixer(QWidget* parent, uint i) {
         int off = i * OSC_OFF;
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
@@ -421,7 +421,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return parent;
     }
 
-    QWidget* createOutput(QWidget* parent, int vol, int pan) {
+    QWidget* createOutput(QWidget* parent, uint vol, uint pan) {
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
         grid->addWidget(createDial(vol), 0, 0);
@@ -457,20 +457,20 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return parent;
     }
 
-    QDial* connectToFilter(QDial* dial, int i) {
+    QDial* connectToFilter(QDial* dial, uint i) {
         filterMapper.setMapping(dial, i);
         connect(dial, SIGNAL(valueChanged(int)), &filterMapper, SLOT(map()));
         return dial;
     }
 
-    QPushButton* connectToFilter(QPushButton* button, int i) {
+    QPushButton* connectToFilter(QPushButton* button, uint i) {
         filterMapper.setMapping(button, i);
         connect(button, SIGNAL(toggled(bool)), &filterMapper, SLOT(map()));
         return button;
     }
 
-    QWidget* createFilter(QGroupBox* parent, int i) {
-        int off = i * DCF_OFF;
+    QWidget* createFilter(QGroupBox* parent, uint i) {
+        uint off = i * DCF_OFF;
         parent->setCheckable(true);
         connectBox(p_filter1_on + off, parent);
         QGridLayout* grid = new QGridLayout(parent);
@@ -529,14 +529,14 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return parent;
     }
 
-    QDial* connectToEnv(QDial* dial, int i) {
+    QDial* connectToEnv(QDial* dial, uint i) {
         envMapper.setMapping(dial, i);
         connect(dial, SIGNAL(valueChanged(int)), &envMapper, SLOT(map()));
         return dial;
     }
 
-    QWidget* createEnv(QGroupBox* parent, int i) {
-        int off = i * ENV_OFF;
+    QWidget* createEnv(QGroupBox* parent, uint i) {
+        uint off = i * ENV_OFF;
         parent->setCheckable(true);
         connectBox(p_env1_on + off, parent);
         QGridLayout* grid = new QGridLayout(parent);
@@ -590,7 +590,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return parent;
     }
 
-    QWidget* createMod(QWidget* parent, int off) {
+    QWidget* createMod(QWidget* parent, uint off) {
         QGridLayout* grid = new QGridLayout(parent);
         for (uint j = 0; j < 10; j += 2) {
             grid->addWidget(createSelect(p_mod1_src + off, mod_src_labels, M_SIZE), j, 0);
@@ -613,20 +613,20 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return parent;
     }
 
-    QDial* connectToLfo(QDial* dial, int i) {
+    QDial* connectToLfo(QDial* dial, uint i) {
         lfoMapper.setMapping(dial, i);
         connect(dial, SIGNAL(valueChanged(int)), &lfoMapper, SLOT(map()));
         return dial;
     }
 
-    QPushButton* connectToLfo(QPushButton* button, int i) {
+    QPushButton* connectToLfo(QPushButton* button, uint i) {
         lfoMapper.setMapping(button, i);
         connect(button, SIGNAL(toggled(bool)), &lfoMapper, SLOT(map()));
         return button;
     }
 
-    QWidget* createLfo(QGroupBox* parent, int i) {
-        int off = i * LFO_OFF;
+    QWidget* createLfo(QGroupBox* parent, uint i) {
+        uint off = i * LFO_OFF;
         parent->setCheckable(true);
         connectBox(p_lfo1_on + off, parent);
         QGridLayout* grid = new QGridLayout(parent);
@@ -674,7 +674,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
     }
 
     // UI to host
-    Q_SLOT void portChange(int p) {
+    Q_SLOT void portChange(uint p) {
         float val = widgets[p]->get_value();
 #ifndef ROGUI_UI_TEST
         write_control(p, val);
@@ -685,8 +685,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         }
     }
 
-    Q_SLOT void updateOsc(int i) {
-        int type = (int)widgets[p_osc1_type + i * OSC_OFF]->get_value();
+    Q_SLOT void updateOsc(uint i) {
+        uint type = (uint)widgets[p_osc1_type + i * OSC_OFF]->get_value();
         float s = widgets[p_osc1_start + i * OSC_OFF]->get_value();
         float w = widgets[p_osc1_width + i * OSC_OFF]->get_value();
         bool inv = widgets[p_osc1_inv + i * OSC_OFF]->get_value() > 0.0f;
@@ -702,12 +702,12 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         osc_wd[i]->repaint();
     }
 
-    Q_SLOT void updateFilter(int i) {
-        int type = (int)widgets[p_filter1_type + i * DCF_OFF]->get_value();
+    Q_SLOT void updateFilter(uint i) {
+        uint type = (int)widgets[p_filter1_type + i * DCF_OFF]->get_value();
         float f = widgets[p_filter1_freq + i * DCF_OFF]->get_value();
         float q = widgets[p_filter1_q + i * DCF_OFF]->get_value();
 
-        int width = 2 * DCF_WIDTH;
+        uint width = 2 * DCF_WIDTH;
         float* in = fftIn[i];
         float* out = fftOut[i];
         for (uint j = 0; j < width; j++) in[j] = 0;
@@ -743,7 +743,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         filter_wd[i]->repaint();
     }
 
-    Q_SLOT void updateEnv(int i) {
+    Q_SLOT void updateEnv(uint i) {
         float pre = widgets[p_env1_pre_delay + i * ENV_OFF]->get_value();
         float a = widgets[p_env1_attack + i * ENV_OFF]->get_value();
         float h = widgets[p_env1_hold + i * ENV_OFF]->get_value();
@@ -753,7 +753,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
         float curve = widgets[p_env1_curve + i * ENV_OFF]->get_value();
 
-        int width = ENV_WIDTH;
+        uint width = ENV_WIDTH;
         float scale = ((float)width) / (pre + a + h + d + r);
         env.setPredelay(scale * pre);
         env.setAHDSR(scale * a, scale * h, scale * d, s, scale * r);
@@ -770,8 +770,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         env_wd[i]->repaint();
     }
 
-    Q_SLOT void updateLfo(int i) {
-        int type = (int)widgets[p_lfo1_type + i * LFO_OFF]->get_value();
+    Q_SLOT void updateLfo(uint i) {
+        uint type = (int)widgets[p_lfo1_type + i * LFO_OFF]->get_value();
         float s = widgets[p_lfo1_start + i * LFO_OFF]->get_value();
         float w = widgets[p_lfo1_width + i * LFO_OFF]->get_value();
         bool inv = widgets[p_lfo1_inv + i * LFO_OFF]->get_value() > 0.0f;
@@ -781,7 +781,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         lfo.setWidth(w);
         lfo.reset();
         float* buffer = lfo_wd[i]->getSamples();
-        int width = LFO_WIDTH;
+        uint width = LFO_WIDTH;
         float scale = inv ? -1.0 : 1.0;
         for (uint j = 0; j < width; j++) {
             buffer[j] = scale * lfo.tick();
@@ -792,7 +792,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
   public:
 
     // host to UI
-    void port_event(uint32_t port, uint32_t buffer_size, uint32_t format, const void* buffer) {
+    void port_event(uint port, uint buffer_size, uint format, const void* buffer) {
         if (port > 2) {
             widgets[port]->set_value(*static_cast<const float*>(buffer));
         }
@@ -872,7 +872,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         lfo.setSamplerate(LFO_WIDTH);
 
         // fft
-        const int fft_width = 2 * DCF_WIDTH;
+        const uint fft_width = 2 * DCF_WIDTH;
         for (uint i = 0; i < 2; i++) {
             fftIn[i] = (float*) fftwf_malloc(sizeof(float) * fft_width);
             fftOut[i] = (float*) fftwf_malloc(sizeof(float) * fft_width);

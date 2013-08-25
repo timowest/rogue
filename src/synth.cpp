@@ -17,7 +17,7 @@ rogueSynth::rogueSynth(double rate)
     ldcBlocker.setSamplerate(sample_rate);
     rdcBlocker.setSamplerate(sample_rate);
 
-    for(int i = 0; i < NVOICES; i++) {
+    for (uint i = 0; i < NVOICES; i++) {
         voices[i] = new rogueVoice(rate, &data);
         add_voices(voices[i]);
     }
@@ -75,7 +75,7 @@ void rogueSynth::update() {
 
     // oscs
     for (uint i = 0; i < NOSC; i++) {
-        int off = i * OSC_OFF;
+        uint off = i * OSC_OFF;
         data.oscs[i].on          = v(p_osc1_on + off);
         data.oscs[i].type        = v(p_osc1_type + off);
         data.oscs[i].inv         = v(p_osc1_inv + off);
@@ -98,7 +98,7 @@ void rogueSynth::update() {
 
     // filters
     for (uint i = 0; i < NDCF; i++) {
-        int off = i * DCF_OFF;
+        uint off = i * DCF_OFF;
         data.filters[i].on       = v(p_filter1_on + off);
         data.filters[i].type     = v(p_filter1_type + off);
         data.filters[i].source   = v(p_filter1_source + off);
@@ -114,7 +114,7 @@ void rogueSynth::update() {
 
     // lfos
     for (uint i = 0; i < NLFO; i++) {
-        int off = i * LFO_OFF;
+        uint off = i * LFO_OFF;
         data.lfos[i].on          = v(p_lfo1_on + off);
         data.lfos[i].type        = v(p_lfo1_type + off);
         data.lfos[i].inv         = v(p_lfo1_inv + off);
@@ -127,7 +127,7 @@ void rogueSynth::update() {
 
     // envs
     for (uint i = 0; i < NENV; i++) {
-        int off = i * ENV_OFF;
+        uint off = i * ENV_OFF;
         data.envs[i].on          = v(p_env1_on + off);
         data.envs[i].pre_delay   = v(p_env1_pre_delay + off) * rate;
         data.envs[i].attack      = v(p_env1_attack + off) * rate;
@@ -142,7 +142,7 @@ void rogueSynth::update() {
     // mods
     int mod_count = 0;
     for (uint i = 0; i < NMOD; i++) {
-        int off = i * MOD_OFF;
+        uint off = i * MOD_OFF;
         data.mods[i].src         = v(p_mod1_src + off);
         data.mods[i].target      = v(p_mod1_target + off);
         data.mods[i].amount      = v(p_mod1_amount + off);
@@ -154,15 +154,15 @@ void rogueSynth::update() {
     data.mod_count = mod_count;
 }
 
-void rogueSynth::pre_process(uint32_t from, uint32_t to) {
+void rogueSynth::pre_process(uint from, uint to) {
     update();
 }
 
-void rogueSynth::post_process(uint32_t from, uint32_t to) {
+void rogueSynth::post_process(uint from, uint to) {
     float* left = p(p_left) + from;
     float* right = p(p_right) + from;
 
-    const uint32_t samples = to - from;
+    const uint samples = to - from;
 
     // DC blocking
     ldcBlocker.process(left, left, samples);
@@ -242,7 +242,7 @@ void rogueSynth::post_process(uint32_t from, uint32_t to) {
     // TODO limiter
 }
 
-void rogueSynth::handle_midi(uint32_t size, unsigned char* data) {
+void rogueSynth::handle_midi(uint size, unsigned char* data) {
 
     //discard invalid midi messages
     if (size != 3) {

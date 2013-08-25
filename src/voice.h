@@ -44,18 +44,18 @@ class rogueVoice : public lvtk::Voice {
       float modulate(float init, int target, Function fn);
 
       // configure
-      void configLFO(int i);
-      void configEnv(int i);
-      void configOsc(int i);
-      void configFilter(int i);
+      void configLFO(uint i);
+      void configEnv(uint i);
+      void configOsc(uint i);
+      void configFilter(uint i);
 
       // run
-      void runLFO(int i, uint32_t from, uint32_t to);
-      void runEnv(int i, uint32_t from, uint32_t to);
-      void runOsc(int i, uint32_t from, uint32_t to);
-      void runFilter(int i, uint32_t from, uint32_t to);
+      void runLFO(uint i, uint from, uint to);
+      void runEnv(uint i, uint from, uint to);
+      void runOsc(uint i, uint from, uint to);
+      void runFilter(uint i, uint from, uint to);
 
-      void render(uint32_t, uint32_t, uint32_t off);
+      void render(uint, uint, uint off);
 
     public:
       rogueVoice(double, SynthData*);
@@ -66,7 +66,7 @@ class rogueVoice : public lvtk::Voice {
       unsigned char get_key() const { return m_key; }
 
       // generates the sound for this voice
-      void render(uint32_t, uint32_t);
+      void render(uint, uint);
 };
 
 }
