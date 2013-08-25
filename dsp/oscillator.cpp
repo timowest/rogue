@@ -858,48 +858,61 @@ void Virtual::process(float* output, float* out_sync, int samples) {
 
 void AS::saw(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
-    // TODO take sr into account
-    float max = 20.0f * wt;
+    float p = phase;
+    int max = 20.0f * wt;
 
-    for (uint i = 0.; i < samples; i++) {
+    // first
+    for (uint i = 0; i < samples; i++) {
         INC_PHASE()
-        float y = 0.0f;
-        for (float j = 1; j < max; j++) {
-            y += SIN(fmod(j * phase, 1.0f)) * 1.0/j;
-        }
-        output[i] = -2.0f/M_PI * y;
+        output[i] = SIN(phase);
+    }
+    // others
+    for (uint j = 2; j < max; j++) {
+        phase = fmod(j * p, 1.0f);
+        float inc2 = j * inc;
+        for (uint i = 0; i < samples; i++) {
+           phase += inc2;
+           if (phase >= 1.0f) phase -= 1.0f;
+           output[i] += SIN(phase);
+       }
+    }
+
+    // normalize
+    for (uint i = 0; i < samples; i++) {
+        output[i] *= -2.0f/M_PI;
     }
 }
 
 void AS::square(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
-    // TODO take sr into account
-    float max = 40.0f * wt;
+    float p = phase;
+    int max = 40.0f * wt;
 
+    // first
     for (uint i = 0; i < samples; i++) {
         INC_PHASE()
-        float y = 0.0f;
-        for (float j = 1; j < max; j += 2.0f) {
-            y += SIN(fmod(j * phase, 1.0f)) * 1.0/j;
-        }
-        output[i] = 4.0/M_PI * y;
+        output[i] = SIN(phase);
+    }
+    // others
+    for (uint j = 3; j < max; j += 2) {
+        phase = fmod(j * p, 1.0f);
+        float inc2 = j * inc;
+        for (uint i = 0; i < samples; i++) {
+           phase += inc2;
+           if (phase >= 1.0f) phase -= 1.0f;
+           output[i] += SIN(phase);
+       }
+    }
+
+    // normalize
+    for (uint i = 0; i < samples; i++) {
+        output[i] *= 4.0/M_PI;
     }
 }
 
+// TODO remove
 void AS::impulse(float* output, float* out_sync, int samples) {
-    float inc = freq / sample_rate;
-    // TODO take sr into account
-    float max = 20.0f * wt;
-
-    for (uint i = 0; i < samples; i++) {
-        INC_PHASE()
-        float y = 0.0f;
-        for (float j = 1; j < max; j++) {
-            y += SIN(fmod(j * phase, 1.0f));
-        }
-        // TODO take max into account
-        output[i] = 0.05 * y;
-    }
+    // TODO remove
 }
 
 void AS::process(float* output, float* out_sync, int samples) {
