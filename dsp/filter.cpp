@@ -8,7 +8,10 @@
 
 #include <algorithm>
 #include <math.h>
+#include "tables.h"
 #include "types.h"
+
+#define TANH(x) tanh_.linear(x)
 
 namespace dsp {
 
@@ -240,7 +243,7 @@ void MoogFilter::setCoefficients(float freq, float res) {
 
 void MoogFilter::compute(float in) {
     // first input (with saturation and feedback)
-    dlout_[0] = (float) tanh(drive_ * (in - 4 * gres_ * (dlout_[4] - gcomp_ * in)));
+    dlout_[0] = (float) TANH(drive_ * (in - 4 * gres_ * (dlout_[4] - gcomp_ * in)));
 
     // four filter blocks
     for (uint i = 0; i < 4; i++) {

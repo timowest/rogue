@@ -33,6 +33,19 @@ struct costable {
 
 extern costable cos_;
 
+/*
+ * tanh table (range -5 to 5)
+ *
+ */
+struct tanhtable {
+    float values[16001];
+    tanhtable();
+    float fast(float in);
+    float linear(float in);
+};
+
+extern tanhtable tanh_;
+
 }
 
 #endif

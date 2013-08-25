@@ -53,5 +53,26 @@ float costable::linear(float val) {
     return rem * values[int(pos + 1)] + (1.0f - rem) * values[int(pos)];
 }
 
+// tanhtable
+
+tanhtable tanh_;
+
+tanhtable::tanhtable() {
+    for (uint i = 0; i < 16001; i++) {
+        values[i] = tanh(float(i - 8000) / 1600.0f);
+    }
+}
+
+float tanhtable::fast(float val) {
+    // XXX doesn't check for boundaries
+    return values[int(1600.0f * (val + 5.0f))];
+}
+
+float tanhtable::linear(float val) {
+    float pos = 1600.0f * (val + 5.0f);
+    float rem = pos - floor(pos);
+    return rem * values[int(pos + 1)] + (1.0f - rem) * values[int(pos)];
+}
+
 
 }
