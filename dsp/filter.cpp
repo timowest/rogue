@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <math.h>
+#include "types.h"
 
 namespace dsp {
 
@@ -22,7 +23,7 @@ void DCBlocker::setSamplerate(float r) {
 }
 
 void DCBlocker::process(float* input, float* output, int samples) {
-    for (int i = 0; i < samples; i++) {
+    for (uint i = 0; i < samples; i++) {
         // y(n) = x(n) - x(n - 1) + R * y(n - 1)
         float y = input[i] - x1 + R * y1;
         x1 = input[i];
@@ -48,12 +49,12 @@ void OnePole::setPole(double p) {
 }
 
 float OnePole::process(float input) {
-	last_ = b0_ * input - a1_ * last_;
-	return last_;
+    last_ = b0_ * input - a1_ * last_;
+    return last_;
 }
 
 void OnePole::process(float* input, float* output, int samples) {
-    for (int i = 0; i < samples; i++) {
+    for (uint i = 0; i < samples; i++) {
         last_ = b0_ * input[i] - a1_ * last_;
         output[i] = last_;
     }
@@ -76,13 +77,13 @@ void OneZero::setZero(float z) {
 }
 
 float OneZero::process(float input) {
-	last_ = b0_ * input + b1_ * prevIn_;
-	prevIn_ = input;
-	return last_;
+    last_ = b0_ * input + b1_ * prevIn_;
+    prevIn_ = input;
+    return last_;
 }
 
 void OneZero::process(float* input, float* output, int samples) {
-    for (int i = 0; i < samples; i++) {
+    for (uint i = 0; i < samples; i++) {
         last_ = b0_ * input[i] + b1_ * prevIn_;
         prevIn_ = input[i];
         output[i] = last_;
@@ -122,7 +123,7 @@ float PoleZero::process(float input) {
 }
 
 void PoleZero::process(float* input, float* output, int samples) {
-    for (int i = 0; i < samples; i++) {
+    for (uint i = 0; i < samples; i++) {
         last_ = b0_ * input[i] + b1_ * prevIn_ - a1_ * last_;
         prevIn_ = input[i];
         output[i] = last_;
@@ -142,14 +143,14 @@ void TwoPole::setCoefficients(float b0, float a1, float a2) {
 }
 
 float TwoPole::process(float input) {
-	float temp = last_;
-	last_ = b0_ * input - a1_ * last_ - a2_ * last__;
-	last__ = temp;
-	return last_;
+    float temp = last_;
+    last_ = b0_ * input - a1_ * last_ - a2_ * last__;
+    last__ = temp;
+    return last_;
 }
 
 void TwoPole::process(float* input, float* output, int samples) {
-    for (int i = 0; i < samples; i++) {
+    for (uint i = 0; i < samples; i++) {
         float temp = last_;
         last_ = b0_ * input[i] - a1_ * last_ - a2_ * last__;
         last__ = temp;
@@ -170,14 +171,14 @@ void TwoZero::setCoefficients(float b0, float b1, float b2) {
 }
 
 float TwoZero::process(float input) {
-	last_ = b0_ * input + b1_ * prevIn_ + b2_ * prevIn__;
-	prevIn__ = prevIn_;
-	prevIn_ = input;
-	return last_;
+    last_ = b0_ * input + b1_ * prevIn_ + b2_ * prevIn__;
+    prevIn__ = prevIn_;
+    prevIn_ = input;
+    return last_;
 }
 
 void TwoZero::process(float* input, float* output, int samples) {
-    for (int i = 0; i < samples; i++) {
+    for (uint i = 0; i < samples; i++) {
         last_ = b0_ * input[i] + b1_ * prevIn_ + b2_ * prevIn__;
         prevIn__ = prevIn_;
         prevIn_ = input[i];
@@ -200,17 +201,17 @@ void BiQuad::setCoefficients(float b0, float b1, float b2, float a1, float a2) {
 }
 
 float BiQuad::process(float input) {
-	float temp = last_;
-	last_ = b0_ * input + b1_ * prevIn_ + b2_ * prevIn__;
-	last_ -= a1_ * temp + a2_ * last__;
-	prevIn__ = prevIn_;
-	prevIn_ = input;
-	last__ = temp;
-	return last_;
+    float temp = last_;
+    last_ = b0_ * input + b1_ * prevIn_ + b2_ * prevIn__;
+    last_ -= a1_ * temp + a2_ * last__;
+    prevIn__ = prevIn_;
+    prevIn_ = input;
+    last__ = temp;
+    return last_;
 }
 
 void BiQuad::process(float* input, float* output, int samples) {
-    for (int i = 0; i < samples; i++) {
+    for (uint i = 0; i < samples; i++) {
         float temp = last_;
         last_ = b0_ * input[i] + b1_ * prevIn_ + b2_ * prevIn__;
         last_ -= a1_ * temp + a2_ * last__;
@@ -242,14 +243,14 @@ void MoogFilter::compute(float in) {
     dlout_[0] = (float) tanh(drive_ * (in - 4 * gres_ * (dlout_[4] - gcomp_ * in)));
 
     // four filter blocks
-    for (int i = 0; i < 4; i++) {
+    for (uint i = 0; i < 4; i++) {
         dlout_[i+1] = g_ * (0.3/1.3 * dlout_[i] + 1/1.3 * dlin_[i] - dlout_[i + 1]) + dlout_[i + 1];
         dlin_[i] = dlout_[i];
     }
 }
 
 #define MOOG_LOOP(x) \
-    for (int i = 0; i < samples; i++) { \
+    for (uint i = 0; i < samples; i++) { \
         compute(input[i]); \
         output[i] = x; \
     }
@@ -310,7 +311,7 @@ void StateVariableFilter::setCoefficients(float fc, float res) {
 }
 
 void StateVariableFilter::process(float* input, float* output, int samples) {
-    for (int i = 0; i < samples; i++) {
+    for (uint i = 0; i < samples; i++) {
         // TODO figure out better upsampling method
         const float in = input[i];
         notch = in - damp * band;
@@ -346,7 +347,7 @@ void StateVariableFilter2::setCoefficients(float fc, float res) {
 }
 
 #define SVF2_LOOP(x) \
-    for (int i = 0; i < samples; i++) { \
+    for (uint i = 0; i < samples; i++) { \
         float v0 = input[i]; \
         float v1z = v1; \
         float v2z = v2; \

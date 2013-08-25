@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "tables.h"
+#include "types.h"
 
 namespace dsp {
 
@@ -15,7 +16,7 @@ namespace dsp {
 sintable sin_;
 
 sintable::sintable() {
-    for (int i = 0; i < 8001; i++) {
+    for (uint i = 0; i < 8001; i++) {
         values[i] = sin(2.0f * M_PI * float(i) / 8000.0f);
     }
 }
@@ -36,7 +37,7 @@ float sintable::linear(float val) {
 costable cos_;
 
 costable::costable() {
-    for (int i = 0; i < 8001; i++) {
+    for (uint i = 0; i < 8001; i++) {
         values[i] = cos(2.0f * M_PI * float(i) / 8000.0f);
     }
 }

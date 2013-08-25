@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include "envelope.h"
+#include "types.h"
 
 namespace dsp {
 
@@ -94,7 +95,7 @@ float AHDSR::tick() {
 
 float AHDSR::tick(int samples) {
     // TODO optimize
-    for (int i = 0; i < samples; i++) {
+    for (uint i = 0; i < samples; i++) {
         innerTick();
     }
     return offset + scale * envCurve(last);

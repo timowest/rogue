@@ -7,6 +7,8 @@
 #ifndef DSP_POLYBLEP_H
 #define DSP_POLYBLEP_H
 
+#include "types.h"
+
 namespace dsp {
 
 static float polyblep_values[8001];
@@ -20,7 +22,7 @@ static float polyblep_slow(float t) {
 }
 
 static void init_polyblep() {
-    for (int i = 0; i < 8001; i++) {
+    for (uint i = 0; i < 8001; i++) {
         polyblep_values[i] = polyblep_slow((i - 4000) / 4000.0f);
     }
 }

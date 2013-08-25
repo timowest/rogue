@@ -8,6 +8,7 @@
 #include "polyblep.h"
 #include "phase.h"
 #include "tables.h"
+#include "types.h"
 
 #define SIN(x) sin_.linear(x)
 
@@ -30,14 +31,14 @@
 
 #define PHASE_LOOP(calc) \
     float inc = freq / sample_rate; \
-    for (int i = 0; i < samples; i++) { \
+    for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
         calc \
     }
 
 #define PHASE_LOOP_PM(calc) \
     float inc = freq / sample_rate; \
-    for (int i = 0; i < samples; i++) { \
+    for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
         float phase = pmod(this->phase, i); \
         calc \
@@ -54,7 +55,7 @@
     float inc = freq / sample_rate; \
     float width = norm_width(wf, inc); \
     float w_step = (norm_width(wt, inc) - width) / (float)samples; \
-    for (int i = 0; i < samples; i++) { \
+    for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
         calc \
         width += w_step; \
@@ -64,7 +65,7 @@
     float inc = freq / sample_rate; \
     float width = norm_width(wf, inc); \
     float w_step = (norm_width(wt, inc) - width) / (float)samples; \
-    for (int i = 0; i < samples; i++) { \
+    for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
         float phase = pmod(this->phase, i); \
         calc \
@@ -80,7 +81,7 @@
 
 #define PMOD_LOOP(calc) \
     float inc = freq / sample_rate; \
-    for (int i = 0; i < samples; i++) { \
+    for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
         calc \
         mod += m_step; \
@@ -88,7 +89,7 @@
 
 #define PMOD_LOOP_PM(calc) \
     float inc = freq / sample_rate; \
-    for (int i = 0; i < samples; i++) { \
+    for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
         float phase = pmod(this->phase, i); \
         calc \
@@ -775,7 +776,7 @@ void AS::saw(float* output, float* out_sync, int samples) {
     // TODO take sr into account
     float max = 20.0f * wt;
 
-    for (int i = 0.; i < samples; i++) {
+    for (uint i = 0.; i < samples; i++) {
         INC_PHASE()
         float y = 0.0f;
         for (float j = 1; j < max; j++) {
@@ -790,7 +791,7 @@ void AS::square(float* output, float* out_sync, int samples) {
     // TODO take sr into account
     float max = 40.0f * wt;
 
-    for (int i = 0; i < samples; i++) {
+    for (uint i = 0; i < samples; i++) {
         INC_PHASE()
         float y = 0.0f;
         for (float j = 1; j < max; j += 2.0f) {
@@ -805,7 +806,7 @@ void AS::impulse(float* output, float* out_sync, int samples) {
     // TODO take sr into account
     float max = 20.0f * wt;
 
-    for (int i = 0; i < samples; i++) {
+    for (uint i = 0; i < samples; i++) {
         INC_PHASE()
         float y = 0.0f;
         for (float j = 1; j < max; j++) {
@@ -827,7 +828,7 @@ void AS::process(float* output, float* out_sync, int samples) {
 // Noise
 
 void Noise::process(float* output, float* out_sync, int samples) {
-    for (int i = 0; i < samples; i++) {
+    for (uint i = 0; i < samples; i++) {
         output[i] =  (2.0f * rand() / (RAND_MAX + 1.0f) - 1.0f);
         out_sync[i] = -1.0;
     }
@@ -835,7 +836,7 @@ void Noise::process(float* output, float* out_sync, int samples) {
     if (type == PINK) {
         // Paul Kellet's pink noise
         // http://musicdsp.org/files/pink.txt
-        for (int i = 0; i < samples; i++) {
+        for (uint i = 0; i < samples; i++) {
             float white = output[i];
             b0 = 0.99765 * b0 + white * 0.0990460;
             b1 = 0.96300 * b1 + white * 0.2965164;
