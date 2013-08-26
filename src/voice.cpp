@@ -401,7 +401,7 @@ void rogueVoice::render(uint from, uint to, uint off) {
     float e_vol = e_start;
 
     // bus a
-    if (data->bus_a_level > 0.0f) {
+    if (data->bus_a_level > SILENCE) {
         float l = data->bus_a_level * (1.0f - data->bus_a_pan);
         float r = data->bus_a_level * data->bus_a_pan;
         for (uint i = from; i < to; i++) {
@@ -414,7 +414,7 @@ void rogueVoice::render(uint from, uint to, uint off) {
     }
 
     // bus b
-    if (data->bus_b_level > 0.0f) {
+    if (data->bus_b_level > SILENCE) {
         float l = data->bus_b_level * (1.0f - data->bus_b_pan);
         float r = data->bus_b_level * data->bus_b_pan;
         for (uint i = from; i < to; i++) {
@@ -427,7 +427,7 @@ void rogueVoice::render(uint from, uint to, uint off) {
     }
 
     // filter 1
-    if (data->filters[0].on && data->filters[0].level > 0.0f) {
+    if (data->filters[0].on && data->filters[0].level > SILENCE) {
         float l = data->filters[0].level * (1.0f - data->filters[0].pan);
         float r = data->filters[0].level * data->filters[0].pan;
         for (uint i = from; i < to; i++) {
@@ -440,7 +440,7 @@ void rogueVoice::render(uint from, uint to, uint off) {
     }
 
     // filter 2
-    if (data->filters[1].on && data->filters[1].level > 0.0f) {
+    if (data->filters[1].on && data->filters[1].level > SILENCE) {
         float l = data->filters[1].level * (1.0f - data->filters[1].pan);
         float r = data->filters[1].level * data->filters[1].pan;
         for (uint i = from; i < to; i++) {
