@@ -50,6 +50,17 @@ int main() {
     data.envs[0].release = 0.5 * SR;
     data.envs[0].curve = 0.5;
 
+    data.filters[0].on = true;
+    data.filters[0].type = 0;
+    data.filters[0].source = 0;
+    data.filters[0].freq = 440.0;
+    data.filters[0].q = 0;
+    data.filters[0].distortion = 0;
+    data.filters[0].level = 1.0;
+    data.filters[0].pan = 0.5;
+    data.filters[0].key_to_f = 0.5;
+    data.filters[0].vel_to_f = 0.0;
+
     rogue::rogueVoice voice(SR, &data);
     voice.set_port_buffers(ports);
 
