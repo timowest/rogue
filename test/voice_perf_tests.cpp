@@ -36,11 +36,18 @@ int main() {
 
     data.oscs[0].on = true;
     data.oscs[0].type = 0;
+    data.oscs[0].tracking = true;
+    data.oscs[0].coarse = 0;
+    data.oscs[0].fine = 0;
+    data.oscs[0].ratio = 1;
     data.oscs[0].start = 0.0;
     data.oscs[0].width = 0.5;
     data.oscs[0].ratio = 1.0;
     data.oscs[0].level = 1.0;
     data.oscs[0].level_a = 1.0;
+    data.oscs[0].level_b = 0.0;
+    data.oscs[0].pm = false;
+    data.oscs[0].sync = false;
 
     data.envs[0].on = true;
     data.envs[0].pre_delay = 0.0f;

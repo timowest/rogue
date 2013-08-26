@@ -294,16 +294,21 @@ void rogueVoice::configFilter(uint i) {
     FilterData& filterData = data->filters[i];
     Filter& filter = filters[i];
 
-    float f = 1.0;
+    float semitones = 0.0f;
     // key to f
     if (filterData.key_to_f != 0.0f) {
-        f *= std::pow(SEMITONE, filterData.key_to_f * (key - 69.0));
+        semitones += filterData.key_to_f * (key - 69.0);
     }
     // vel to f
     if (filterData.vel_to_f != 0.0f) {
-        f *= std::pow(SEMITONE, filterData.vel_to_f * (velocity - 64.0));
+        semitones +=filterData.vel_to_f * (velocity - 64.0);
     }
-    filter.key_vel_to_f = f;
+    if (semitones != 0.0f) {
+        filter.key_vel_to_f = std::pow(SEMITONE, semitones);
+    } else {
+        filter.key_vel_to_f = 1.0;
+    }
+
 }
 
 void rogueVoice::runFilter(uint i, uint from, uint to) {
@@ -315,7 +320,9 @@ void rogueVoice::runFilter(uint i, uint from, uint to) {
 
         // freq modulation
         float fmod = modulate(0.0f, M_DCF1_F + 4 * i, add_mod);
-        f *= std::pow(SEMITONE, 24 * fmod);
+        if (fmod != 0.0) {
+            f *= std::pow(SEMITONE, 24 * fmod);
+        }
 
         // res modulation
         float q = filterData.q + modulate(0.0f, M_DCF1_Q + 4 * i, add_mod);
