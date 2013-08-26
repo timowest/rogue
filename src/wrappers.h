@@ -73,7 +73,7 @@ struct Osc {
 
 struct Filter {
     dsp::MoogFilter moog;
-    dsp::StateVariableFilter svf;
+    dsp::StateVariableFilter2 svf;
     float buffer[BUFFER_SIZE];
     float prev_level;
     float key_vel_to_f;
