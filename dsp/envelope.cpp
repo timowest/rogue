@@ -35,14 +35,21 @@ void AHDSR::setAHDSR(float _a, float _h, float _d, float _s, float _r) {
     releaseRate = 1.0f / _r;
 }
 
-float AHDSR::innerTick() {
+float AHDSR::innerTick(int samples) {
     if (state_ == PRE) {      // pre-delay
-        if (--counter == 0) {
+        counter -= samples;
+        if (counter <= 0) {
             state_ = A;
+            if (counter < 0) {
+                int left = -counter;
+                counter = 0;
+                return innerTick(left);
+            }
         }
     } else if (state_ == A) { // attack
-        last += attackRate;
+        last += samples * attackRate;
         if (last >= 1.0f) {
+            int left = (last - 1.0) / attackRate;
             if (holdSamples > 0.0f) {
                 state_ = H;
                 counter = holdSamples;
@@ -53,31 +60,49 @@ float AHDSR::innerTick() {
                 offset = attackTarget;
                 last = 0.0f;
             }
+            if (left > 0) {
+                return innerTick(left);
+            }
         }
     } else if (state_ == H) { // hold
-        if (--counter == 0) {
+        counter -= samples;
+        if (counter <= 0) {
             state_ = D;
             scale = sustain - attackTarget;
             offset = attackTarget;
             last = 0.0f;
+            if (counter < 0) {
+                int left = -counter;
+                counter = 0;
+                return innerTick(counter);
+            }
         }
     } else if (state_ == D) { // decay
-        last += decayRate;
+        last += samples * decayRate;
         if (last >= 1.0f) {
+            int left = (last - 1.0) / decayRate;
             state_ = S;
             scale = -sustain;
             offset = sustain;
             last = 0.0f;
+            if (left > 0) {
+                return innerTick(left);
+            }
         }
     } else if (state_ == R) { // release
-        last += releaseRate;
+        last += samples * releaseRate;
         if (last >= 1.0f) {
+            int left = (last - 1.0) / releaseRate;
             if (retrigger) {
+                last = 1.0;
                 on();
             } else {
                 state_ = IDLE;
                 scale = offset = 0.0f;
                 last = 0.0f;
+            }
+            if (left > 0) {
+                return innerTick(left);
             }
         }
     }
@@ -89,15 +114,12 @@ float AHDSR::envCurve(float x) {
 }
 
 float AHDSR::tick() {
-    innerTick();
+    innerTick(1);
     return offset + scale * envCurve(last);
 }
 
 float AHDSR::tick(int samples) {
-    // TODO optimize
-    for (uint i = 0; i < samples; i++) {
-        innerTick();
-    }
+    innerTick(samples);
     return offset + scale * envCurve(last);
 }
 

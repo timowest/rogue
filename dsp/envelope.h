@@ -31,7 +31,7 @@ class AHDSR {
 
   private:
     float envCurve(float x);
-    float innerTick();
+    float innerTick(int samples);
     float attackTarget = 1.0;
     float preDelaySamples = 0.0;
     float attackRate, holdSamples, decayRate, releaseRate = 0.0;
