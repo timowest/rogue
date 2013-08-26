@@ -29,6 +29,7 @@ int main() {
     ports.push_back(buffer_r);
 
     rogue::SynthData data;
+    data.playmode = 0;
     data.volume = 0.5;
     data.bus_a_level = 0.5;
     data.bus_a_pan = 0.5;

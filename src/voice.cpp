@@ -314,7 +314,7 @@ void rogueVoice::runFilter(uint i, uint from, uint to) {
         float f = filterData.freq * filter.key_vel_to_f;
 
         // freq modulation
-        float fmod = modulate(1.0f, M_DCF1_F + 4 * i, add_mod);
+        float fmod = modulate(0.0f, M_DCF1_F + 4 * i, add_mod);
         f *= std::pow(SEMITONE, 24 * fmod);
 
         // res modulation
