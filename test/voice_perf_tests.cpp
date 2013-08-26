@@ -51,7 +51,7 @@ int main() {
     data.envs[0].curve = 0.5;
 
     data.filters[0].on = true;
-    data.filters[0].type = 0;
+    data.filters[0].type = 0; // moog lp
     data.filters[0].source = 0;
     data.filters[0].freq = 440.0;
     data.filters[0].q = 0;
@@ -60,6 +60,17 @@ int main() {
     data.filters[0].pan = 0.5;
     data.filters[0].key_to_f = 0.5;
     data.filters[0].vel_to_f = 0.0;
+
+    data.filters[1].on = true;
+    data.filters[1].type = 8; // svf lp
+    data.filters[1].source = 0;
+    data.filters[1].freq = 440.0;
+    data.filters[1].q = 0;
+    data.filters[1].distortion = 0;
+    data.filters[1].level = 1.0;
+    data.filters[1].pan = 0.5;
+    data.filters[1].key_to_f = 0.5;
+    data.filters[1].vel_to_f = 0.0;
 
     rogue::rogueVoice voice(SR, &data);
     voice.set_port_buffers(ports);
