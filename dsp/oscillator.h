@@ -74,7 +74,7 @@ class Oscillator {
 };
 
 /** Virtual
- *  Analog - Minimoog waveform models
+ *  Analog - Vintage waveform models
  *  Phase Distortion - Casio CZ sounds
  *  Electronic - various
  *  FM - OPL FM sounds
