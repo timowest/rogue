@@ -957,7 +957,7 @@ void AS::square(float* output, float* out_sync, int samples) {
 void AS::impulse(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float p = phase;
-    int max = 40.0f * wt;
+    int max = 20.0f * wt;
 
     // first
     for (uint i = 0; i < samples; i++) {
