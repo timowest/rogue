@@ -171,9 +171,6 @@ class MoogFilter : Filter {
     void setCoefficients(float freq, float res);
     void process(float* input, float* output, int samples);
 
-  protected:
-    void compute(float in);
-
   private:
     float dlout_[5], dlin_[5];
     float drive_ = 1.0f, wc_, g_, gres_, gcomp_ = 0.5f;

@@ -241,20 +241,14 @@ void MoogFilter::setCoefficients(float freq, float res) {
     gres_ = res * (1.0029 + 0.0526 * wc_ - 0.926 * pow(wc_, 2) + 0.0218 * pow(wc_, 3));
 }
 
-void MoogFilter::compute(float in) {
-    // first input (with saturation and feedback)
-    dlout_[0] = (float) TANH(drive_ * (in - 4.0f * gres_ * (dlout_[4] - gcomp_ * in)));
-
-    // four filter blocks
-    for (uint i = 0; i < 4; i++) {
-        dlout_[i+1] = g_ * (0.3f/1.3f * dlout_[i] + 1.0f/1.3f * dlin_[i] - dlout_[i + 1]) + dlout_[i + 1];
-        dlin_[i] = dlout_[i];
-    }
-}
-
 #define MOOG_LOOP(x) \
     for (uint i = 0; i < samples; i++) { \
-        compute(input[i]); \
+        const float in = input[i]; \
+        dlout_[0] = (float) TANH(drive_ * (in - 4.0f * gres_ * (dlout_[4] - gcomp_ * in))); \
+        for (uint i = 0; i < 4; i++) { \
+            dlout_[i+1] = g_ * (0.3f/1.3f * dlout_[i] + 1.0f/1.3f * dlin_[i] - dlout_[i + 1]) + dlout_[i + 1]; \
+            dlin_[i] = dlout_[i]; \
+        } \
         output[i] = x; \
     }
 
