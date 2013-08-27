@@ -370,7 +370,7 @@ void StateVariableFilter2::process(float* input, float* output, int samples) {
         SVF2_LOOP(v1);
         break;
     case HP:
-        SVF2_LOOP(v0 - k * v1 - 2);
+        SVF2_LOOP(v0 - k * v1 - v2);
         break;
     case NOTCH:
         SVF2_LOOP(v0 - k * v1);
