@@ -13,9 +13,18 @@
 
 namespace rogue {
 
-// TODO use table for this
+static float midi2f_values[256];
+
+static uint midi2f_init() {
+    for (uint i = 0; i < 256; i++) {
+        midi2f_values[i] = 0.007874f * float(i);
+    }
+}
+
+static uint _ = midi2f_init();
+
 static float midi2f(unsigned char data) {
-    return 0.007874f * (float)(data);
+    return midi2f_values[data];
 }
 
 static float midi2hz(float key) {
