@@ -15,14 +15,6 @@ namespace rogue {
 
 static float midi2f_values[256];
 
-static uint midi2f_init() {
-    for (uint i = 0; i < 256; i++) {
-        midi2f_values[i] = 0.007874f * float(i);
-    }
-}
-
-static uint _ = midi2f_init();
-
 static float midi2f(unsigned char data) {
     return midi2f_values[data];
 }
@@ -30,6 +22,14 @@ static float midi2f(unsigned char data) {
 static float midi2hz(float key) {
     return 8.177445f * std::pow(SEMITONE, key);
 }
+
+static uint init_values() {
+    for (uint i = 0; i < 256; i++) {
+        midi2f_values[i] = 0.007874f * float(i);
+    }
+}
+
+static uint _ = init_values();
 
 static float limit(float v, float min, float max) {
     if (v < min) {
