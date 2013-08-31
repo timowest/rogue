@@ -66,6 +66,6 @@ perf_tests: src/rogue.gen
 	./perf_tests.out
 	
 voice_perf_tests: src/rogue.gen
-	$(CXX) -pg -std=c++11 -fopenmp test/voice_perf_tests.cpp $(FAST) $(LVTK) -Idsp -Isrc -o voice_perf_tests.out
+	$(CXX) -pg -std=c++11 -fopenmp test/voice_perf_tests.cpp $(FAST) -ftree-vectorizer-verbose=6 $(LVTK) -Idsp -Isrc -o voice_perf_tests.out
 	./voice_perf_tests.out
 	gprof ./voice_perf_tests.out
