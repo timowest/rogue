@@ -401,6 +401,7 @@ void Virtual::el_double_saw(float* output, float* out_sync, int samples) {
         }
 
     } else if (sync) {
+        // FIXME
         PWIDTH_LOOP_SYNC(
             if (phase < width) {
                 output[i] = gb(phase / width);
@@ -440,8 +441,16 @@ void Virtual::el_tri(float* output, float* out_sync, int samples) {
             )
         }
     } else if (sync) {
+        // bandlimited
         PWIDTH_LOOP_SYNC(
-            output[i] = gb(gtri(phase, width));
+            float s = input_sync[i];
+            float mod = 0.0f;
+            if (s >= 0.0f) { // start
+                mod = gtri(phase_, width) * polyblep(phase / inc);
+            } else if (s > -1.0f) { // end
+                mod = gtri(phase + sync * inc, width) * polyblep(s);
+            }
+            output[i] = gb(gtri(phase, width) - mod);
         )
     } else {
         PWIDTH_LOOP(
@@ -523,7 +532,6 @@ void Virtual::el_pulse_saw(float* output, float* out_sync, int samples) {
                 }
             )
         }
-
     } else if (sync) {
         PWIDTH_LOOP_SYNC(
             if (phase < width) {
@@ -573,8 +581,26 @@ void Virtual::el_slope(float* output, float* out_sync, int samples) {
             )
         }
     } else if (sync) {
+        // bandlimited
         PWIDTH_LOOP_SYNC(
-            output[i] = gb(gvslope(phase, width));
+            float s = input_sync[i];
+            float p2 = gvslope(phase, width);
+            float mod = 0.0f;
+            float inc2 = inc / (1.0f - width);
+            if (s >= 0.0f) { // sync start
+                mod = gvslope(phase_ + inc - phase, width) * polyblep(phase / inc);
+            } else if (s > -1.0f) { // sync end
+                // TODO
+            } else if (phase < inc) {        // start
+                mod = polyblep(phase / inc);
+            } else if (p2 > (1.0f - inc2)) { // end
+                mod = polyblep( (p2 - 1.0f) / inc2);
+            } else if (phase < width && phase > (width - inc)) {
+                mod = width * polyblep( (p2 - width) / inc);
+            } else if (phase > width && p2 < inc2) {
+                mod = width * polyblep(p2 / inc2);
+            }
+            output[i] = gb(p2 - mod);
         )
     } else {
         // bandlimited

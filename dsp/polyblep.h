@@ -40,7 +40,7 @@ static float saw_sync(float p, float p_, float inc, float sync) {
     } else if (p > (1.0f - inc)) { // end
         mod = polyblep((p - 1.0f) / inc);
     } else if (sync > -1.0f) { // sync end
-        mod = (p + sync * inc) * polyblep(sync);
+        mod = (p + (1.0 + sync) * inc) * polyblep(sync);
     }
     return mod;
 }
