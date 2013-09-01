@@ -581,16 +581,14 @@ void Virtual::el_slope(float* output, float* out_sync, int samples) {
             )
         }
     } else if (sync) {
-        // FIXME
+        // bandlimited
         PWIDTH_LOOP_SYNC(
             float s = input_sync[i];
             float p2 = gvslope(phase, width);
             float mod = 0.0f;
             float inc2 = inc / (1.0f - width);
             if (s >= 0.0f) { // sync start
-                mod = gvslope(phase_ + inc - phase, width) * polyblep(s);
-            } else if (s > -1.0f) { // sync end
-                mod = gvslope(phase + (1.0 + s) * inc, width) * polyblep(s);
+                mod = gvslope(phase_, width) * polyblep(s);
             } else if (phase < inc) { // start
                 mod = polyblep(phase / inc);
             } else if (p2 > (1.0f - inc2)) { // end
@@ -599,6 +597,8 @@ void Virtual::el_slope(float* output, float* out_sync, int samples) {
                 mod = width * polyblep( (p2 - width) / inc);
             } else if (phase > width && p2 < inc2) {
                 mod = width * polyblep(p2 / inc2);
+            } else if (s > -1.0f) { // sync end
+                mod = gvslope(phase, width) * polyblep(s);
             }
             output[i] = gb(p2 - mod);
         )
