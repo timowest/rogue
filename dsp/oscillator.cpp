@@ -16,8 +16,8 @@
 
 #define CASE(a,b) case a: b(output, out_sync, samples); break;
 
-// sync  >= 0.0  after reset
-//       > -1.0  before reset
+// sync  >= 0.0  samples after reset
+//       > -1.0  samples before reset
 //       -2.0    no reset
 
 #define INC_PHASE_SYNC() \
@@ -294,7 +294,7 @@ void Virtual::pd_saw_pulse(float* output, float* out_sync, int samples) {
     float m_step = (wf - wt) / (float)samples;
 
     PMOD_LOOP_BOTH(
-        float p2 = 0;
+        float p2 = 0.0f;
         if (phase < 0.5f) {
             p2 = phase;
         } else {
@@ -446,7 +446,7 @@ void Virtual::el_tri(float* output, float* out_sync, int samples) {
             float s = input_sync[i];
             float mod = 0.0f;
             if (s >= 0.0f) { // start
-                mod = gtri(phase_, width) * polyblep(phase / inc);
+                mod = gtri(phase_, width) * polyblep(s);
             } else if (s > -1.0f) { // end
                 mod = gtri(phase + sync * inc, width) * polyblep(s);
             }
@@ -581,17 +581,17 @@ void Virtual::el_slope(float* output, float* out_sync, int samples) {
             )
         }
     } else if (sync) {
-        // bandlimited
+        // FIXME
         PWIDTH_LOOP_SYNC(
             float s = input_sync[i];
             float p2 = gvslope(phase, width);
             float mod = 0.0f;
             float inc2 = inc / (1.0f - width);
             if (s >= 0.0f) { // sync start
-                mod = gvslope(phase_ + inc - phase, width) * polyblep(phase / inc);
+                mod = gvslope(phase_ + inc - phase, width) * polyblep(s);
             } else if (s > -1.0f) { // sync end
-                // TODO
-            } else if (phase < inc) {        // start
+                mod = gvslope(phase + (1.0 + s) * inc, width) * polyblep(s);
+            } else if (phase < inc) { // start
                 mod = polyblep(phase / inc);
             } else if (p2 > (1.0f - inc2)) { // end
                 mod = polyblep( (p2 - 1.0f) / inc2);
