@@ -16,7 +16,12 @@
 
 #define CASE(a,b) case a: b(output, out_sync, samples); break;
 
+// sync  >= 0.0  after reset
+//       > -1.0  before reset
+//       -2.0    no reset
+
 #define INC_PHASE_SYNC() \
+    phase_ = phase; \
     phase += inc; \
     if (input_sync[i] >= 0.0) { \
         phase = input_sync[i] * inc; \
@@ -24,17 +29,22 @@
     }  else if (phase >= 1.0f) { \
         phase -= 1.0f; \
         out_sync[i] = phase / inc; \
+    } else if (phase > (1.0 - inc)) { \
+        out_sync[i] = -(1.0 - phase) / inc; \
     } else { \
-        out_sync[i] = -1.0; \
+        out_sync[i] = input_sync[i]; \
     }
 
 #define INC_PHASE() \
+    phase_ = phase; \
     phase += inc; \
     if (phase >= 1.0f) { \
         phase -= 1.0f; \
         out_sync[i] = phase / inc; \
+    } else if (phase > (1.0 - inc)) { \
+        out_sync[i] = -(1.0 - phase) / inc; \
     } else { \
-        out_sync[i] = -1.0; \
+        out_sync[i] = -2.0; \
     }
 
 // phase loop
@@ -346,16 +356,22 @@ void Virtual::pd_half_sine(float* output, float* out_sync, int samples) {
 void Virtual::el_saw(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
         if (sync) {
-            // TODO
+            PHASE_LOOP_PM_SYNC(
+                output[i] = gb(phase);
+            )
         } else {
             PHASE_LOOP_PM(
                 output[i] = gb(phase);
             )
         }
     } else if (sync) {
-        // TODO
+        // bandlimited
+        PHASE_LOOP_SYNC(
+            float mod = saw_sync(phase, phase_, inc, input_sync[i]);
+            output[i] = gb(phase - mod);
+        )
     } else {
-        // with bandlimiting
+        // bandlimited
         PHASE_LOOP(
             float mod = saw_polyblep(phase, inc);
             output[i] = gb(phase - mod);
@@ -366,17 +382,34 @@ void Virtual::el_saw(float* output, float* out_sync, int samples) {
 // polyblep
 void Virtual::el_double_saw(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
-        PWIDTH_LOOP_PM(
+        if (sync) {
+            PWIDTH_LOOP_PM_SYNC(
+                if (phase < width) {
+                    output[i] = gb(phase / width);
+                } else {
+                    output[i] = gb((phase - width) / (1.0f - width));
+                }
+            )
+        } else {
+            PWIDTH_LOOP_PM(
+                if (phase < width) {
+                    output[i] = gb(phase / width);
+                } else {
+                    output[i] = gb((phase - width) / (1.0f - width));
+                }
+            )
+        }
+
+    } else if (sync) {
+        PWIDTH_LOOP_SYNC(
             if (phase < width) {
                 output[i] = gb(phase / width);
             } else {
                 output[i] = gb((phase - width) / (1.0f - width));
             }
         )
-    } else if (sync) {
-        // TODO
     } else {
-        // with bandlimiting
+        // bandlimited
         PWIDTH_LOOP(
             float p2;
             if (phase < width) {
@@ -396,9 +429,25 @@ void Virtual::el_double_saw(float* output, float* out_sync, int samples) {
 }
 
 void Virtual::el_tri(float* output, float* out_sync, int samples) {
-    PWIDTH_LOOP_BOTH(
-        output[i] = gb(gtri(phase, width));
-    )
+    if (pm > 0.0f) {
+        if (sync) {
+            PWIDTH_LOOP_PM_SYNC(
+                output[i] = gb(gtri(phase, width));
+            )
+        } else {
+            PWIDTH_LOOP_PM(
+                output[i] = gb(gtri(phase, width));
+            )
+        }
+    } else if (sync) {
+        PWIDTH_LOOP_SYNC(
+            output[i] = gb(gtri(phase, width));
+        )
+    } else {
+        PWIDTH_LOOP(
+            output[i] = gb(gtri(phase, width));
+        )
+    }
 }
 
 // TODO remove
@@ -420,13 +469,23 @@ void Virtual::el_tri3(float* output, float* out_sync, int samples) {
 // polyblep
 void Virtual::el_pulse(float* output, float* out_sync, int samples) {
     if (pm > 0.0f) {
-        PWIDTH_LOOP_PM(
-            output[i] = phase < width ? -1.0f : 1.0f;
-        )
+        if (sync) {
+            PWIDTH_LOOP_PM_SYNC(
+                output[i] = phase < width ? -1.0f : 1.0f;
+            )
+        } else {
+            PWIDTH_LOOP_PM(
+                output[i] = phase < width ? -1.0f : 1.0f;
+            )
+        }
     } else if (sync) {
-        // TODO
+        // FIXME
+        PWIDTH_LOOP_SYNC(
+            float mod = pulse_sync(phase, phase_, width, inc, input_sync[i]);
+            output[i] = (phase < width ? -1.0f : 1.0f) - 2.0f * mod;
+        )
     } else {
-        // with bandlimiting
+        // bandlimited
         PWIDTH_LOOP(
             float mod = pulse_polyblep(phase, width, inc);
             output[i] = (phase < width ? -1.0f : 1.0f) - 2.0f * mod;
@@ -447,17 +506,34 @@ void Virtual::el_pulse2(float* output, float* out_sync, int samples) {
 // polyblep
 void Virtual::el_pulse_saw(float* output, float* out_sync, int samples) {
     if (pm > 0.0f) {
-        PWIDTH_LOOP_PM(
+        if (sync) {
+            PWIDTH_LOOP_PM_SYNC(
+                if (phase < width) {
+                    output[i] = phase / width;
+                } else {
+                    output[i] = (width - phase) / (1.0 - width);
+                }
+            )
+        } else {
+            PWIDTH_LOOP_PM(
+                if (phase < width) {
+                    output[i] = phase / width;
+                } else {
+                    output[i] = (width - phase) / (1.0 - width);
+                }
+            )
+        }
+
+    } else if (sync) {
+        PWIDTH_LOOP_SYNC(
             if (phase < width) {
                 output[i] = phase / width;
             } else {
                 output[i] = (width - phase) / (1.0 - width);
             }
         )
-    } else if (sync) {
-        // TODO
     } else {
-        // with bandlimiting
+        // bandlimited
         PWIDTH_LOOP(
             if (phase < width) {
                 float p2 = phase / width;
@@ -487,13 +563,21 @@ void Virtual::el_pulse_saw(float* output, float* out_sync, int samples) {
 // polyblep
 void Virtual::el_slope(float* output, float* out_sync, int samples) {
     if (pm > 0.0f) {
-        PWIDTH_LOOP_PM(
+        if (sync) {
+            PWIDTH_LOOP_PM_SYNC(
+                output[i] = gb(gvslope(phase, width));
+            )
+        } else {
+            PWIDTH_LOOP_PM(
+                output[i] = gb(gvslope(phase, width));
+            )
+        }
+    } else if (sync) {
+        PWIDTH_LOOP_SYNC(
             output[i] = gb(gvslope(phase, width));
         )
-    } else if (sync) {
-        // TODO
     } else {
-        // with bandlimiting
+        // bandlimited
         PWIDTH_LOOP(
             float p2 = gvslope(phase, width);
             float mod = 0.0f;
@@ -516,21 +600,34 @@ void Virtual::el_alpha1(float* output, float* out_sync, int samples) {
     // pulse
     float f = freq;
     float p = phase;
+    float p_ = phase_;
     freq = 2.0f * freq;
     phase = fmod(2.0f * phase, 1.0);
+    phase_ = fmod(2.0f * phase_, 1.0);
     el_pulse(output, out_sync, samples);
 
     // saw
     phase = p;
+    phase_ = p_;
     freq = f;
     if (pm > 0.0) {
-        PHASE_LOOP_PM(
-            output[i] = phase * (output[i] + 1.0) - 1.0f;
-        )
+        if (sync) {
+            PHASE_LOOP_PM_SYNC(
+                output[i] = phase * (output[i] + 1.0) - 1.0f;
+            )
+        } else {
+            PHASE_LOOP_PM(
+                output[i] = phase * (output[i] + 1.0) - 1.0f;
+            )
+        }
     } else if (sync) {
-        // TODO
+        // bandlimited
+        PHASE_LOOP_SYNC(
+            float mod = saw_sync(phase, phase_, inc, input_sync[i]);
+            output[i] = (phase - mod) * (output[i] + 1.0) - 1.0f;
+        )
     } else {
-        // with bandlimiting
+        // bandlimited
         PHASE_LOOP(
             float mod = saw_polyblep(phase, inc);
             output[i] = (phase - mod) * (output[i] + 1.0) - 1.0f;
@@ -543,21 +640,35 @@ void Virtual::el_alpha2(float* output, float* out_sync, int samples) {
     // pulse
     float f = freq;
     float p = phase;
+    float p_ = phase_;
     freq = 4.0f * freq;
     phase = fmod(4.0f * phase, 1.0);
+    phase_ = fmod(4.0f * phase_, 1.0);
     el_pulse(output, out_sync, samples);
 
     // saw
     phase = p;
+    phase_ = p_;
     freq = f;
     if (pm > 0.0) {
-        PHASE_LOOP_PM(
-            output[i] = phase * (output[i] + 1.0) - 1.0f;
-        )
+        if (sync) {
+            PHASE_LOOP_PM_SYNC(
+                output[i] = phase * (output[i] + 1.0) - 1.0f;
+            )
+        } else {
+            PHASE_LOOP_PM(
+                output[i] = phase * (output[i] + 1.0) - 1.0f;
+            )
+        }
+
     } else if (sync) {
-        // TODO
+        // bandlimited
+        PHASE_LOOP_SYNC(
+            float mod = saw_sync(phase, phase_, inc, input_sync[i]);
+            output[i] = (phase - mod) * (output[i] + 1.0) - 1.0f;
+        )
     } else {
-        // with bandlimiting
+        // bandlimited
         PHASE_LOOP(
             float mod = saw_polyblep(phase, inc);
             output[i] = (phase - mod) * (output[i] + 1.0) - 1.0f;
@@ -570,12 +681,15 @@ void Virtual::el_beta1(float* output, float* out_sync, int samples) {
     // pulse
     float f = freq;
     float p = phase;
+    float p_ = phase_;
     freq = 2.0f * freq;
     phase = fmod(2.0f * phase, 1.0);
+    phase_ = fmod(2.0f * phase_, 1.0);
     el_pulse(output, out_sync, samples);
 
     // saw
     phase = p;
+    phase_ = p_;
     freq = f;
     if (pm > 0.0) {
         PHASE_LOOP_PM(
@@ -584,7 +698,7 @@ void Virtual::el_beta1(float* output, float* out_sync, int samples) {
             output[i] = gb(phase * pulse + phase2 * (1.0f - pulse));
         )
     } else {
-        // with bandlimiting
+        // bandlimited
         PHASE_LOOP(
             float pulse = 0.5f * (output[i] + 1.0f);
             float phase2 = fmod(phase + 0.5, 1.0f);
@@ -601,12 +715,15 @@ void Virtual::el_beta2(float* output, float* out_sync, int samples) {
     // pulse
     float f = freq;
     float p = phase;
+    float p_ = phase_;
     freq = 4.0f * freq;
     phase = fmod(4.0f * phase, 1.0);
+    phase_ = fmod(4.0f * phase_, 1.0);
     el_pulse(output, out_sync, samples);
 
     // saw
     phase = p;
+    phase_ = p_;
     freq = f;
     if (pm > 0.0) {
         PHASE_LOOP_PM(
@@ -615,7 +732,7 @@ void Virtual::el_beta2(float* output, float* out_sync, int samples) {
             output[i] = gb(phase * pulse + phase2 * (1.0f - pulse));
         )
     } else {
-        // with bandlimiting
+        // bandlimited
         PHASE_LOOP(
             float pulse = 0.5f * (output[i] + 1.0f);
             float phase2 = fmod(phase + 0.5, 1.0f);
@@ -629,10 +746,12 @@ void Virtual::el_beta2(float* output, float* out_sync, int samples) {
 void Virtual::el_pulse_tri(float* output, float* out_sync, int samples) {
     // pulse2
     float p = phase;
+    float p_ = phase_;
     el_pulse2(output, out_sync, samples);
 
     // tri
     phase = p;
+    phase_ = p_;
     PWIDTH_LOOP_BOTH(
         output[i] = 0.5 * (output[i] + gb(gtri(phase, 0.5f)));
     )
@@ -666,14 +785,24 @@ void Virtual::fm2(float* output, float* out_sync, int samples) {
 // bandlimited
 void Virtual::fm3(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
-        PHASE_LOOP_PM(
+        if (sync) {
+            PHASE_LOOP_PM_SYNC(
+                float y = SIN(phase);
+                output[i] = (phase > 0.25 && phase < 0.75) ? -y : y;
+            )
+        } else {
+            PHASE_LOOP_PM(
+                float y = SIN(phase);
+                output[i] = (phase > 0.25 && phase < 0.75) ? -y : y;
+            )
+        }
+    } else if (sync) {
+        PHASE_LOOP_SYNC(
             float y = SIN(phase);
             output[i] = (phase > 0.25 && phase < 0.75) ? -y : y;
         )
-    } else if (sync) {
-        // TODO
     } else {
-        // with bandlimiting
+        // bandlimited
         PHASE_LOOP(
             float y = SIN(phase);
             if (phase < (0.25 - inc)) {
@@ -701,13 +830,21 @@ void Virtual::fm3(float* output, float* out_sync, int samples) {
 // bandlimited
 void Virtual::fm4(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
-        PHASE_LOOP_PM(
+        if (sync) {
+            PHASE_LOOP_PM_SYNC(
+                output[i] = phase < 0.5f ? SIN(2.0f * phase) : 0.0f;
+            )
+        } else {
+            PHASE_LOOP_PM(
+                output[i] = phase < 0.5f ? SIN(2.0f * phase) : 0.0f;
+            )
+        }
+    } else if (sync) {
+        PHASE_LOOP_SYNC(
             output[i] = phase < 0.5f ? SIN(2.0f * phase) : 0.0f;
         )
-    } else if (sync) {
-        // TODO
     } else {
-        // with bandlimiting
+        // bandlimited
         PHASE_LOOP(
             if (phase < 0.5) {
                 output[i] = SIN(2.0f * phase);
@@ -725,13 +862,21 @@ void Virtual::fm4(float* output, float* out_sync, int samples) {
 // bandlimited
 void Virtual::fm5(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
-        PHASE_LOOP_PM(
+        if (sync) {
+            PHASE_LOOP_PM_SYNC(
+                output[i] = phase < 0.5f ? SIN(phase) : 0.0f;
+            )
+        } else {
+            PHASE_LOOP_PM(
+                output[i] = phase < 0.5f ? SIN(phase) : 0.0f;
+            )
+        }
+    } else if (sync) {
+        PHASE_LOOP_SYNC(
             output[i] = phase < 0.5f ? SIN(phase) : 0.0f;
         )
-    } else if (sync) {
-        // TODO
     } else {
-        // with bandlimiting
+        // bandlimited
         PHASE_LOOP(
             if (phase < 0.5) {
                 output[i] = SIN(phase);
@@ -771,7 +916,30 @@ static float bandlimit_fm678(float y, float phase, float inc) {
 // bandlimited
 void Virtual::fm6(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
-        PHASE_LOOP_PM(
+        if (sync) {
+            PHASE_LOOP_PM_SYNC(
+                if (phase < 0.25f) {
+                     output[i] = SIN(2.0 * phase);
+                 } else if (phase > 0.5f && phase < 0.75f) {
+                     output[i] = SIN(2.0 * (phase - 0.25));
+                 } else {
+                     output[i] = 0.0f;
+                 }
+            )
+        } else {
+            PHASE_LOOP_PM(
+                if (phase < 0.25f) {
+                     output[i] = SIN(2.0 * phase);
+                 } else if (phase > 0.5f && phase < 0.75f) {
+                     output[i] = SIN(2.0 * (phase - 0.25));
+                 } else {
+                     output[i] = 0.0f;
+                 }
+            )
+        }
+
+    } else if (sync) {
+        PHASE_LOOP_SYNC(
             if (phase < 0.25f) {
                  output[i] = SIN(2.0 * phase);
              } else if (phase > 0.5f && phase < 0.75f) {
@@ -780,10 +948,8 @@ void Virtual::fm6(float* output, float* out_sync, int samples) {
                  output[i] = 0.0f;
              }
         )
-    } else if (sync) {
-        // TODO
     } else {
-        // with bandlimiting
+        // bandlimited
         PHASE_LOOP(
             float y = 0.0f;
             if (phase < 0.25f) {
@@ -800,17 +966,34 @@ void Virtual::fm6(float* output, float* out_sync, int samples) {
 // bandlimited
 void Virtual::fm7(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
-        PHASE_LOOP_PM(
+        if (sync) {
+            PHASE_LOOP_PM_SYNC(
+                if (phase < 0.25 || phase > 0.5 && phase < 0.75) {
+                    output[i] = SIN(phase);
+                } else {
+                    output[i] = 0.0f;
+                }
+            )
+        } else {
+            PHASE_LOOP_PM(
+                if (phase < 0.25 || phase > 0.5 && phase < 0.75) {
+                    output[i] = SIN(phase);
+                } else {
+                    output[i] = 0.0f;
+                }
+            )
+        }
+
+    } else if (sync) {
+        PHASE_LOOP_SYNC(
             if (phase < 0.25 || phase > 0.5 && phase < 0.75) {
                 output[i] = SIN(phase);
             } else {
                 output[i] = 0.0f;
             }
         )
-    } else if (sync) {
-        // TODO
     } else {
-        // with bandlimiting
+        // bandlimited
         PHASE_LOOP(
             const float y = SIN(phase);
             output[i] = bandlimit_fm678(y, phase, inc);
@@ -822,17 +1005,34 @@ void Virtual::fm7(float* output, float* out_sync, int samples) {
 // bandlimited
 void Virtual::fm8(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
-        PHASE_LOOP_PM(
+        if (sync) {
+            PHASE_LOOP_PM_SYNC(
+                if (phase < 0.25 || phase > 0.5 && phase < 0.75) {
+                    output[i] = SIN(fmod(phase, 0.25f));
+                } else {
+                    output[i] = 0.0f;
+                }
+            )
+        } else {
+            PHASE_LOOP_PM(
+                if (phase < 0.25 || phase > 0.5 && phase < 0.75) {
+                    output[i] = SIN(fmod(phase, 0.25f));
+                } else {
+                    output[i] = 0.0f;
+                }
+            )
+        }
+
+    } else if (sync) {
+        PHASE_LOOP_SYNC(
             if (phase < 0.25 || phase > 0.5 && phase < 0.75) {
                 output[i] = SIN(fmod(phase, 0.25f));
             } else {
                 output[i] = 0.0f;
             }
         )
-    } else if (sync) {
-        // TODO
     } else {
-        // with bandlimiting
+        // bandlimited
         PHASE_LOOP(
             const float y = fabs(SIN(fmod(phase, 0.5f)));
             output[i] = bandlimit_fm678(y, phase, inc);

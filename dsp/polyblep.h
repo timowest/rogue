@@ -30,6 +30,21 @@ static float saw_polyblep(float p, float inc) {
     return mod;
 }
 
+static float saw_sync(float p, float p_, float inc, float sync) {
+    float mod = 0.0f;
+    if (p < inc) { // start
+        mod = polyblep(p / inc);
+        if (sync >= 0.0f) {
+            mod *= p_ + inc - p;
+        }
+    } else if (p > (1.0f - inc)) { // end
+        mod = polyblep((p - 1.0f) / inc);
+    } else if (sync > -1.0f) { // sync end
+        mod = (p + sync * inc) * polyblep(sync);
+    }
+    return mod;
+}
+
 static float pulse_polyblep(float p, float width, float inc) {
     float mod = 0.0f;
     if (p < width) {
@@ -43,6 +58,28 @@ static float pulse_polyblep(float p, float width, float inc) {
             mod = polyblep( (p - 1.0f) / inc);
         } else if (p < (width + inc)) {
             mod = -polyblep( (p - width) / inc);
+        }
+    }
+    return mod;
+}
+
+static float pulse_sync(float p, float p_, float width, float inc, float sync) {
+    float mod = 0.0f;
+    if (p < width) {
+        if (p < inc) { // start
+            if (sync < 0.0f || p_ >= (width - inc)) {
+                mod = polyblep(p / inc);
+            }
+        } else if (p > (width - inc)) {
+            mod = -polyblep( (p - width) / inc);
+        }
+    } else {
+        if (p > (1.0f - inc)) { // end
+            mod = polyblep( (p - 1.0f) / inc);
+        } else if (p < (width + inc)) {
+            mod = -polyblep( (p - width) / inc);
+        } else if (sync > -1.0f) {
+            mod = polyblep(sync);
         }
     }
     return mod;

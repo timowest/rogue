@@ -16,7 +16,7 @@ namespace dsp {
  */
 class Oscillator {
   protected:
-    float freq = 440.0f, sample_rate, phase = 0.0f;
+    float freq = 440.0f, sample_rate, phase = 0.0f, phase_ = 0.0f;
     float start = 0.0f, wf = 0.5f, wt = 0.5f;
     int type = 0;
 
@@ -36,7 +36,7 @@ class Oscillator {
         float phase2 = phase + pm * input[i];
         if (phase2 < 0.0f) {
             phase2 += 1.0f;
-        } else if (phase2 > 1.0f) {
+        } else if (phase2 >= 1.0f) {
             phase2 -= 1.0f;
         }
         return phase2;
@@ -60,6 +60,7 @@ class Oscillator {
 
     void clear() {
         phase = start;
+        phase_ = start;
         freq = 440.0f;
         type = 0;
 
@@ -68,6 +69,7 @@ class Oscillator {
 
     void reset() {
         phase = start;
+        phase_ = start;
     }
 
     virtual void process(float* output, float* out_sync, int samples) = 0;

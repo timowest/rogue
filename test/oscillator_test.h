@@ -10,7 +10,7 @@ void oscillator_test() {
 
     for (int i = 0; i < SIZE; i++) {
         buffer2[i] = 0.0;
-        sync[i] = -1.0;
+        sync[i] = -2.0;
     }
 
     dsp::Virtual va;
@@ -63,14 +63,26 @@ void oscillator_test() {
 
         // with sync
         va.reset();
+        va.setFreq(660.0f);
+        va.setModulation(buffer2, sync, 0.0, true);
+        va.process(buffer3, sync2, SIZE);
+
+        sprintf(filename, "wavs/osc/vasc1_%i.wav", i);
+        write_wav(filename, buffer3);
+        if (count_clicks(buffer3) > 0) {
+            error("va sync1 click error %i", i);
+        }
+
+        // with sync 2
+        va.reset();
         va.setFreq(220.0f);
         va.setModulation(buffer2, sync, 0.0, true);
         va.process(buffer3, sync2, SIZE);
 
-        sprintf(filename, "wavs/osc/vasc_%i.wav", i);
+        sprintf(filename, "wavs/osc/vasc2_%i.wav", i);
         write_wav(filename, buffer3);
         if (count_clicks(buffer3) > 0) {
-            error("va sync click error %i", i);
+            error("va sync2 click error %i", i);
         }
     }
 
