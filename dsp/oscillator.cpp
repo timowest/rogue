@@ -379,45 +379,47 @@ void Virtual::el_saw(float* output, float* out_sync, int samples) {
     }
 }
 
+static float double_saw(float phase, float width) {
+    if (phase < width) {
+        return phase / width;
+    } else {
+        return (phase - width) / (1.0f - width);
+    }
+}
+
 // polyblep
 void Virtual::el_double_saw(float* output, float* out_sync, int samples) {
     if (pm > 0.0) {
         if (sync) {
             PWIDTH_LOOP_PM_SYNC(
-                if (phase < width) {
-                    output[i] = gb(phase / width);
-                } else {
-                    output[i] = gb((phase - width) / (1.0f - width));
-                }
+                output[i] = gb(double_saw(phase, width));
             )
         } else {
             PWIDTH_LOOP_PM(
-                if (phase < width) {
-                    output[i] = gb(phase / width);
-                } else {
-                    output[i] = gb((phase - width) / (1.0f - width));
-                }
+                output[i] = gb(double_saw(phase, width));
             )
         }
-
     } else if (sync) {
-        // FIXME
+        // bandlimited
         PWIDTH_LOOP_SYNC(
-            if (phase < width) {
-                output[i] = gb(phase / width);
+            float p2 = double_saw(phase, width);
+            float s = input_sync[i];
+            float mod = 0.0f;
+            if (s >= 0.0f) {
+                mod = double_saw(phase_, width) * polyblep(sync);
+            } else if (sync > -1.0f) {
+                mod = p2 * polyblep(sync);
+            } else if (phase < width) {
+                mod = saw_polyblep(p2, inc / width);
             } else {
-                output[i] = gb((phase - width) / (1.0f - width));
+                mod = saw_polyblep(p2, inc / (1.0f - width));
             }
+            output[i] = gb(p2 - mod);
         )
     } else {
         // bandlimited
         PWIDTH_LOOP(
-            float p2;
-            if (phase < width) {
-                p2 = phase / width;
-            } else {
-                p2 = (phase - width) / (1.0f - width);
-            }
+            float p2 = double_saw(phase, width);
             float mod = 0.0f;
             if (phase < width) {
                 mod = saw_polyblep(p2, inc / width);
@@ -446,7 +448,7 @@ void Virtual::el_tri(float* output, float* out_sync, int samples) {
             float s = input_sync[i];
             float mod = 0.0f;
             if (s >= 0.0f) { // start
-                mod = gtri(phase_, width) * polyblep(s);
+                mod = gtri(phase_ + inc - phase, width) * polyblep(s);
             } else if (s > -1.0f) { // end
                 mod = gtri(phase + sync * inc, width) * polyblep(s);
             }
@@ -686,7 +688,6 @@ void Virtual::el_alpha2(float* output, float* out_sync, int samples) {
                 output[i] = phase * (output[i] + 1.0) - 1.0f;
             )
         }
-
     } else if (sync) {
         // bandlimited
         PHASE_LOOP_SYNC(
@@ -1224,7 +1225,7 @@ void AS::process(float* output, float* out_sync, int samples) {
 void Noise::process(float* output, float* out_sync, int samples) {
     for (uint i = 0; i < samples; i++) {
         output[i] =  (2.0f * rand() / (RAND_MAX + 1.0f) - 1.0f);
-        out_sync[i] = -1.0;
+        out_sync[i] = -2.0;
     }
 
     if (type == PINK) {
