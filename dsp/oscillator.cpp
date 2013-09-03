@@ -405,14 +405,18 @@ void Virtual::el_double_saw(float* output, float* out_sync, int samples) {
             float p2 = double_saw(phase, width);
             float s = input_sync[i];
             float mod = 0.0f;
-            if (s >= 0.0f) {
-                mod = double_saw(phase_, width) * polyblep(sync);
-            } else if (sync > -1.0f) {
-                mod = p2 * polyblep(sync);
-            } else if (phase < width) {
-                mod = saw_polyblep(p2, inc / width);
-            } else {
-                mod = saw_polyblep(p2, inc / (1.0f - width));
+            if (s >= 0.0f) { // sync start
+                mod = double_saw(phase_, width) * polyblep(s);
+            } else if (s > -1.0f) { // sync end
+                mod = double_saw(phase, width) * polyblep(s);
+            } else if (phase < inc) { // start
+                mod = polyblep(phase / inc);
+            } else if (phase > (1.0f - inc)) { // end
+                mod = polyblep( (phase - 1.0f) / inc);
+            } else if (phase < width && phase > (width - inc)) { // mid end
+                mod = polyblep( (phase - width) / inc);
+            } else if (phase > width && phase < (width + inc)) { // mid start
+                mod = polyblep((phase - width) / inc);
             }
             output[i] = gb(p2 - mod);
         )
@@ -421,10 +425,14 @@ void Virtual::el_double_saw(float* output, float* out_sync, int samples) {
         PWIDTH_LOOP(
             float p2 = double_saw(phase, width);
             float mod = 0.0f;
-            if (phase < width) {
-                mod = saw_polyblep(p2, inc / width);
-            } else {
-                mod = saw_polyblep(p2, inc / (1.0f - width));
+            if (phase < inc) { // start
+                mod = polyblep(phase / inc);
+            } else if (phase > (1.0f - inc)) { // end
+                mod = polyblep( (phase - 1.0f) / inc);
+            } else if (phase < width && phase > (width - inc)) { // mid end
+                mod = polyblep( (phase - width) / inc);
+            } else if (phase > width && phase < (width + inc)) { // mid start
+                mod = polyblep((phase - width) / inc);
             }
             output[i] = gb(p2 - mod);
         )
@@ -535,6 +543,7 @@ void Virtual::el_pulse_saw(float* output, float* out_sync, int samples) {
             )
         }
     } else if (sync) {
+        // TODO
         PWIDTH_LOOP_SYNC(
             output[i] = pulse_saw(phase, width);
         )
