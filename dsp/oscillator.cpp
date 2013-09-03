@@ -550,27 +550,18 @@ void Virtual::el_pulse_saw(float* output, float* out_sync, int samples) {
     } else {
         // bandlimited
         PWIDTH_LOOP(
-            if (phase < width) {
-                float p2 = phase / width;
-                float inc2 = inc / width;
-                float mod = 0.0f;
-                if (p2 < inc2) { // start
-                    //mod = polyblep(p2 / inc2);
-                } else if (p2 > (1.0f - inc2)) { // end
-                    mod = polyblep( (p2 - 1.0) / inc2);
-                }
-                output[i] = p2 - mod;
-            } else {
-                float p2 = (phase - width) / (1.0 - width);
-                float inc2 = inc / (1.0 - width);
-                float mod = 0.0f;
-                if (p2 < inc2) { // start
-                    //mod = polyblep(p2 / inc2);
-                } else if (p2 > (1.0f - inc2)) { // end
-                    mod = polyblep( (p2 - 1.0) / inc2);
-                }
-                output[i] = -(p2 - mod);
+            float p2 = pulse_saw(phase, width);
+            float mod = 0.0f;
+            if (phase < inc) { // start
+                mod = -polyblep(phase / inc);
+            } else if (phase > (1.0f - inc)) { // end
+                mod = -polyblep( (phase - 1.0f) / inc);
+            } else if (phase < width && phase > (width - inc)) { // mid end
+                mod = polyblep( (phase - width) / inc);
+            } else if (phase > width && phase < (width + inc)) { // mid start
+                mod = polyblep((phase - width) / inc);
             }
+            output[i] = p2 - mod;
         )
     }
 }
