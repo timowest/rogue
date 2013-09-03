@@ -543,9 +543,25 @@ void Virtual::el_pulse_saw(float* output, float* out_sync, int samples) {
             )
         }
     } else if (sync) {
-        // TODO
+        // bandlimited
         PWIDTH_LOOP_SYNC(
-            output[i] = pulse_saw(phase, width);
+            float s = input_sync[i];
+            float p2 = pulse_saw(phase, width);
+            float mod = 0.0f;
+            if (s >= 0.0f) { // sync start
+                mod = pulse_saw(phase_, width) * polyblep(s);
+            } else if (phase < inc) { // start
+                mod = -polyblep(phase / inc);
+            } else if (phase > (1.0f - inc)) { // end
+                mod = -polyblep( (phase - 1.0f) / inc);
+            } else if (phase < width && phase > (width - inc)) { // mid end
+                mod = polyblep( (phase - width) / inc);
+            } else if (phase > width && phase < (width + inc)) { // mid start
+                mod = polyblep((phase - width) / inc);
+            } else if (s > -1.0f) { // sync end
+                mod = pulse_saw(phase, width) * polyblep(s);
+            }
+            output[i] = p2 - mod;
         )
     } else {
         // bandlimited
