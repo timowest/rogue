@@ -583,6 +583,7 @@ void Virtual::el_pulse_saw(float* output, float* out_sync, int samples) {
 }
 
 // polyblep
+// TODO simplify bandlimiting
 void Virtual::el_slope(float* output, float* out_sync, int samples) {
     if (pm > 0.0f) {
         if (sync) {
