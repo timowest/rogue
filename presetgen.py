@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 # coding: utf-8
 
 import rdflib
-from rdflib.Graph import Graph
+from rdflib import Graph
 
 NS = """@prefix atom: <http://lv2plug.in/ns/ext/atom#> .
 @prefix lv2: <http://lv2plug.in/ns/lv2core#> .
