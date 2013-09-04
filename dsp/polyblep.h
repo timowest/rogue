@@ -68,11 +68,13 @@ static float pulse_sync(float p, float p_, float width, float inc, float sync) {
     float mod = 0.0f;
     if (p < width) {
         if (p < inc) { // start
-            if (sync < 0.0f || p_ >= (width - inc)) {
+            if (sync < 0.0f || p_ >= width) {
                 mod = polyblep(p / inc);
             }
         } else if (p > (width - inc)) {
-            mod = -polyblep( (p - width) / inc);
+            if (sync < -1.0f) {
+                mod = -polyblep( (p - width) / inc);
+            }
         }
     } else {
         if (p > (1.0f - inc)) { // end
