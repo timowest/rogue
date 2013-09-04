@@ -795,14 +795,35 @@ void Virtual::el_pulse_tri(float* output, float* out_sync, int samples) {
 }
 
 // copied from lmms triple oscillator
+static float lmms_exp(float phase) {
+    if (phase > 0.5f) {
+        return -1.0 + 8.0 * (1.0 - phase) * (1.0 - phase);
+    } else {
+        return -1.0 + 8.0 * phase * phase;
+    }
+}
+
 void Virtual::el_exp(float* output, float* out_sync, int samples) {
-    PHASE_LOOP_BOTH(
-        if (phase > 0.5f) {
-            output[i] = -1.0 + 8.0 * (1.0 - phase) * (1.0 - phase);
+    if (pm > 0.0f) {
+        if (sync) {
+            PHASE_LOOP_PM_SYNC(
+                output[i] = lmms_exp(phase);
+            )
         } else {
-            output[i] = -1.0 + 8.0 * phase * phase;
+            PHASE_LOOP_PM(
+                output[i] = lmms_exp(phase);
+            )
         }
-    )
+    } else if (sync) {
+        PHASE_LOOP_SYNC(
+            // TODO
+            output[i] = lmms_exp(phase);
+        )
+    } else {
+        PHASE_LOOP(
+            output[i] = lmms_exp(phase);
+        )
+    }
 }
 
 // FM
