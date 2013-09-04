@@ -583,7 +583,6 @@ void Virtual::el_pulse_saw(float* output, float* out_sync, int samples) {
 }
 
 // polyblep
-// TODO simplify bandlimiting
 void Virtual::el_slope(float* output, float* out_sync, int samples) {
     if (pm > 0.0f) {
         if (sync) {
@@ -601,19 +600,18 @@ void Virtual::el_slope(float* output, float* out_sync, int samples) {
             float s = input_sync[i];
             float p2 = gvslope(phase, width);
             float mod = 0.0f;
-            float inc2 = inc / (1.0f - width);
             if (s >= 0.0f) { // sync start
                 mod = gvslope(phase_, width) * polyblep(s);
-            } else if (phase < inc) { // start
-                mod = polyblep(phase / inc);
-            } else if (p2 > (1.0f - inc2)) { // end
-                mod = polyblep( (p2 - 1.0f) / inc2);
-            } else if (phase < width && phase > (width - inc)) {
-                mod = width * polyblep( (p2 - width) / inc);
-            } else if (phase > width && p2 < inc2) {
-                mod = width * polyblep(p2 / inc2);
             } else if (s > -1.0f) { // sync end
                 mod = gvslope(phase, width) * polyblep(s);
+            } else if (phase < inc) { // start
+                mod = polyblep(phase / inc);
+            } else if (phase > (1.0f - inc)) { // end
+                mod = polyblep( (phase - 1.0f) / inc);
+            } else if (phase < width && phase > (width - inc)) { // mid end
+                mod = width * polyblep( (phase - width) / inc);
+            } else if (phase > width && phase < (width + inc)) { // mid start
+                mod = width * polyblep((phase - width) / inc);
             }
             output[i] = gb(p2 - mod);
         )
@@ -622,15 +620,14 @@ void Virtual::el_slope(float* output, float* out_sync, int samples) {
         PWIDTH_LOOP(
             float p2 = gvslope(phase, width);
             float mod = 0.0f;
-            float inc2 = inc / (1.0f - width);
-            if (phase < inc) {        // start
+            if (phase < inc) { // start
                 mod = polyblep(phase / inc);
-            } else if (p2 > (1.0f - inc2)) { // end
-                mod = polyblep( (p2 - 1.0f) / inc2);
-            } else if (phase < width && phase > (width - inc)) {
-                mod = width * polyblep( (p2 - width) / inc);
-            } else if (phase > width && p2 < inc2) {
-                mod = width * polyblep(p2 / inc2);
+            } else if (phase > (1.0f - inc)) { // end
+                mod = polyblep( (phase - 1.0f) / inc);
+            } else if (phase < width && phase > (width - inc)) { // mid end
+                mod = width * polyblep( (phase - width) / inc);
+            } else if (phase > width && phase < (width + inc)) { // mid start
+                mod = width * polyblep((phase - width) / inc);
             }
             output[i] = gb(p2 - mod);
         )
