@@ -7,6 +7,7 @@
 #ifndef DSP_OSCILLATOR_H
 #define DSP_OSCILLATOR_H
 
+#include <math.h>
 #include "filter.h"
 
 namespace dsp {
@@ -35,9 +36,9 @@ class Oscillator {
     float pmod(float phase, int i) {
         float phase2 = phase + pm * input[i];
         if (phase2 < 0.0f) {
-            phase2 += 1.0f;
+            phase2 = 1.0f - fmod(fabs(phase2), 1.0f);
         } else if (phase2 >= 1.0f) {
-            phase2 -= 1.0f;
+            phase2 = fmod(phase2, 1.0f);
         }
         return phase2;
     }
