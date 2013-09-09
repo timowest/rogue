@@ -28,7 +28,7 @@ class LFO {
   private:
     int type = 0;
     float phase = 0.0, start = 0.0, freq, width = 0.5;
-    float prev_phase, value;
+    float prev_phase;
     float sample_rate;
 };
 

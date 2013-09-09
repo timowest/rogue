@@ -17,13 +17,11 @@ void LFO::clear() {
     type = 0;
     phase = start;
     prev_phase = start;
-    value = 0.0;
 }
 
 void LFO::reset() {
     phase = start;
     prev_phase = start;
-    value = 0.0;
 }
 
 float LFO::getValue(float p) {

@@ -171,7 +171,6 @@ void rogueSynth::post_process(uint from, uint to) {
             float phase = data.lfos[i].phase;
             phase = fmod(phase + samples * inc, 1.0f);
             data.lfos[i].phase = phase;
-            data.lfos[i].start = phase;
         }
     }
 

@@ -156,11 +156,14 @@ void rogueVoice::configLFO(uint i) {
 
     // NOTE: lfos can't modulate each other's freq
     lfo.lfo.setType(lfoData.type);
-    lfo.lfo.setStart(lfoData.start);
+    float start = lfoData.start;
+    if (lfoData.reset_type == 1) {
+        start = lfoData.phase;
+    }
+    lfo.lfo.setStart(start);
     lfo.lfo.setFreq(f);
     lfo.lfo.setWidth(lfoData.width);
     // TODO humanize
-    // TODO reset type
 }
 
 void rogueVoice::runLFO(uint i, uint from, uint to) {
