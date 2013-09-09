@@ -46,6 +46,8 @@ struct LFOData {
     float freq;
     float start, width;
     float humanize;
+
+    float phase = 0.0f;
 };
 
 struct EnvData {

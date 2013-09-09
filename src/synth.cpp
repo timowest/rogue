@@ -164,6 +164,17 @@ void rogueSynth::post_process(uint from, uint to) {
 
     const uint samples = to - from;
 
+    // shift global LFO phases
+    for (uint i = 0; i < NLFO; i++) {
+        if (data.lfos[i].reset_type == 1) {
+            float inc = data.lfos[i].freq / sample_rate;
+            float phase = data.lfos[i].phase;
+            phase = fmod(phase + samples * inc, 1.0f);
+            data.lfos[i].phase = phase;
+            data.lfos[i].start = phase;
+        }
+    }
+
     // DC blocking
     ldcBlocker.process(left, left, samples);
     rdcBlocker.process(right, right, samples);
