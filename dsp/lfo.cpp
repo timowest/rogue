@@ -25,6 +25,7 @@ void LFO::reset() {
 }
 
 float LFO::getValue(float p) {
+    float val;
     switch (type) {
     case SIN:
         return sin_.fast(p);
@@ -40,10 +41,10 @@ float LFO::getValue(float p) {
         return p < width ? -1.0 : 1.0;
     case SH:
         if (prev_phase > p) { // update value once per cycle
-            value = (2.0f * rand() / float(RAND_MAX + 1.0f) - 1.0f);
+            val = (2.0f * rand() / float(RAND_MAX + 1.0f) - 1.0f);
         }
         prev_phase = p;
-        return value;
+        return val;
     case NOISE:
         return (2.0f * rand() / float(RAND_MAX + 1.0f) - 1.0f);
     default:

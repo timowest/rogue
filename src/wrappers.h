@@ -92,7 +92,9 @@ struct LFO {
     dsp::LFO lfo;
     float current, last;
 
-    void on() {}
+    void on() {
+        lfo.reset();
+    }
 
     void off() {}
 
