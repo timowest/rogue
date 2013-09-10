@@ -46,23 +46,23 @@ struct Osc {
     }
 
     void setModulation(int type, float* _input, float* _input_s, float _pm, bool _sync) {
-        if (type < 34) {
+        if (type < 29) {
             virt.setModulation(_input, _input_s, _pm, _sync);
-        } else if (type < 37) {
+        } else if (type < 32) {
             as.setModulation(_input, _input_s, _pm, _sync);
         }
     }
 
     void process(int type, float freq, float wf, float wt, float* buffer, float* sync, int samples) {
         dsp::Oscillator* osc;
-        if (type < 34) {
+        if (type < 29) {
             osc = &virt;
-        } else if (type < 37) {
+        } else if (type < 32) {
             osc = &as;
-            type = type - 34;
+            type = type - 29;
         } else {
             osc = &noise;
-            type = type - 37;
+            type = type - 32;
         }
         osc->setType(type);
         osc->setFreq(freq);
@@ -112,9 +112,13 @@ struct Env {
     dsp::AHDSR env;
     float current, last;
 
-    void on() { env.on(); }
+    void on() {
+        env.on();
+    }
 
-    void off() { env.off(); }
+    void off() {
+        env.off();
+    }
 
     void reset() {
         current = 0.0f;

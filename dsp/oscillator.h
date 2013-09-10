@@ -85,11 +85,10 @@ class Oscillator {
 
 class Virtual : public Oscillator {
 
-    // 34
+    // 29
     enum {VA_SAW, VA_TRI_SAW, VA_PULSE,
           PD_SAW, PD_SQUARE, PD_PULSE, PD_DOUBLE_SINE, PD_SAW_PULSE, PD_RES1, PD_RES2, PD_RES3, PD_HALF_SINE,
-          EL_SAW, EL_DOUBLE_SAW, EL_TRI, EL_TRI2, EL_TRI3, EL_PULSE, EL_PULSE_SAW, EL_SLOPE, EL_ALPHA1, EL_ALPHA2,
-          EL_BETA1, EL_BETA2, EL_PULSE_TRI, EL_EXP,
+          EL_SAW, EL_DOUBLE_SAW, EL_TRI, EL_PULSE, EL_PULSE_SAW, EL_SLOPE, EL_ALPHA1, EL_ALPHA2, EL_EXP,
           FM1, FM2, FM3, FM4, FM5, FM6, FM7, FM8
     };
 
@@ -116,17 +115,11 @@ class Virtual : public Oscillator {
     void el_saw(float* output, float* sync, int samples);
     void el_double_saw(float* output, float* sync, int samples);
     void el_tri(float* output, float* sync, int samples);
-    void el_tri2(float* output, float* sync, int samples);
-    void el_tri3(float* output, float* sync, int samples);
     void el_pulse(float* output, float* sync, int samples);
-    void el_pulse2(float* output, float* sync, int samples);
     void el_pulse_saw(float* output, float* sync, int samples);
     void el_slope(float* output, float* sync, int samples);
     void el_alpha1(float* output, float* sync, int samples);
     void el_alpha2(float* output, float* sync, int samples);
-    void el_beta1(float* output, float* sync, int samples);
-    void el_beta2(float* output, float* sync, int samples);
-    void el_pulse_tri(float* output, float* sync, int samples);
     void el_exp(float* output, float* sync, int samples);
 
     // FM

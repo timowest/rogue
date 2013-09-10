@@ -308,7 +308,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         connectBox(p_osc1_on + off, parent);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        QComboBox* typeBox = createSelect(p_osc1_type + off, osc_types, 34 + 3 + 4);
+        QComboBox* typeBox = createSelect(p_osc1_type + off, osc_types, 29 + 3 + 4);
         oscMapper.setMapping(typeBox, i);
         connect(typeBox, SIGNAL(currentIndexChanged(int)), &oscMapper, SLOT(map()));
         grid->addWidget(typeBox, 0, 0, 1, 2);

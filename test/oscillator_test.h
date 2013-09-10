@@ -26,7 +26,7 @@ void oscillator_test() {
     no.setFreq(440.0f);
 
     // va
-    for (int i = 0; i < 34; i++) {
+    for (int i = 0; i < 29; i++) {
         va.reset();
         va.setFreq(440.0f);
         va.setType(i);

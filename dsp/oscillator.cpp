@@ -469,22 +469,6 @@ void Virtual::el_tri(float* output, float* out_sync, int samples) {
     }
 }
 
-// TODO remove
-void Virtual::el_tri2(float* output, float* out_sync, int samples) {
-    PWIDTH_LOOP_BOTH(
-        float p = gtri(phase, width);
-        output[i] = gb(p * sqrt(p) + p * (1.0-p));
-    )
-}
-
-// TODO remove
-void Virtual::el_tri3(float* output, float* out_sync, int samples) {
-    PWIDTH_LOOP_BOTH(
-        float p = gtri(phase, width);
-        output[i] = gb(phase < width ? sqrt(p) : p*p*p);
-    )
-}
-
 // polyblep
 void Virtual::el_pulse(float* output, float* out_sync, int samples) {
     if (pm > 0.0f) {
@@ -510,16 +494,6 @@ void Virtual::el_pulse(float* output, float* out_sync, int samples) {
             output[i] = (phase < width ? -1.0f : 1.0f) - 2.0f * mod;
         )
     }
-}
-
-// TODO polyblep
-void Virtual::el_pulse2(float* output, float* out_sync, int samples) {
-    PWIDTH_LOOP_BOTH( // TODO optimize
-        float min = 0.5f - 0.5f * width;
-        float max = 0.5f + 0.5f * width;
-        float p2 = (phase > min && phase < max) ? 1.0f : 0.0f;
-        output[i] = gb(p2);
-    )
 }
 
 static float pulse_saw(float phase, float width) {
@@ -711,87 +685,6 @@ void Virtual::el_alpha2(float* output, float* out_sync, int samples) {
             output[i] = (phase - mod) * (output[i] + 1.0) - 1.0f;
         )
     }
-}
-
-// TODO remove
-void Virtual::el_beta1(float* output, float* out_sync, int samples) {
-    // pulse
-    float f = freq;
-    float p = phase;
-    float p_ = phase_;
-    freq = 2.0f * freq;
-    phase = fmod(2.0f * phase, 1.0);
-    phase_ = fmod(2.0f * phase_, 1.0);
-    el_pulse(output, out_sync, samples);
-
-    // saw
-    phase = p;
-    phase_ = p_;
-    freq = f;
-    if (pm > 0.0) {
-        PHASE_LOOP_PM(
-            float pulse = 0.5f * (output[i] + 1.0f);
-            float phase2 = fmod(phase + 0.5, 1.0f);
-            output[i] = gb(phase * pulse + phase2 * (1.0f - pulse));
-        )
-    } else {
-        // bandlimited
-        PHASE_LOOP(
-            float pulse = 0.5f * (output[i] + 1.0f);
-            float phase2 = fmod(phase + 0.5, 1.0f);
-            float mod1 = saw_polyblep(phase, inc);
-            float mod2 = saw_polyblep(phase2, inc);
-            output[i] = gb((phase - mod1) * pulse + (phase2 - mod2) * (1.0f - pulse));
-        )
-    }
-
-}
-
-// TODO remove
-void Virtual::el_beta2(float* output, float* out_sync, int samples) {
-    // pulse
-    float f = freq;
-    float p = phase;
-    float p_ = phase_;
-    freq = 4.0f * freq;
-    phase = fmod(4.0f * phase, 1.0);
-    phase_ = fmod(4.0f * phase_, 1.0);
-    el_pulse(output, out_sync, samples);
-
-    // saw
-    phase = p;
-    phase_ = p_;
-    freq = f;
-    if (pm > 0.0) {
-        PHASE_LOOP_PM(
-            float pulse = 0.5f * (output[i] + 1.0f);
-            float phase2 = fmod(phase + 0.5, 1.0f);
-            output[i] = gb(phase * pulse + phase2 * (1.0f - pulse));
-        )
-    } else {
-        // bandlimited
-        PHASE_LOOP(
-            float pulse = 0.5f * (output[i] + 1.0f);
-            float phase2 = fmod(phase + 0.5, 1.0f);
-            float mod1 = saw_polyblep(phase, inc);
-            float mod2 = saw_polyblep(phase2, inc);
-            output[i] = gb((phase - mod1) * pulse + (phase2 - mod2) * (1.0f - pulse));
-        )
-    }
-}
-
-void Virtual::el_pulse_tri(float* output, float* out_sync, int samples) {
-    // pulse2
-    float p = phase;
-    float p_ = phase_;
-    el_pulse2(output, out_sync, samples);
-
-    // tri
-    phase = p;
-    phase_ = p_;
-    PWIDTH_LOOP_BOTH(
-        output[i] = 0.5 * (output[i] + gb(gtri(phase, 0.5f)));
-    )
 }
 
 // copied from lmms triple oscillator
@@ -1119,16 +1012,11 @@ void Virtual::process(float* output, float* out_sync, int samples) {
     CASE(EL_SAW, el_saw)
     CASE(EL_DOUBLE_SAW, el_double_saw)
     CASE(EL_TRI, el_tri)
-    CASE(EL_TRI2, el_tri2)
-    CASE(EL_TRI3, el_tri3)
     CASE(EL_PULSE, el_pulse)
     CASE(EL_PULSE_SAW, el_pulse_saw)
     CASE(EL_SLOPE, el_slope)
     CASE(EL_ALPHA1, el_alpha1)
     CASE(EL_ALPHA2, el_alpha2)
-    CASE(EL_BETA1, el_beta1)
-    CASE(EL_BETA2, el_beta2)
-    CASE(EL_PULSE_TRI, el_pulse_tri)
     CASE(EL_EXP, el_exp)
     // fm
     CASE(FM1, fm1)
