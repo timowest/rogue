@@ -10,7 +10,8 @@
   a pset:Preset ;
   lv2:appliesTo <http://www.github.com/timowest/rogue> ;
   rdfs:label "Basic Saw" ;
-  lv2:port [ lv2:symbol "osc1_level" ; pset:value 1 ] ,
+  lv2:port 
+  [ lv2:symbol "osc1_level" ; pset:value 1 ] ,
   [ lv2:symbol "osc1_on" ; pset:value 1 ] ,
   [ lv2:symbol "osc1_level_a" ; pset:value 1 ] ,
   [ lv2:symbol "osc1_type" ; pset:value 12 ] ,

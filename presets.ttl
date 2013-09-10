@@ -1,0 +1,8 @@
+@prefix lv2: <http://lv2plug.in/ns/lv2core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix base: <http://www.github.com/timowest/>.
+
+<http://www.github.com/timowest/rogue#basic-saw>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/basic-saw.ttl> .

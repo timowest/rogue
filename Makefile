@@ -11,7 +11,7 @@ QT = `pkg-config --cflags --libs QtGui`
 FFTW = -lfftw3f
 SNDFILE = -lsndfile
 
-$(BUNDLE): manifest.ttl rogue.ttl rogue.so rogue-gui.so presets styles
+$(BUNDLE): manifest.ttl rogue.ttl presets.ttl rogue.so rogue-gui.so presets styles
 	rm -rf $(BUNDLE)
 	mkdir $(BUNDLE)
 	cp -r $^ $(BUNDLE)

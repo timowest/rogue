@@ -4,5 +4,5 @@
 @prefix pset: <http://lv2plug.in/ns/ext/presets#>.
 
 base:rogue
-  a            lv2:Plugin; 
-  rdfs:seeAlso <rogue.ttl>.
+  a lv2:Plugin ; 
+  rdfs:seeAlso <rogue.ttl> , <presets.ttl> .
