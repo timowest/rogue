@@ -14,7 +14,7 @@ CHARS osc_types[] = {
         "Saw", "Double Saw", "Tri", "Pulse", "Pulse Saw", "Slope", "Alpha 1", "Alpha 2", "Exp",
         "FM 1", "FM 2", "FM 3", "FM 4", "FM 5", "FM 6", "FM 7", "FM 8",
         // AS
-        "AS Saw", "AS Square", "AS Impulse",
+        "AS Saw", "AS Square", "AS Triangle",
         // Noise
         "Noise", "Pink Noise", "LP Noise", "BP Noise"};
 

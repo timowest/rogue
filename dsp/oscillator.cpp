@@ -1098,12 +1098,11 @@ void AS::square(float* output, float* out_sync, int samples) {
     phase = end;
 }
 
-// TODO replace with triangle
-// TODO remove
-void AS::impulse(float* output, float* out_sync, int samples) {
+// TODO add pm support
+void AS::triangle(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float p = phase;
-    int max = 20.0f * wt;
+    int max = 40.0f * wt;
 
     // first
     for (uint i = 0; i < samples; i++) {
@@ -1113,19 +1112,22 @@ void AS::impulse(float* output, float* out_sync, int samples) {
     float end = phase;
 
     // others
-    for (uint j = 2; j < max; j++) {
+    float inv = -1.0f;
+    for (uint j = 3; j < max; j += 2) {
         phase = fmod(j * p, 1.0f);
         float inc2 = j * inc;
+        float scale = inv * 1.0/(j*j);
         for (uint i = 0; i < samples; i++) {
            phase += inc2;
            if (phase >= 1.0f) phase -= 1.0f;
-           output[i] += SIN(phase);
+           output[i] += scale * SIN(phase);
        }
+       inv *= -1.0f;
     }
 
     // normalize
     for (uint i = 0; i < samples; i++) {
-        output[i] *= 0.05;
+        output[i] *= -8.0/(M_PI * M_PI);
     }
 
     phase = end;
@@ -1135,7 +1137,7 @@ void AS::process(float* output, float* out_sync, int samples) {
     switch (type) {
     CASE(SAW, saw)
     CASE(SQUARE, square)
-    CASE(IMPULSE, impulse)
+    CASE(TRIANGLE, triangle)
     }
 }
 

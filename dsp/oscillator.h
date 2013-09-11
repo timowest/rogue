@@ -143,12 +143,12 @@ class Virtual : public Oscillator {
  */
 class AS : public Oscillator {
 
-    enum {SAW, SQUARE, IMPULSE};
+    enum {SAW, SQUARE, TRIANGLE};
 
   public:
     void saw(float* output, float* sync, int samples);
     void square(float* output, float* sync, int samples);
-    void impulse(float* output, float* sync, int samples);
+    void triangle(float* output, float* sync, int samples);
 
     void process(float* output, float* sync, int samples);
 };
