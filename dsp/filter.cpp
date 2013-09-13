@@ -372,4 +372,23 @@ void StateVariableFilter2::process(float* input, float* output, int samples) {
     }
 }
 
+// CombFilter
+
+
+void CombFilter::clear() {
+    delay.clear();
+}
+
+void CombFilter::setCoefficients(float _fc, float _amount) {
+    delay.setDelay((1.0 / _fc) * sample_rate);
+    fc = _fc;
+    amount = _amount;
+}
+
+void CombFilter::process(float* input, float* output, int samples) {
+    for (uint i = 0; i < samples; i++) {
+        output[i] = input[i] + amount * delay.process(input[i]);
+    }
+}
+
 }

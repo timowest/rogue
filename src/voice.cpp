@@ -327,6 +327,7 @@ void rogueVoice::runFilter(uint i, uint from, uint to) {
     FilterData& filterData = data->filters[i];
     Filter& filter = filters[i];
     if (filterData.on) {
+        uint samples = to - from;
         uint type = filterData.type;
         float f = filterData.freq * filter.key_vel_to_f;
 
@@ -345,16 +346,19 @@ void rogueVoice::runFilter(uint i, uint from, uint to) {
         if (type < 8) {
             filter.moog.setType(type);
             filter.moog.setCoefficients(f, q);
-            filter.moog.process(source + from, filter.buffer + from, to - from);
-        } else {
+            filter.moog.process(source + from, filter.buffer + from, samples);
+        } else if (type < 12) {
             filter.svf.setType(type - 8);
             filter.svf.setCoefficients(f, q);
-            filter.svf.process(source + from, filter.buffer + from, to - from);
+            filter.svf.process(source + from, filter.buffer + from, samples);
+        } else {
+            filter.comb.setCoefficients(f, q);
+            filter.comb.process(source + from, filter.buffer + from,samples);
         }
 
         // amp modulation
         float v = modulate(1.0f, M_DCF1_AMP + 4 * i, multiply_mod);
-        float step = (v - filter.prev_level) / float(to - from);
+        float step = (v - filter.prev_level) / float(samples);
         float l = filter.prev_level;
         for (uint i = from; i < to; i++) {
             filter.buffer[i] *= l;

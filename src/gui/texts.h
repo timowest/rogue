@@ -20,7 +20,8 @@ CHARS osc_types[] = {
 
 CHARS filter_types[] = {"LP 24dB", "LP 18dB", "LP 12dB", "LP 6dB", "HP 24dB",
         "BP 12dB", "BP 18dB", "Notch",
-        "SVF LP", "SVF HP", "SVF BP", "SVF Notch"};
+        "SVF LP", "SVF HP", "SVF BP", "SVF Notch",
+        "Comb"};
 
 CHARS filter_sources[] = {"Bus A", "Bus B", "Filter1"};
 

@@ -475,7 +475,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         connectBox(p_filter1_on + off, parent);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        QComboBox* typeBox = createSelect(p_filter1_type + off, filter_types, 12);
+        QComboBox* typeBox = createSelect(p_filter1_type + off, filter_types, 13);
         filterMapper.setMapping(typeBox, i);
         connect(typeBox, SIGNAL(currentIndexChanged(int)), &filterMapper, SLOT(map()));
         grid->addWidget(typeBox, 0, 0, 1, 2);
@@ -719,11 +719,15 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
             filter.moog.setType(type);
             filter.moog.setCoefficients(f, q);
             filter.moog.process(in, in, width);
-        } else {
+        } else if (type < 12) {
             filter.svf.clear();
             filter.svf.setType(type - 8);
             filter.svf.setCoefficients(f, q);
             filter.svf.process(in, in, width);
+        } else {
+            filter.comb.clear();
+            filter.comb.setCoefficients(f, q);
+            filter.comb.process(in, in, width);
         }
 
         fftwf_execute(fftPlan[i]);

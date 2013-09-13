@@ -1,5 +1,6 @@
 #define ROGUI_UI_TEST
 
+#include "delay.cpp"
 #include "lfo.cpp"
 #include "tables.cpp"
 #include "filter.cpp"

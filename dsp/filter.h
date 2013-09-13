@@ -7,6 +7,8 @@
 #ifndef DSP_FILTER_H
 #define DSP_FILTER_H
 
+#include "delay.h"
+
 namespace dsp {
 
 /**
@@ -229,8 +231,19 @@ class StateVariableFilter2 : Filter {
 
 };
 
-// TODO CombFilter
+class CombFilter : Filter {
 
+  public:
+    void clear();
+    void setSamplerate(float rate) { sample_rate = rate; }
+    void setCoefficients(float fc, float amount);
+    void process(float* input, float* output, int samples);
+
+  private:
+    float sample_rate, fc, amount;
+    DelayA delay;
+
+};
 
 }
 
