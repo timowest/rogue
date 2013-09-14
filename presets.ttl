@@ -1,8 +1,34 @@
 @prefix lv2: <http://lv2plug.in/ns/lv2core#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix pset: <http://lv2plug.in/ns/ext/presets#> .
 @prefix base: <http://www.github.com/timowest/>.
 
 <http://www.github.com/timowest/rogue#basic-saw>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/basic-saw.ttl> .
+
+<http://www.github.com/timowest/rogue#basic-pulse>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/basic-pulse.ttl> .
+
+<http://www.github.com/timowest/rogue#basic-tri>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/basic-tri.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-saw>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-saw.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-square>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-square.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-pulse>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-pulse.ttl> .
