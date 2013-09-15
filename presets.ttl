@@ -33,22 +33,27 @@
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/pd-pulse.ttl> .
 
-<http://www.github.com/timowest/rogue#pulse-lead1>
+<http://www.github.com/timowest/rogue#lead-pulse1>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/pulse-lead1.ttl> .
+  rdfs:seeAlso  <presets/lead-pulse1.ttl> .
 
-<http://www.github.com/timowest/rogue#pulse-lead2>
+<http://www.github.com/timowest/rogue#lead-pulse2>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/pulse-lead2.ttl> .
+  rdfs:seeAlso  <presets/lead-pulse2.ttl> .
 
-<http://www.github.com/timowest/rogue#pulse-lead3>
+<http://www.github.com/timowest/rogue#stacked-saws>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/pulse-lead3.ttl> .
+  rdfs:seeAlso  <presets/stacked-saws.ttl> .
 
-<http://www.github.com/timowest/rogue#saw-lead1>
+<http://www.github.com/timowest/rogue#stacked-pulses>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/saw-lead1.ttl> .
+  rdfs:seeAlso  <presets/stacked-pulses.ttl> .
+
+<http://www.github.com/timowest/rogue#pad-arctic>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pad-arctic.ttl> .

@@ -313,7 +313,7 @@ void rogueVoice::configFilter(uint i) {
     }
     // vel to f
     if (filterData.vel_to_f != 0.0f) {
-        semitones +=filterData.vel_to_f * (velocity - 64.0);
+        semitones += filterData.vel_to_f * (velocity - 64.0);
     }
     if (semitones != 0.0f) {
         filter.key_vel_to_f = std::pow(SEMITONE, semitones);
