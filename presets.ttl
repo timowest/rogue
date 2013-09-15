@@ -32,3 +32,18 @@
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/pd-pulse.ttl> .
+
+<http://www.github.com/timowest/rogue#pulse-lead1>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pulse-lead1.ttl> .
+
+<http://www.github.com/timowest/rogue#pulse-lead2>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pulse-lead2.ttl> .
+
+<http://www.github.com/timowest/rogue#saw-lead1>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/saw-lead1.ttl> .
