@@ -337,9 +337,12 @@ void rogueVoice::runFilter(uint i, uint from, uint to) {
             f *= std::pow(SEMITONE, 24 * fmod);
         }
 
+        // TODO limit cutoff to SR/2
+
         // res modulation
         float q = filterData.q + modulate(0.0f, M_DCF1_Q + 4 * i, add_mod);
         if (q < 0.0) q = 0.0;
+        if (q > 1.0) q = 1.0;
 
         // process
         float* source = buffers[filterData.source];
