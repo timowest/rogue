@@ -181,6 +181,40 @@ class MoogFilter : Filter {
 };
 
 /**
+ * This model is based on a reference implementation of an algorithm developed by
+ * Stefano D'Angelo and Vesa Valimaki, presented in a paper published at ICASSP in 2013.
+ * This improved model is based on a circuit analysis and compared against a reference
+ * Ngspice simulation. In the paper, it is noted that this particular model is
+ * more accurate in preserving the self-oscillating nature of the real filter.
+ * References: "An Improved Virtual Analog Model of the Moog Ladder Filter"
+ * Original Implementation: D'Angelo, Valimaki
+ */
+class MoogFilter2 : Filter {
+
+  public:
+    void clear();
+    void setType(int t) { type_ = t; }
+    void setSamplerate(float r) { sample_rate_ = r; }
+    void setCoefficients(float freq, float res);
+    void process(float* input, float* output, int samples);
+
+  private:
+    float sample_rate_;
+    int type_;
+
+    float V1prev, V2prev, V3prev, V4prev;
+    float tV1prev, tV2prev, tV3prev, tV4prev;
+    float dV1prev, dV2prev, dV3prev, dV4prev;
+
+    float _x;
+    float _g;
+
+    float _cutoff;
+    float _resonance;
+    float _drive;
+};
+
+/**
  * Andrew Simper's State Variable Filter
  *
  * based on http://www.musicdsp.org/showone.php?id=92
