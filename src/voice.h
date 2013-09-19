@@ -37,6 +37,7 @@ class rogueVoice : public lvtk::Voice {
 
     protected:
       float sample_rate;
+      float half_sample_rate;
       unsigned char m_key, m_velocity;
       float key, velocity, glide_step;
 

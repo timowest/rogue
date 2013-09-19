@@ -44,6 +44,7 @@ static float limit(float v, float min, float max) {
 rogueVoice::rogueVoice(double rate, SynthData* d) {
     data = d;
     sample_rate = rate;
+    half_sample_rate = 0.5f * rate;
 
     // init elements
     for (uint i = 0; i < NOSC; i++) oscs[i] = Osc();
@@ -337,7 +338,9 @@ void rogueVoice::runFilter(uint i, uint from, uint to) {
             f *= std::pow(SEMITONE, 24 * fmod);
         }
 
-        // TODO limit cutoff to SR/2
+        if (f > half_sample_rate) {
+            f = half_sample_rate;
+        }
 
         // res modulation
         float q = filterData.q + modulate(0.0f, M_DCF1_Q + 4 * i, add_mod);
