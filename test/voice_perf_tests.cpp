@@ -1,5 +1,6 @@
 #include <omp.h>
 
+#include "delay.cpp"
 #include "oscillator.cpp"
 #include "filter.cpp"
 #include "lfo.cpp"

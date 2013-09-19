@@ -11,7 +11,6 @@
 
 namespace dsp {
 
-
 /**
 * allpass interpolating delay line class.
 *

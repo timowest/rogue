@@ -1,4 +1,6 @@
 #include <sndfile.hh>
+
+#include "delay.cpp"
 #include "oscillator.cpp"
 #include "filter.cpp"
 #include "lfo.cpp"
