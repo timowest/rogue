@@ -53,6 +53,11 @@
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/basic-pulse.ttl> .
 
+<http://www.github.com/timowest/rogue#fm-bass>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/fm-bass.ttl> .
+
 <http://www.github.com/timowest/rogue#lead-pulse1>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
