@@ -13,7 +13,7 @@ namespace dsp {
  * sin table (range 0 - 1)
  */
 struct sintable {
-    float values[8001];
+    float values[8010];
     sintable();
     float fast(float in);
     float linear(float in);
@@ -25,7 +25,7 @@ extern sintable sin_;
  * cos table (range 0 - 1)
  */
 struct costable {
-    float values[8001];
+    float values[8010];
     costable();
     float fast(float in);
     float linear(float in);
@@ -38,7 +38,7 @@ extern costable cos_;
  *
  */
 struct tanhtable {
-    float values[16001];
+    float values[16010];
     tanhtable();
     float fast(float in);
     float linear(float in);

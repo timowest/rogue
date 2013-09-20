@@ -16,7 +16,7 @@ namespace dsp {
 sintable sin_;
 
 sintable::sintable() {
-    for (uint i = 0; i < 8001; i++) {
+    for (uint i = 0; i < 8010; i++) {
         values[i] = sin(2.0f * M_PI * float(i) / 8000.0f);
     }
 }
@@ -37,7 +37,7 @@ float sintable::linear(float val) {
 costable cos_;
 
 costable::costable() {
-    for (uint i = 0; i < 8001; i++) {
+    for (uint i = 0; i < 8010; i++) {
         values[i] = cos(2.0f * M_PI * float(i) / 8000.0f);
     }
 }
@@ -58,7 +58,7 @@ float costable::linear(float val) {
 tanhtable tanh_;
 
 tanhtable::tanhtable() {
-    for (uint i = 0; i < 16001; i++) {
+    for (uint i = 0; i < 16010; i++) {
         values[i] = tanh(float(int(i) - 8000) / 1600.0f);
     }
 }
