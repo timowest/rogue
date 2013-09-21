@@ -336,7 +336,7 @@ void rogueVoice::runFilter(uint i, uint from, uint to) {
         // freq modulation
         float fmod = modulate(0.0f, M_DCF1_F + 4 * i, add_mod);
         if (fmod != 0.0) {
-            f *= std::pow(SEMITONE, 24 * fmod);
+            f *= std::pow(SEMITONE, 48.0 * fmod);
         }
         f = limit(f, 0, half_sample_rate);
 
