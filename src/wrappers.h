@@ -79,6 +79,12 @@ struct Filter {
     float prev_level;
     float key_vel_to_f;
 
+    Filter() {
+        moog.clear();
+        svf.clear();
+        comb.clear();
+    }
+
     void reset() {
         prev_level = 0.0f;
     }

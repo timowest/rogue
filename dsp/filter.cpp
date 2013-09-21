@@ -303,7 +303,7 @@ void MoogFilter2::clear() {
 
     _cutoff = 100;
     _resonance = .05;
-    _drive = 0.05;
+    _drive = 1;
 }
 
 void MoogFilter2::setCoefficients(float cut, float r) {
