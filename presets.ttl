@@ -73,6 +73,11 @@
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/lead-pulse2.ttl> .
 
+<http://www.github.com/timowest/rogue#brass2>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/brass2.ttl> .
+
 <http://www.github.com/timowest/rogue#pad-arctic>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
