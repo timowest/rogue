@@ -23,7 +23,7 @@ struct OscData {
     float level;
 
     // modulation
-    uint input = 0, out_mod = 0;
+    uint input = 0, input2 = 0, out_mod = 0;
     float pm;
     bool sync;
 };

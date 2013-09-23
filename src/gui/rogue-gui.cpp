@@ -341,23 +341,25 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(connectToOsc(createDial(p_osc1_start + off), i), 4, 0);
         grid->addWidget(connectToOsc(createDial(p_osc1_width + off), i), 4, 1);
         if (i > 0) {
-            grid->addWidget(createSelect(p_osc1_input + off, nums, i), 4, 4);
-            grid->addWidget(createSelect(p_osc1_out_mod + off, out_mod, 4), 4, 5);
-            grid->addWidget(createDial(p_osc1_pm + off), 4, 6);
+            grid->addWidget(createSelect(p_osc1_input + off, nums, i), 4, 3);
+            grid->addWidget(createDial(p_osc1_pm + off), 4, 4);
+            grid->addWidget(createSelect(p_osc1_input2 + off, nums, i), 4, 5);
+            grid->addWidget(createSelect(p_osc1_out_mod + off, out_mod, 4), 4, 6);
         }
         // row 6
         grid->addWidget(new QLabel("Start"), 5, 0);
         grid->addWidget(new QLabel("Width"), 5, 1);
         if (i > 0) {
-            grid->addWidget(new QLabel("Input"), 5, 4);
-            grid->addWidget(new QLabel("Mod"), 5, 5);
-            grid->addWidget(new QLabel("PM"), 5, 6);
+            grid->addWidget(new QLabel("Input"), 5, 3);
+            grid->addWidget(new QLabel("PM"), 5, 4);
+            grid->addWidget(new QLabel("Input 2"), 5, 5);
+            grid->addWidget(new QLabel("Mod"), 5, 6);
         }
         // row 7
         grid->addWidget(createLabel(p_osc1_start + off), 6, 0);
         grid->addWidget(createLabel(p_osc1_width + off), 6, 1);
         if (i > 0) {
-            grid->addWidget(createLabel(p_osc1_pm + off), 6, 6);
+            grid->addWidget(createLabel(p_osc1_pm + off), 6, 4);
         }
         grid->setHorizontalSpacing(2);
         grid->setVerticalSpacing(0);
@@ -891,6 +893,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
 
         // create dummy widgets for unused controls of osc1
         ((QDial*)createDial(p_osc1_input))->setParent(&dummyParent);
+        ((QDial*)createDial(p_osc1_input2))->setParent(&dummyParent);
         ((QDial*)createDial(p_osc1_pm))->setParent(&dummyParent);
         ((QDial*)createDial(p_osc1_sync))->setParent(&dummyParent);
         ((QDial*)createDial(p_osc1_out_mod))->setParent(&dummyParent);

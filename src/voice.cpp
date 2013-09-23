@@ -274,7 +274,7 @@ void rogueVoice::runOsc(uint i, uint from, uint to) {
 
         // audio output modulation
         if (oscData.out_mod > 0) {
-            float* in = oscs[oscData.input].buffer;
+            float* in = oscs[oscData.input2].buffer;
             switch (oscData.out_mod) {
             case 1: // Add
                 for (uint i = from; i < to; i++) {

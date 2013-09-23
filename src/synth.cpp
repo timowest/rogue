@@ -93,6 +93,7 @@ void rogueSynth::update() {
         data.oscs[i].input       = v(p_osc1_input + off);
         data.oscs[i].pm          = v(p_osc1_pm + off);
         data.oscs[i].sync        = v(p_osc1_sync + off);
+        data.oscs[i].input2      = v(p_osc1_input2 + off);
         data.oscs[i].out_mod     = v(p_osc1_out_mod + off);
     }
 

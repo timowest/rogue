@@ -144,6 +144,7 @@ def main():
             ["input"      , 0, 2, 0, 1],
             ["pm"         , 0, 10.0, 0, 0.01],
             ["sync"       , 0, 1,   0, 1], # toggled
+            ["input2"     , 0, 2, 0, 1],
             ["out_mod"    , 0, 3, 0, 1]]    
             
     dcfs = [["on"         , 0, 1, 0, 1], # toggled

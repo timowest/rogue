@@ -23,7 +23,7 @@
 #define NMOD    20
 
 // offsets for port access
-#define OSC_OFF 17
+#define OSC_OFF 18
 #define DCF_OFF 10
 #define LFO_OFF 8
 #define ENV_OFF 9
