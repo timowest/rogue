@@ -58,10 +58,6 @@ struct EnvData {
     bool retrigger;
 };
 
-struct DelaylineData {
-    // TODO
-};
-
 struct ModulationData {
     uint src = 0, target = 0;
     float amount = 0.0;

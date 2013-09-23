@@ -18,6 +18,7 @@ rogueSynth::rogueSynth(double rate)
     rdcBlocker.setSamplerate(sample_rate);
 
     for (uint i = 0; i < NVOICES; i++) {
+        // TODO oversampling
         voices[i] = new rogueVoice(rate, &data);
         add_voices(voices[i]);
     }
@@ -164,6 +165,8 @@ void rogueSynth::post_process(uint from, uint to) {
     float* right = p(p_right) + from;
 
     const uint samples = to - from;
+
+    // TODO downsample
 
     // shift global LFO phases
     for (uint i = 0; i < NLFO; i++) {

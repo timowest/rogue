@@ -372,6 +372,7 @@ void rogueVoice::runFilter(uint i, uint from, uint to) {
 }
 
 void rogueVoice::render(uint from, uint to) {
+    // TODO take oversampling into account
     uint from_ = from % BUFFER_SIZE;
     uint off = from - from_;
     while (off < to) {
