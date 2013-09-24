@@ -71,6 +71,8 @@ struct SynthData {
     ModulationData mods[NMOD];
     uint mod_count;
 
+    uint oversample = 2;
+
     float pitch_bend;
     uint playmode;
     float bus_a_level, bus_a_pan;

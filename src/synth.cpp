@@ -18,8 +18,7 @@ rogueSynth::rogueSynth(double rate)
     rdcBlocker.setSamplerate(sample_rate);
 
     for (uint i = 0; i < NVOICES; i++) {
-        // TODO oversampling
-        voices[i] = new rogueVoice(rate, &data);
+        voices[i] = new rogueVoice(rate, &data, left, right);
         add_voices(voices[i]);
     }
 
@@ -41,6 +40,17 @@ rogueSynth::rogueSynth(double rate)
     reverb.init();
 
     add_audio_outputs(p_left, p_right);
+
+    converter_l = src_new(SRC_SINC_MEDIUM_QUALITY, 1, 0);
+    converter_r = src_new(SRC_SINC_MEDIUM_QUALITY, 1, 0);
+
+    converter_data.src_ratio = 1.0 / float(data.oversample);
+    converter_data.end_of_input = 0;
+}
+
+rogueSynth::~rogueSynth() {
+    src_delete(converter_l);
+    src_delete(converter_r);
 }
 
 unsigned rogueSynth::find_free_voice(unsigned char key, unsigned char velocity) {
@@ -158,15 +168,33 @@ void rogueSynth::update() {
 
 void rogueSynth::pre_process(uint from, uint to) {
     update();
+
+    from = data.oversample * from;
+    to = data.oversample * to;
+
+    uint samples = to - from;
+    std::memset(left + from, 0, sizeof(float) * samples);
+    std::memset(right + from, 0, sizeof(float) * samples);
 }
 
 void rogueSynth::post_process(uint from, uint to) {
-    float* left = p(p_left) + from;
-    float* right = p(p_right) + from;
+    float* pleft = p(p_left) + from;
+    float* pright = p(p_right) + from;
 
     const uint samples = to - from;
 
-    // TODO downsample
+    // downsample
+    converter_data.data_in = left + (data.oversample * from);
+    converter_data.input_frames = data.oversample * samples;
+    converter_data.data_out = pleft;
+    converter_data.output_frames = samples;
+    src_process(converter_l, &converter_data);
+
+    converter_data.data_in = right + (data.oversample * from);
+    converter_data.input_frames = data.oversample * samples;
+    converter_data.data_out = pright;
+    converter_data.output_frames = samples;
+    src_process(converter_r, &converter_data);
 
     // shift global LFO phases
     for (uint i = 0; i < NLFO; i++) {
@@ -179,8 +207,8 @@ void rogueSynth::post_process(uint from, uint to) {
     }
 
     // DC blocking
-    ldcBlocker.process(left, left, samples);
-    rdcBlocker.process(right, right, samples);
+    ldcBlocker.process(pleft, pleft, samples);
+    rdcBlocker.process(pright, pright, samples);
 
     if (!effects_activated) {
         chorus_ports[0] = p(p_chorus_t);
@@ -216,41 +244,41 @@ void rogueSynth::post_process(uint from, uint to) {
 
     // chorus
     if (*p(p_chorus_on) > 0.0) {
-    	chorus_ports[6] = left;
-    	chorus_ports[7] = right;
-    	chorus_ports[8] = left;
-    	chorus_ports[9] = right;
+    	chorus_ports[6] = pleft;
+    	chorus_ports[7] = pright;
+    	chorus_ports[8] = pleft;
+    	chorus_ports[9] = pright;
     	chorus.run(samples);
     }
     // phaser
     if (*p(p_phaser_on) > 0.0) {
-    	phaser_ports[0] = left;
-    	phaser_ports[1] = right;
-    	phaser_ports[6] = left;
-    	phaser_ports[7] = right;
+    	phaser_ports[0] = pleft;
+    	phaser_ports[1] = pright;
+    	phaser_ports[6] = pleft;
+    	phaser_ports[7] = pright;
     	phaser.run(samples);
     }
     // delay
     if (*p(p_delay_on) > 0.0) {
-        delay_ports[0] = left;
-        delay_ports[1] = right;
-        delay_ports[8] = left;
-        delay_ports[9] = right;
+        delay_ports[0] = pleft;
+        delay_ports[1] = pright;
+        delay_ports[8] = pleft;
+        delay_ports[9] = pright;
         delay.run(samples);
     }
     // reverb
     if (*p(p_reverb_on) > 0.0) {
-    	reverb_ports[0] = left;
-    	reverb_ports[1] = right;
-    	reverb_ports[6] = left;
-    	reverb_ports[7] = right;
+    	reverb_ports[0] = pleft;
+    	reverb_ports[1] = pright;
+    	reverb_ports[6] = pleft;
+    	reverb_ports[7] = pright;
     	reverb.run(samples);
     }
 
     // volume
     for (uint i = 0; i < samples; i++) {
-        left[i] = data.volume * left[i];
-        right[i] = data.volume * right[i];
+        left[i] = data.volume * pleft[i];
+        right[i] = data.volume * pright[i];
     }
 
     // TODO limiter

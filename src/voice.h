@@ -35,6 +35,9 @@ class rogueVoice : public lvtk::Voice {
       float mod[M_SIZE];
       bool in_sustain = false;
 
+      float* left;
+      float* right;
+
     protected:
       float sample_rate;
       float half_sample_rate;
@@ -59,7 +62,7 @@ class rogueVoice : public lvtk::Voice {
       void render(uint, uint, uint off);
 
     public:
-      rogueVoice(double, SynthData*);
+      rogueVoice(double, SynthData*, float*, float*);
       void on(unsigned char key, unsigned char velocity);
       void off(unsigned char velocity);
       void reset();

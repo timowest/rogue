@@ -8,7 +8,8 @@
 
 #ifndef ROGUE_SYNTH_H
 #define ROGUE_SYNTH_H
-//See associated .cpp file for copyright and other info
+
+#include <samplerate.h>
 
 #include "common.h"
 #include "config.h"
@@ -34,6 +35,8 @@ class rogueSynth : public lvtk::Synth<rogueVoice, rogueSynth> {
 
   public:
     rogueSynth(double);
+    ~rogueSynth();
+
     unsigned find_free_voice(unsigned char, unsigned char);
     void handle_midi(uint, unsigned char*);
     void pre_process(uint from, uint to);
@@ -56,6 +59,12 @@ class rogueSynth : public lvtk::Synth<rogueVoice, rogueSynth> {
     rogueVoice *voices[NVOICES];
     bool sustain;
     SynthData data;
+
+    SRC_STATE* converter_l;
+    SRC_STATE* converter_r;
+    SRC_DATA converter_data;
+    float left[8192];
+    float right[8192];
 
     StereoChorusII2x2 chorus;
     float* chorus_ports[10];

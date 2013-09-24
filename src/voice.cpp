@@ -41,10 +41,12 @@ static float limit(float v, float min, float max) {
     }
 }
 
-rogueVoice::rogueVoice(double rate, SynthData* d) {
+rogueVoice::rogueVoice(double rate, SynthData* d, float* l, float* r) {
     data = d;
-    sample_rate = rate;
+    sample_rate = d->oversample * rate;
     half_sample_rate = 0.5f * rate;
+    left = l;
+    right = r;
 
     // init elements
     for (uint i = 0; i < NOSC; i++) oscs[i] = Osc();
@@ -53,9 +55,9 @@ rogueVoice::rogueVoice(double rate, SynthData* d) {
     for (uint i = 0; i < NENV; i++) envs[i] = Env();
 
     // set sample rate
-    for (uint i = 0; i < NOSC; i++) oscs[i].setSamplerate(rate);
-    for (uint i = 0; i < NDCF; i++) filters[i].setSamplerate(rate);
-    for (uint i = 0; i < NLFO; i++) lfos[0].setSamplerate(rate);
+    for (uint i = 0; i < NOSC; i++) oscs[i].setSamplerate(sample_rate);
+    for (uint i = 0; i < NDCF; i++) filters[i].setSamplerate(sample_rate);
+    for (uint i = 0; i < NLFO; i++) lfos[0].setSamplerate(sample_rate);
 
     // set buffers
     buffers[0] = bus_a;
@@ -372,7 +374,10 @@ void rogueVoice::runFilter(uint i, uint from, uint to) {
 }
 
 void rogueVoice::render(uint from, uint to) {
-    // TODO take oversampling into account
+    // oversampling
+    from = data->oversample * from;
+    to = data->oversample * to;
+
     uint from_ = from % BUFFER_SIZE;
     uint off = from - from_;
     while (off < to) {
@@ -406,9 +411,6 @@ void rogueVoice::render(uint from, uint to, uint off) {
     for (uint i = 0; i < NENV; i++) runEnv(i, from, to);
     for (uint i = 0; i < NOSC; i++) runOsc(i, from, to);
     for (uint i = 0; i < NDCF; i++) runFilter(i, from, to);
-
-    float* left = p(p_left);
-    float* right = p(p_right);
 
     // TODO bus a pan modulation
     // TODO bus b pan modulation
