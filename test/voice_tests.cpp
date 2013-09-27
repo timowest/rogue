@@ -41,6 +41,7 @@ int main() {
 
     rogue::SynthData data;
     data.volume = 0.5;
+    data.oversample = 1;
     data.bus_a_level = 0.5;
     data.bus_a_pan = 0.5;
 
@@ -61,7 +62,7 @@ int main() {
     data.envs[0].release = 0.5 * SR;
     data.envs[0].curve = 0.5;
 
-    rogue::rogueVoice voice(SR, &data);
+    rogue::rogueVoice voice(SR, &data, buffer_l, buffer_r);
     voice.set_port_buffers(ports);
     voice.on(69, 64);
     voice.render(0, SIZE / 2);

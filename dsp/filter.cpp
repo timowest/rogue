@@ -281,6 +281,72 @@ void MoogFilter::process(float* input, float* output, int samples) {
     }
 }
 
+// MoogFilter 2
+
+static const float VT = 0.026;
+
+static const float TWO_VT = 2.0f * VT;
+
+void MoogFilter2::clear() {
+    V1prev = 0.0;
+    V2prev = 0.0;
+    V3prev = 0.0;
+    V4prev = 0.0;
+    tV1prev = 0.0;
+    tV2prev = 0.0;
+    tV3prev = 0.0;
+    tV4prev = 0.0;
+    dV1prev = 0.0;
+    dV2prev = 0.0;
+    dV3prev = 0.0;
+    dV4prev = 0.0;
+
+    _cutoff = 100;
+    _resonance = .05;
+    _drive = 0.05;
+}
+
+void MoogFilter2::setCoefficients(float cut, float r) {
+    _cutoff = cut;
+
+    _x = M_PI * _cutoff / sample_rate_;
+    _g = 4.0 * M_PI * VT * _cutoff * (1.0 - _x) / (1.0 + _x);
+
+    _resonance = 3.0 * r;
+}
+
+void MoogFilter2::process(float* input, float* output, int samples) {
+    const float TWO_SR = 2.0 * sample_rate_;
+    const float _out = 1.0f / _drive;
+
+    for (uint i = 0; i < samples; i++) {
+        const float in = input[i];
+
+        float dV1 = -_g * (tanh((_drive * in + _resonance * V4prev) / TWO_VT) + tV1prev);
+        V1prev += (dV1 + dV1prev) / TWO_SR;
+        dV1prev = dV1;
+        tV1prev = tanh(V1prev / TWO_VT);
+
+        float dV2 = _g * (tV1prev - tV2prev);
+        V2prev += (dV2 + dV2prev) / TWO_SR;
+        dV2prev = dV2;
+        tV2prev = tanh(V2prev / TWO_VT);
+
+        float dV3 = _g * (tV2prev - tV3prev);
+        V3prev += (dV3 + dV3prev) / TWO_SR;
+        dV3prev = dV3;
+        tV3prev = tanh(V3prev / TWO_VT);
+
+        float dV4 = _g * (tV3prev - tV4prev);
+        V4prev += (dV4 + dV4prev) / TWO_SR;
+        dV4prev = dV4;
+        tV4prev = tanh(V4prev / TWO_VT);
+
+        // Output
+        output[i] = _out * V4prev;
+    }
+}
+
 // StateVariableFilter
 
 void StateVariableFilter::clear() {

@@ -14,6 +14,10 @@ void filter_test() {
     moog.setSamplerate(SR);
     moog.setCoefficients(1000.0, 0.5);
 
+    dsp::MoogFilter2 moog2;
+    moog2.setSamplerate(SR);
+    moog2.setCoefficients(1000.0, 0.5);
+
     dsp::StateVariableFilter svf;
     svf.setSamplerate(SR);
     svf.setCoefficients(1000.0, 0.5);
@@ -45,6 +49,27 @@ void filter_test() {
             }
 
             sprintf(filename, "wavs/filter/moog_%i%i.wav", i, j);
+            write_wav(filename, buffer);
+        }
+    }
+
+    // moog2
+    for (int i = 1; i < 11; i++) {
+        for (int j = 0; j < 10; j++) {
+            moog2.clear();
+            //moog2.setType(i);
+            moog2.setCoefficients(float(i) * 1000.0, float(j) * 0.1);
+            moog2.process(noise, buffer, SIZE);
+
+            bool zero = true;
+            for (int i = 0; i < SIZE; i++) {
+                zero &= buffer[i] == 0.0f;
+            }
+            if (zero) {
+                error("moog2 is silent %", i);
+            }
+
+            sprintf(filename, "wavs/filter/moog2_%i%i.wav", i, j);
             write_wav(filename, buffer);
         }
     }
