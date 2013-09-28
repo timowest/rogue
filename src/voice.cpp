@@ -348,12 +348,16 @@ void rogueVoice::runFilter(uint i, uint from, uint to) {
 
         // process
         float* source = buffers[filterData.source];
-        if (type < 8) {
-            filter.moog.setType(type);
+        if (type < 6) {
+            filter.am.setType(type);
+            filter.am.setCoefficients(f, q);
+            filter.am.process(source + from, filter.buffer + from, samples);
+        } else if (type == 6) {
+            filter.moog.setType(0);
             filter.moog.setCoefficients(f, q);
             filter.moog.process(source + from, filter.buffer + from, samples);
-        } else if (type < 12) {
-            filter.svf.setType(type - 8);
+        } else if (type < 11) {
+            filter.svf.setType(type - 7);
             filter.svf.setCoefficients(f, q);
             filter.svf.process(source + from, filter.buffer + from, samples);
         } else {

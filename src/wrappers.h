@@ -72,7 +72,8 @@ struct Osc {
 };
 
 struct Filter {
-    dsp::MoogFilter moog;
+    dsp::AmSynthFilter am;
+    dsp::MoogFilter2 moog;
     dsp::StateVariableFilter2 svf;
     dsp::CombFilter comb;
     float buffer[BUFFER_SIZE];
@@ -80,6 +81,7 @@ struct Filter {
     float key_vel_to_f;
 
     Filter() {
+        am.clear();
         moog.clear();
         svf.clear();
         comb.clear();
@@ -90,6 +92,7 @@ struct Filter {
     }
 
     void setSamplerate(float r) {
+        am.setSamplerate(r);
         moog.setSamplerate(r);
         svf.setSamplerate(r);
         comb.setSamplerate(r);

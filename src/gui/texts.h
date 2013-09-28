@@ -18,8 +18,12 @@ CHARS osc_types[] = {
         // Noise
         "Noise", "Pink Noise", "LP Noise", "BP Noise"};
 
-CHARS filter_types[] = {"LP 24dB", "LP 18dB", "LP 12dB", "LP 6dB", "HP 24dB",
-        "BP 12dB", "BP 18dB", "Notch",
+CHARS filter_types[] = {
+        // AMSynth
+        "LP 24dB", "HP 24dB", "BP 24dB", "LP 12dB", "HP 12dB", "BP 12dB",
+        // Moog
+        "Moog 24dB",
+        // SVF
         "SVF LP", "SVF HP", "SVF BP", "SVF Notch",
         "Comb"};
 

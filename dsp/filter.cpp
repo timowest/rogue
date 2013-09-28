@@ -225,6 +225,86 @@ void BiQuad::process(float* input, float* output, int samples) {
     }
 }
 
+// AmSynth
+
+void AmSynthFilter::clear() {
+    d1 = 0.0;
+    d2 = 0.0;
+    d3 = 0.0;
+    d4 = 0.0;
+}
+
+void AmSynthFilter::setCoefficients(float f, float r) {
+    freq_ = std::min(f, float(sample_rate_ / 2.0) * 0.99f); // filter is unstable at PI
+    freq_ = std::max(freq_, 10.0f);
+    res_ = r;
+}
+
+void AmSynthFilter::process(float* input, float* output, int samples) {
+    const float w = (freq_ / sample_rate_); // cutoff freq [ 0 <= w <= 0.5 ]
+    const float r = std::max(0.001, 2.0 * (1.0 - res_)); // r is 1/Q (sqrt(2) for a butterworth response)
+
+    const float k = tan(w * M_PI);
+    const float k2 = k * k;
+    const float rk = r * k;
+    const float bh = 1.0 + rk + k2;
+
+    float a0, a1, a2, b1, b2;
+
+    switch (type_ % 3) {
+        case 0:
+            a0 = k2 / bh;
+            a1 = a0 * 2.0;
+            a2 = a0;
+            b1 = (2.0 * (k2 - 1.0)) / bh;
+            b2 = (1.0 - rk + k2) / bh;
+            break;
+        case 1:
+            a0 =  1.0 / bh;
+            a1 = -2.0 / bh;
+            a2 =  a0;
+            b1 = (2.0 * (k2 - 1.0)) / bh;
+            b2 = (1.0 - rk + k2) / bh;
+            break;
+        case 2:
+            a0 =  rk / bh;
+            a1 =  0.0;
+            a2 = -rk / bh;
+            b1 = (2.0 * (k2 - 1.0)) / bh;
+            b2 = (1.0 - rk + k2) / bh;
+            break;
+    }
+
+    if (type_ < 3) {
+        for (int i = 0; i < samples; i++) {
+            float y, x = input[i];
+
+            y  =      (a0 * x) + d1;
+            d1 = d2 + (a1 * x) - (b1 * y);
+            d2 =      (a2 * x) - (b2 * y);
+
+            x = y;
+
+            y  =      (a0 * x) + d3;
+            d3 = d4 + (a1 * x) - (b1 * y);
+            d4 =      (a2 * x) - (b2 * y);
+
+            output[i] = y;
+        }
+    } else {
+        for (int i = 0; i < samples; i++) {
+            float y, x = input[i];
+
+            y  =      (a0 * x) + d1;
+            d1 = d2 + (a1 * x) - (b1 * y);
+            d2 =      (a2 * x) - (b2 * y);
+
+            output[i] = y;
+        }
+    }
+}
+
+
 // MoogFilter
 
 void MoogFilter::clear() {

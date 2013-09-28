@@ -148,6 +148,30 @@ class BiQuad : Filter {
 };
 
 /**
+ * AmSynth filters
+ *
+ *  Copyright (c) 2001-2012 Nick Dowell
+ *
+ */
+class AmSynthFilter : Filter {
+
+    enum {LP24, HP24, BP24, LP12, HP12, BP12};
+
+  public:
+    void clear();
+    void setType(int t) { type_ = t;}
+    void setSamplerate(float r) { sample_rate_ = r; }
+    void setCoefficients(float f, float r);
+    void process(float* input, float* output, int samples);
+
+  private:
+    float d1, d2, d3, d4;
+    float freq_, res_, sample_rate_;
+    int type_ = 0;
+};
+
+
+/**
  * Tim Stilson's MoogVCF filter using 'compromise' poles at z = -0.3
  *
  * Several improvements are built in, such as corrections for cutoff
