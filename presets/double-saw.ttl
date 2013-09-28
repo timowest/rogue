@@ -11,7 +11,7 @@
   lv2:appliesTo <http://www.github.com/timowest/rogue> ;
   rdfs:label "Double Saw" ;
   lv2:port
-  [ lv2:symbol "filter1_type" ; pset:value 8 ] ,
+  [ lv2:symbol "filter1_type" ; pset:value 7 ] ,
   [ lv2:symbol "osc4_input" ; pset:value 0 ] ,
   [ lv2:symbol "mod9_amount" ; pset:value 0 ] ,
   [ lv2:symbol "filter2_source" ; pset:value 0 ] ,

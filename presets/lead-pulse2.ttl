@@ -11,7 +11,7 @@
   lv2:appliesTo <http://www.github.com/timowest/rogue> ;
   rdfs:label "Pulse Lead 2" ;
   lv2:port
-  [ lv2:symbol "filter1_type" ; pset:value 8 ] ,
+  [ lv2:symbol "filter1_type" ; pset:value 7 ] ,
   [ lv2:symbol "osc4_input" ; pset:value 0 ] ,
   [ lv2:symbol "mod9_amount" ; pset:value 0 ] ,
   [ lv2:symbol "filter2_source" ; pset:value 0 ] ,
@@ -253,7 +253,7 @@
   [ lv2:symbol "filter1_level" ; pset:value 0.5 ] ,
   [ lv2:symbol "mod3_target" ; pset:value 0 ] ,
   [ lv2:symbol "env1_decay" ; pset:value 0.5 ] ,
-  [ lv2:symbol "filter2_type" ; pset:value 8 ] ,
+  [ lv2:symbol "filter2_type" ; pset:value 7 ] ,
   [ lv2:symbol "osc3_input" ; pset:value 0 ] ,
   [ lv2:symbol "lfo4_on" ; pset:value 0 ] ,
   [ lv2:symbol "osc2_ratio" ; pset:value 1 ] ,
