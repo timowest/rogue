@@ -5,6 +5,7 @@
  */
 
 #include "oscillator.h"
+#include <algorithm>
 #include "polyblep.h"
 #include "phase.h"
 #include "tables.h"
@@ -1036,7 +1037,7 @@ void Virtual::process(float* output, float* out_sync, int samples) {
 void AS::saw(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float p = phase;
-    int max = std::min(20.0f * wt, sample_rate / 2.0 / freq);
+    int max = std::min(20.0f * wt, sample_rate / 2.0f / freq);
 
     // first
     for (uint i = 0; i < samples; i++) {
@@ -1069,7 +1070,7 @@ void AS::saw(float* output, float* out_sync, int samples) {
 void AS::square(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float p = phase;
-    int max = std::min(40.0f * wt, sample_rate / 2.0 / freq);
+    int max = std::min(40.0f * wt, sample_rate / 2.0f / freq);
 
     // first
     for (uint i = 0; i < samples; i++) {
@@ -1102,7 +1103,7 @@ void AS::square(float* output, float* out_sync, int samples) {
 void AS::triangle(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float p = phase;
-    int max = std::min(40.0f * wt, sample_rate / 2.0 / freq);
+    int max = std::min(40.0f * wt, sample_rate / 2.0f / freq);
 
     // first
     for (uint i = 0; i < samples; i++) {
