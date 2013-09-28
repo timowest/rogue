@@ -89,6 +89,10 @@ struct Filter {
 
     void reset() {
         prev_level = 0.0f;
+        am.clear();
+        moog.clear();
+        svf.clear();
+        comb.clear();
     }
 
     void setSamplerate(float r) {
