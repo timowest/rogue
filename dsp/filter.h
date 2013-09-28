@@ -165,7 +165,7 @@ class AmSynthFilter : Filter {
     void process(float* input, float* output, int samples);
 
   private:
-    float d1, d2, d3, d4;
+    double d1, d2, d3, d4;
     float freq_, res_, sample_rate_;
     int type_ = 0;
 };

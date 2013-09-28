@@ -241,15 +241,15 @@ void AmSynthFilter::setCoefficients(float f, float r) {
 }
 
 void AmSynthFilter::process(float* input, float* output, int samples) {
-    const float w = (freq_ / sample_rate_); // cutoff freq [ 0 <= w <= 0.5 ]
-    const float r = std::max(0.001, 2.0 * (1.0 - res_)); // r is 1/Q (sqrt(2) for a butterworth response)
+    const double w = (freq_ / sample_rate_); // cutoff freq [ 0 <= w <= 0.5 ]
+    const double r = std::max(0.001, 2.0 * (1.0 - res_)); // r is 1/Q (sqrt(2) for a butterworth response)
 
-    const float k = tan(w * M_PI);
-    const float k2 = k * k;
-    const float rk = r * k;
-    const float bh = 1.0 + rk + k2;
+    const double k = tan(w * M_PI);
+    const double k2 = k * k;
+    const double rk = r * k;
+    const double bh = 1.0 + rk + k2;
 
-    float a0, a1, a2, b1, b2;
+    double a0, a1, a2, b1, b2;
 
     switch (type_ % 3) {
         case 0:
