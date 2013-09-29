@@ -277,8 +277,8 @@ void rogueSynth::post_process(uint from, uint to) {
 
     // volume
     for (uint i = 0; i < samples; i++) {
-        left[i] = data.volume * pleft[i];
-        right[i] = data.volume * pright[i];
+        pleft[i] = data.volume * pleft[i];
+        pright[i] = data.volume * pright[i];
     }
 
     // TODO limiter
@@ -302,7 +302,15 @@ void rogueSynth::handle_midi(uint size, unsigned char* data) {
         break;
 
     case 0x90: //note on
-        voices[ find_free_voice(data[1], data[2]) ]->on(data[1], data[2]);
+        if (data[2] > 0) {
+            voices[ find_free_voice(data[1], data[2]) ]->on(data[1], data[2]);
+        } else {
+            for (uint i = 0; i < NVOICES; ++i) {
+                if (voices[i]->get_key() == data[1]) {
+                    voices[i]->off(data[2]);
+                }
+            }
+        }
         break;
 
     case 0xE0: // pitchbend
