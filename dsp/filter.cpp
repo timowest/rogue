@@ -304,126 +304,43 @@ void AmSynthFilter::process(float* input, float* output, int samples) {
     }
 }
 
-
 // MoogFilter
 
 void MoogFilter::clear() {
-    drive_ = 1.0;
-    type_ = 0;
-    gcomp_ = 0.5;
-    dlout_[0] = dlout_[1] = dlout_[2] = dlout_[3] = dlout_[4] = 0.0;
-    dlin_[0] = dlin_[1] = dlin_[2] = dlin_[3] = dlin_[4] = 0.0;
+    f = 0; pc = 0; q = 0;
+    bf0 = 0; bf1 = 0; bf2 = 0; bf3 = 0; bf4 = 0;
+    t1 = 0; t2 = 0;
 }
 
-void MoogFilter::setCoefficients(float freq, float res) {
-    wc_ = 2.0f * M_PI * freq / sample_rate_;
-    g_ = 0.9892 * wc_ - 0.4342 * pow(wc_, 2) + 0.1381 * pow(wc_, 3) - 0.0202 * pow(wc_, 4);
-    gres_ = res * (1.0029 + 0.0526 * wc_ - 0.926 * pow(wc_, 2) + 0.0218 * pow(wc_, 3));
-}
+void MoogFilter::setCoefficients(float f_, float r_) {
+    float frequency = f_ / sample_rate;
+    float resonance = r_;
 
-#define MOOG_LOOP(x) \
-    for (uint i = 0; i < samples; i++) { \
-        const float in = input[i]; \
-        dlout_[0] = (float) TANH(drive_ * (in - 4.0f * gres_ * (dlout_[4] - gcomp_ * in))); \
-        for (uint i = 0; i < 4; i++) { \
-            dlout_[i+1] = g_ * (0.3f/1.3f * dlout_[i] + 1.0f/1.3f * dlin_[i] - dlout_[i + 1]) + dlout_[i + 1]; \
-            dlin_[i] = dlout_[i]; \
-        } \
-        output[i] = x; \
-    }
+    if (frequency < 0) frequency = 0;
+    if (frequency > 0.6) frequency = 0.6;
+
+    q = 1.0f - frequency;
+    pc = frequency + 0.8f * frequency * q;
+    f = pc + pc - 1.0f;
+    q = resonance * (1.0f + 0.5f * q * (1.0f - q + 5.6f * q * q));
+}
 
 void MoogFilter::process(float* input, float* output, int samples) {
-    switch(type_) {
-    case LP24: // 24dB LP
-        MOOG_LOOP(dlout_[4])
-        break;
-    case LP18: // 18dB LP
-        MOOG_LOOP(dlout_[3])
-        break;
-    case LP12: // 12dB LP
-        MOOG_LOOP(dlout_[2])
-        break;
-    case LP6:  // 6db LP
-        MOOG_LOOP(dlout_[1])
-        break;
-    case HP24: // 24dB HP
-        MOOG_LOOP(dlout_[0] - dlout_[4])
-        break;
-    case BP12: // 12db BP
-        MOOG_LOOP(dlout_[4] - dlout_[2])
-        break;
-    case BP18: // 18/6dB BP
-        MOOG_LOOP(dlout_[3] - dlout_[4])
-        break;
-    case NOTCH:// NOTCH
-        MOOG_LOOP((dlout_[3] - dlout_[4]) + 2/3 * dlout_[0])
-        break;
-    }
-}
-
-// MoogFilter 2
-
-static const float VT = 0.026;
-
-static const float TWO_VT = 2.0f * VT;
-
-void MoogFilter2::clear() {
-    V1prev = 0.0;
-    V2prev = 0.0;
-    V3prev = 0.0;
-    V4prev = 0.0;
-    tV1prev = 0.0;
-    tV2prev = 0.0;
-    tV3prev = 0.0;
-    tV4prev = 0.0;
-    dV1prev = 0.0;
-    dV2prev = 0.0;
-    dV3prev = 0.0;
-    dV4prev = 0.0;
-
-    _cutoff = 100;
-    _resonance = .05;
-    _drive = 0.05;
-}
-
-void MoogFilter2::setCoefficients(float cut, float r) {
-    _cutoff = cut;
-
-    _x = M_PI * _cutoff / sample_rate_;
-    _g = 4.0 * M_PI * VT * _cutoff * (1.0 - _x) / (1.0 + _x);
-
-    _resonance = 3.0 * r;
-}
-
-void MoogFilter2::process(float* input, float* output, int samples) {
-    const float TWO_SR = 2.0 * sample_rate_;
-    const float _out = 1.0f / _drive;
-
     for (uint i = 0; i < samples; i++) {
-        const float in = input[i];
+        float in = input[i];
 
-        float dV1 = -_g * (tanh((_drive * in + _resonance * V4prev) / TWO_VT) + tV1prev);
-        V1prev += (dV1 + dV1prev) / TWO_SR;
-        dV1prev = dV1;
-        tV1prev = tanh(V1prev / TWO_VT);
+        in -= q * bf4; //feedback
+        t1 = bf1;  bf1 = (in + bf0) * pc - bf1 * f;
+        t2 = bf2;  bf2 = (bf1 + t1) * pc - bf2 * f;
+        t1 = bf3;  bf3 = (bf2 + t2) * pc - bf3 * f;
+        bf4 = (bf3 + t1) * pc - bf4 * f;
+        bf4 = bf4 - bf4 * bf4 * bf4 * 0.166667f;    //clipping
+        bf0 = in;
 
-        float dV2 = _g * (tV1prev - tV2prev);
-        V2prev += (dV2 + dV2prev) / TWO_SR;
-        dV2prev = dV2;
-        tV2prev = tanh(V2prev / TWO_VT);
-
-        float dV3 = _g * (tV2prev - tV3prev);
-        V3prev += (dV3 + dV3prev) / TWO_SR;
-        dV3prev = dV3;
-        tV3prev = tanh(V3prev / TWO_VT);
-
-        float dV4 = _g * (tV3prev - tV4prev);
-        V4prev += (dV4 + dV4prev) / TWO_SR;
-        dV4prev = dV4;
-        tV4prev = tanh(V4prev / TWO_VT);
-
-        // Output
-        output[i] = _out * V4prev;
+        // Lowpass  output:  bf4
+        // Highpass output:  in - bf4;
+        // Bandpass output:  3.0f * (bf3 - bf4);
+        output[i] = bf4;
     }
 }
 

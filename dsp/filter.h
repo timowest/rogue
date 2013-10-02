@@ -148,10 +148,8 @@ class BiQuad : Filter {
 };
 
 /**
- * AmSynth filters
- *
- *  Copyright (c) 2001-2012 Nick Dowell
- *
+ * AmSynth filter
+ * Copyright (c) 2001-2012 Nick Dowell
  */
 class AmSynthFilter : Filter {
 
@@ -170,74 +168,28 @@ class AmSynthFilter : Filter {
     int type_ = 0;
 };
 
-
 /**
- * Tim Stilson's MoogVCF filter using 'compromise' poles at z = -0.3
- *
- * Several improvements are built in, such as corrections for cutoff
- * and resonance parameters, removal of the necessity of the
- * separation table, audio rate update of cutoff and resonance
- * and a smoothly saturating tanh() function, clamping output and
- * creating inherent nonlinearities.
- *
- * Much credit is owed to Antti Huovilainen's 2004 and 2006 papers
- * on the subject.
- *
- * originally by Aaron Krajeski 2012
- * based on http://song-swap.com/MUMT618/aaron/Presentation/
+ * Moog 24 dB/oct resonant lowpass VCF
+ * References: CSound source code, Stilson/Smith CCRMA paper.
+ * Modified by paul.kellett@maxim.abel.co.uk July 2000
  */
 class MoogFilter : Filter {
 
-    enum {LP24, LP18, LP12, LP6, HP24, BP12, BP18, NOTCH};
-
   public:
     void clear();
-    void setType(int t) { type_ = t; }
-    void setSamplerate(float r) { sample_rate_ = r; }
-    void setCoefficients(float freq, float res);
+    void setType(int t) { type = t; }
+    void setSamplerate(float r) { sample_rate = r; }
+    void setCoefficients(float f, float r);
     void process(float* input, float* output, int samples);
 
   private:
-    float dlout_[5], dlin_[5];
-    float drive_ = 1.0f, wc_, g_, gres_, gcomp_ = 0.5f;
-    float sample_rate_;
-    int type_;
+    float f, pc, q;
+    float bf0, bf1, bf2, bf3, bf4;
+    float t1, t2;
+
+    int type = 0;
+    float sample_rate;
 };
-
-/**
- * This model is based on a reference implementation of an algorithm developed by
- * Stefano D'Angelo and Vesa Valimaki, presented in a paper published at ICASSP in 2013.
- * This improved model is based on a circuit analysis and compared against a reference
- * Ngspice simulation. In the paper, it is noted that this particular model is
- * more accurate in preserving the self-oscillating nature of the real filter.
- * References: "An Improved Virtual Analog Model of the Moog Ladder Filter"
- * Original Implementation: D'Angelo, Valimaki
- */
-class MoogFilter2 : Filter {
-
-  public:
-    void clear();
-    void setType(int t) { type_ = t; }
-    void setSamplerate(float r) { sample_rate_ = r; }
-    void setCoefficients(float freq, float res);
-    void process(float* input, float* output, int samples);
-
-  private:
-    float sample_rate_;
-    int type_;
-
-    float V1prev, V2prev, V3prev, V4prev;
-    float tV1prev, tV2prev, tV3prev, tV4prev;
-    float dV1prev, dV2prev, dV3prev, dV4prev;
-
-    float _x;
-    float _g;
-
-    float _cutoff;
-    float _resonance;
-    float _drive;
-};
-
 
 /**
  * Andrew Simper's State Variable Filter
@@ -290,6 +242,9 @@ class StateVariableFilter2 : Filter {
 
 };
 
+/**
+ * Comb filter
+ */
 class CombFilter : Filter {
 
   public:

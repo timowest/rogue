@@ -73,7 +73,7 @@ struct Osc {
 
 struct Filter {
     dsp::AmSynthFilter am;
-    dsp::MoogFilter2 moog;
+    dsp::MoogFilter moog;
     dsp::StateVariableFilter2 svf;
     dsp::CombFilter comb;
     float buffer[BUFFER_SIZE];
