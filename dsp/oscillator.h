@@ -7,6 +7,8 @@
 #ifndef DSP_OSCILLATOR_H
 #define DSP_OSCILLATOR_H
 
+#define SEMITONE 1.05946f
+
 #include <math.h>
 #include "filter.h"
 
@@ -59,7 +61,7 @@ class Oscillator {
         wt = _wt;
     }
 
-    void clear() {
+    virtual void clear() {
         phase = start;
         phase_ = start;
         freq = 440.0f;
@@ -68,7 +70,7 @@ class Oscillator {
         wf = wt = 0.5;
     }
 
-    void reset() {
+    virtual void reset() {
         phase = start;
         phase_ = start;
     }
@@ -136,7 +138,7 @@ class Virtual : public Oscillator {
 
 };
 
-// TODO JP8000 tri mod, supersaw
+// TODO JP8000 tri mod
 
 /**
  * Additive Synthesis
@@ -151,6 +153,34 @@ class AS : public Oscillator {
     void triangle(float* output, float* sync, int samples);
 
     void process(float* output, float* sync, int samples);
+};
+
+/**
+ * Aliasing Supersaw and Supersquare
+ *
+ * 7 oscillators, width controls detune amount (max: +/-1 semitone)
+ */
+class SuperWave : public Oscillator {
+
+    enum {SAW, SQUARE};
+
+    float phases[7];
+
+  public:
+    void clear() {
+        Oscillator::clear();
+        for (uint i = 0; i < 7; i++) phases[i] = start;
+    }
+
+    void reset() {
+        Oscillator::reset();
+        for (uint i = 0; i < 7; i++) phases[i] = start;
+    }
+
+    void saw(float* output, float* sync, int samples);
+    void square(float* output, float* sync, int samples);
+    void process(float* output, float* sync, int samples);
+
 };
 
 /**

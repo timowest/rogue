@@ -17,6 +17,8 @@ struct Osc {
     dsp::Virtual virt;
     dsp::AS as;
     dsp::Noise noise;
+    dsp::SuperWave superWave;
+
     float buffer[BUFFER_SIZE];
     float sync[BUFFER_SIZE];
     float prev_level;
@@ -31,18 +33,21 @@ struct Osc {
         virt.setStart(s);
         as.setStart(s);
         noise.setStart(s);
+        superWave.setStart(s);
     }
 
     void resetPhase() {
         virt.reset();
         as.reset();
         noise.reset();
+        superWave.reset();
     }
 
     void setSamplerate(float r) {
         virt.setSamplerate(r);
         as.setSamplerate(r);
         noise.setSamplerate(r);
+        superWave.setSamplerate(r);
     }
 
     void setModulation(int type, float* _input, float* _input_s, float _pm, bool _sync) {
@@ -59,10 +64,13 @@ struct Osc {
             osc = &virt;
         } else if (type < 32) {
             osc = &as;
-            type = type - 29;
+            type -= 29;
+        } else if (type < 34) {
+            osc = &superWave;
+            type -= 32;
         } else {
             osc = &noise;
-            type = type - 32;
+            type -= 34;
         }
         osc->setType(type);
         osc->setFreq(freq);

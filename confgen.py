@@ -128,7 +128,7 @@ def main():
     #        suffix        min max default 
 
     oscs = [["on"         , 0, 1, 0, 1], # toggled
-            ["type"       , 0, 35, 0, 1],
+            ["type"       , 0, 37, 0, 1],
             ["inv"        , 0, 1, 0, 1], # toggled
             ["free"       , 0, 1, 0, 1], # toggled
             ["tracking"   , 0, 1, 1, 1], # toggled
