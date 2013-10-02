@@ -1144,6 +1144,20 @@ void AS::process(float* output, float* out_sync, int samples) {
 
 // SuperWave
 
+void SuperWave::clear() {
+    Oscillator::clear();
+    for (uint i = 0; i < 7; i++) {
+        phases[i] = start * rand() / (RAND_MAX + 1.0f);
+    }
+}
+
+void SuperWave::reset() {
+    Oscillator::reset();
+    for (uint i = 0; i < 7; i++) {
+        phases[i] = start * rand() / (RAND_MAX + 1.0f);
+    }
+}
+
 void SuperWave::saw(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float incs[7];

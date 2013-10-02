@@ -151,7 +151,6 @@ class AS : public Oscillator {
     void saw(float* output, float* sync, int samples);
     void square(float* output, float* sync, int samples);
     void triangle(float* output, float* sync, int samples);
-
     void process(float* output, float* sync, int samples);
 };
 
@@ -167,16 +166,8 @@ class SuperWave : public Oscillator {
     float phases[7];
 
   public:
-    void clear() {
-        Oscillator::clear();
-        for (uint i = 0; i < 7; i++) phases[i] = start;
-    }
-
-    void reset() {
-        Oscillator::reset();
-        for (uint i = 0; i < 7; i++) phases[i] = start;
-    }
-
+    void clear();
+    void reset();
     void saw(float* output, float* sync, int samples);
     void square(float* output, float* sync, int samples);
     void process(float* output, float* sync, int samples);
