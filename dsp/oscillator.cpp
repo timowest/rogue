@@ -1200,10 +1200,56 @@ void SuperWave::square(float* output, float* out_sync, int samples) {
     }
 }
 
+void SuperWave::saw2(float* output, float* out_sync, int samples) {
+    float inc = freq / sample_rate;
+    float incs[7];
+
+    float off = -0.2;
+    for (uint j = 0; j < 7; j++) {
+        incs[j] = inc * std::pow(SEMITONE, wf * off);
+        off += 0.2/3.0;
+    }
+
+    for (uint i = 0; i < samples; i++) {
+        float out = 0;
+        for (uint j = 0; j < 7; j++) {
+            phases[j] += incs[j];
+            if (phases[j] >= 1.0f) phases[j] -= 1.0f;
+            float mod = saw_polyblep(phases[j], incs[j]);
+            out += gb(phases[j] - mod);
+        }
+        output[i] = out / 7.0f;
+    }
+}
+
+void SuperWave::square2(float* output, float* out_sync, int samples) {
+    float inc = freq / sample_rate;
+    float incs[7];
+
+    float off = -0.2;
+    for (uint j = 0; j < 7; j++) {
+        incs[j] = inc * std::pow(SEMITONE, wf * off);
+        off += 0.2/3.0;
+    }
+
+    for (uint i = 0; i < samples; i++) {
+        float out = 0;
+        for (uint j = 0; j < 7; j++) {
+            phases[j] += incs[j];
+            if (phases[j] >= 1.0f) phases[j] -= 1.0f;
+            float mod = pulse_polyblep(phases[j], 0.5, incs[j]);
+            out += (phases[j] < 0.5 ? -1.0 : 1.0) - (2.0 * mod);
+        }
+        output[i] = out / 7.0f;
+    }
+}
+
 void SuperWave::process(float* output, float* out_sync, int samples) {
     switch (type) {
     CASE(SAW, saw)
     CASE(SQUARE, square)
+    CASE(SAW2, saw2)
+    CASE(SQUARE2, square2)
     }
 }
 

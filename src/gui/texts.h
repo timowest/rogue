@@ -16,7 +16,7 @@ CHARS osc_types[] = {
         // AS
         "AS Saw", "AS Square", "AS Triangle",
         // Super
-        "SuperSaw", "SuperSquare",
+        "SuperSaw", "SuperSquare", "SuperSaw 2", "SuperSquare 2",
         // Noise
         "Noise", "Pink Noise", "LP Noise", "BP Noise"};
 

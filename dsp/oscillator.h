@@ -161,7 +161,7 @@ class AS : public Oscillator {
  */
 class SuperWave : public Oscillator {
 
-    enum {SAW, SQUARE};
+    enum {SAW, SQUARE, SAW2, SQUARE2};
 
     float phases[7];
 
@@ -170,6 +170,8 @@ class SuperWave : public Oscillator {
     void reset();
     void saw(float* output, float* sync, int samples);
     void square(float* output, float* sync, int samples);
+    void saw2(float* output, float* sync, int samples);
+    void square2(float* output, float* sync, int samples);
     void process(float* output, float* sync, int samples);
 
 };

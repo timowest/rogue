@@ -65,12 +65,12 @@ struct Osc {
         } else if (type < 32) {
             osc = &as;
             type -= 29;
-        } else if (type < 34) {
+        } else if (type < 36) {
             osc = &superWave;
             type -= 32;
         } else {
             osc = &noise;
-            type -= 34;
+            type -= 36;
         }
         osc->setType(type);
         osc->setFreq(freq);
