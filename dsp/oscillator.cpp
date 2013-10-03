@@ -1162,10 +1162,10 @@ void SuperWave::saw(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float incs[7];
 
-    float off = -0.1;
+    float off = -0.2;
     for (uint j = 0; j < 7; j++) {
         incs[j] = inc * std::pow(SEMITONE, wf * off);
-        off += 0.1/3.0;
+        off += 0.2/3.0;
     }
 
     for (uint i = 0; i < samples; i++) {
@@ -1183,10 +1183,10 @@ void SuperWave::square(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float incs[7];
 
-    float off = -0.1;
+    float off = -0.2;
     for (uint j = 0; j < 7; j++) {
         incs[j] = inc * std::pow(SEMITONE, wf * off);
-        off += 0.1/3.0;
+        off += 0.2/3.0;
     }
 
     for (uint i = 0; i < samples; i++) {
