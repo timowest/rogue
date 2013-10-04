@@ -1163,8 +1163,9 @@ void SuperWave::saw(float* output, float* out_sync, int samples) {
     float incs[7];
 
     float off = -0.2;
+    float w = wf * wf;
     for (uint j = 0; j < 7; j++) {
-        incs[j] = inc * std::pow(SEMITONE, wf * off);
+        incs[j] = inc * std::pow(SEMITONE, w * off);
         off += 0.2/3.0;
     }
 
@@ -1184,8 +1185,9 @@ void SuperWave::square(float* output, float* out_sync, int samples) {
     float incs[7];
 
     float off = -0.2;
+    float w = wf * wf;
     for (uint j = 0; j < 7; j++) {
-        incs[j] = inc * std::pow(SEMITONE, wf * off);
+        incs[j] = inc * std::pow(SEMITONE, w * off);
         off += 0.2/3.0;
     }
 
@@ -1205,8 +1207,9 @@ void SuperWave::saw2(float* output, float* out_sync, int samples) {
     float incs[7];
 
     float off = -0.2;
+    float w = wf * wf;
     for (uint j = 0; j < 7; j++) {
-        incs[j] = inc * std::pow(SEMITONE, wf * off);
+        incs[j] = inc * std::pow(SEMITONE, w * off);
         off += 0.2/3.0;
     }
 
@@ -1227,8 +1230,9 @@ void SuperWave::square2(float* output, float* out_sync, int samples) {
     float incs[7];
 
     float off = -0.2;
+    float w = wf * wf;
     for (uint j = 0; j < 7; j++) {
-        incs[j] = inc * std::pow(SEMITONE, wf * off);
+        incs[j] = inc * std::pow(SEMITONE, w * off);
         off += 0.2/3.0;
     }
 
