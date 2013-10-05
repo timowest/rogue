@@ -1176,8 +1176,11 @@ void SuperWave::saw(float* output, float* out_sync, int samples) {
             if (phases[j] >= 1.0f) phases[j] -= 1.0f;
             out += gb(phases[j]);
         }
-        output[i] = out / 7.0f;
+        output[i] = 0.8 * out;
     }
+
+    filter.setCoefficients(freq, 0.3);
+    filter.process(output, output, samples);
 }
 
 void SuperWave::square(float* output, float* out_sync, int samples) {
@@ -1198,8 +1201,11 @@ void SuperWave::square(float* output, float* out_sync, int samples) {
             if (phases[j] >= 1.0f) phases[j] -= 1.0f;
             out += phases[j] < 0.5 ? -1.0 : 1.0;
         }
-        output[i] = out / 7.0f;
+        output[i] = 0.8 * out;
     }
+
+    filter.setCoefficients(freq, 0.3);
+    filter.process(output, output, samples);
 }
 
 void SuperWave::saw2(float* output, float* out_sync, int samples) {

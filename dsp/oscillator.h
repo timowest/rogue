@@ -164,8 +164,15 @@ class SuperWave : public Oscillator {
     enum {SAW, SQUARE, SAW2, SQUARE2};
 
     float phases[7];
+    AmSynthFilter filter;
 
   public:
+    void setSamplerate(float r) {
+        Oscillator::setSamplerate(r);
+        filter.setSamplerate(r);
+        filter.setType(1);
+    }
+
     void clear();
     void reset();
     void saw(float* output, float* sync, int samples);

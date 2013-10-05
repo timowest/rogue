@@ -206,7 +206,7 @@ void rogueVoice::configEnv(uint i) {
     env.env.setRetrigger(envData.retrigger);
     env.env.setCurve(envData.curve);
     env.env.setPredelay(envData.pre_delay / f);
-    env.env.setAHDSR(std::min(a, 0.001f), h, d, s, r);
+    env.env.setAHDSR(std::max(a, 0.001f), h, d, s, r);
 }
 
 void rogueVoice::runEnv(uint i, uint from, uint to) {
