@@ -1144,6 +1144,10 @@ void AS::process(float* output, float* out_sync, int samples) {
 
 // SuperWave
 
+const float SuperWave::detune[] = {
+        -0.11002313, -0.06288439, -0.01952356, 0,
+        0.01991221, 0.06216538, 0.10745242};
+
 void SuperWave::clear() {
     Oscillator::clear();
     for (uint i = 0; i < 7; i++) {
@@ -1162,11 +1166,9 @@ void SuperWave::saw(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float incs[7];
 
-    float off = -0.2;
-    float w = wf * wf;
+    float w = wf * wf * wf * wf;
     for (uint j = 0; j < 7; j++) {
-        incs[j] = inc * std::pow(SEMITONE, w * off);
-        off += 0.2/3.0;
+        incs[j] = inc * (1.0 + w * detune[j]);
     }
 
     for (uint i = 0; i < samples; i++) {
@@ -1187,11 +1189,9 @@ void SuperWave::square(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float incs[7];
 
-    float off = -0.2;
-    float w = wf * wf;
+    float w = wf * wf * wf * wf;
     for (uint j = 0; j < 7; j++) {
-        incs[j] = inc * std::pow(SEMITONE, w * off);
-        off += 0.2/3.0;
+        incs[j] = inc * (1.0 + w * detune[j]);
     }
 
     for (uint i = 0; i < samples; i++) {
@@ -1212,11 +1212,9 @@ void SuperWave::saw2(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float incs[7];
 
-    float off = -0.2;
-    float w = wf * wf;
+    float w = wf * wf * wf * wf;
     for (uint j = 0; j < 7; j++) {
-        incs[j] = inc * std::pow(SEMITONE, w * off);
-        off += 0.2/3.0;
+        incs[j] = inc * (1.0 + w * detune[j]);
     }
 
     for (uint i = 0; i < samples; i++) {
@@ -1235,11 +1233,9 @@ void SuperWave::square2(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
     float incs[7];
 
-    float off = -0.2;
-    float w = wf * wf;
+    float w = wf * wf * wf * wf;
     for (uint j = 0; j < 7; j++) {
-        incs[j] = inc * std::pow(SEMITONE, w * off);
-        off += 0.2/3.0;
+        incs[j] = inc * (1.0 + w * detune[j]);
     }
 
     for (uint i = 0; i < samples; i++) {

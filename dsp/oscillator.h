@@ -158,12 +158,19 @@ class AS : public Oscillator {
  * Aliasing Supersaw and Supersquare
  *
  * 7 oscillators, width controls detune amount (max: +/-1 semitone)
+ *
+ * Uses ideas and values from How to Emulate the Supersaw, 2010 Adam Szabo
  */
 class SuperWave : public Oscillator {
+
+    // max detune values from How to Emulate the Supersaw
+    static const float detune[];
 
     enum {SAW, SQUARE, SAW2, SQUARE2};
 
     float phases[7];
+
+    // TODO find better HP filter
     AmSynthFilter filter;
 
   public:
