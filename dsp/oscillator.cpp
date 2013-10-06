@@ -1178,7 +1178,7 @@ void SuperWave::saw(float* output, float* out_sync, int samples) {
             if (phases[j] >= 1.0f) phases[j] -= 1.0f;
             out += gb(phases[j]);
         }
-        output[i] = out / 7.0;
+        output[i] = 0.8 * out;
     }
 
     filter.setCoefficients(freq, 0.3);
