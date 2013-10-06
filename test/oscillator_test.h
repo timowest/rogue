@@ -25,7 +25,9 @@ void oscillator_test() {
     no.setSamplerate(SR);
     no.setFreq(440.0f);
 
-    // TODO SuperWave
+    dsp::SuperWave sw;
+    sw.setSamplerate(SR);
+    sw.setFreq(440.0f);
 
     // va
     for (int i = 0; i < 29; i++) {
@@ -104,6 +106,19 @@ void oscillator_test() {
         write_wav(filename, buffer);
     }
 
+    // sw
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 10; j++) {
+            sw.reset();
+            sw.setType(i);
+            sw.setWidth(j * 0.1, j * 0.1);
+            sw.process(buffer, sync, SIZE);
+
+            sprintf(filename, "wavs/osc/sw_%i%i.wav", i, j);
+            write_wav(filename, buffer);
+        }
+    }
+
     // noise
     for (int i = 0; i < 4; i++) {
         no.reset();
@@ -113,4 +128,5 @@ void oscillator_test() {
         sprintf(filename, "wavs/osc/no_%i.wav", i);
         write_wav(filename, buffer);
     }
+
 }

@@ -1181,7 +1181,7 @@ void SuperWave::saw(float* output, float* out_sync, int samples) {
         output[i] = 0.8 * out;
     }
 
-    filter.setCoefficients(freq, 0.3);
+    filter.setCoefficients(freq, 0.0);
     filter.process(output, output, samples);
 }
 
@@ -1204,7 +1204,7 @@ void SuperWave::square(float* output, float* out_sync, int samples) {
         output[i] = 0.8 * out;
     }
 
-    filter.setCoefficients(freq, 0.3);
+    filter.setCoefficients(freq, 0.0);
     filter.process(output, output, samples);
 }
 
