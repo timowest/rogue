@@ -1033,105 +1033,97 @@ void Virtual::process(float* output, float* out_sync, int samples) {
 
 // AS
 
-// TODO add pm support
+void AS::clear() {
+    Oscillator::clear();
+    for (uint i = 0; i < 20; i++) {
+        phases[i] = start * rand() / (RAND_MAX + 1.0f);
+    }
+}
+
+void AS::reset() {
+    Oscillator::reset();
+    for (uint i = 0; i < 20; i++) {
+        phases[i] = start * rand() / (RAND_MAX + 1.0f);
+    }
+}
+
 void AS::saw(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
-    float p = phase;
     int max = std::min(20.0f * wt, sample_rate / 2.0f / freq);
 
-    // first
+    // reset
     for (uint i = 0; i < samples; i++) {
-        INC_PHASE()
-        output[i] = SIN(phase);
+        output[i] = 0;
     }
-    float end = phase;
 
-    // others
-    for (uint j = 2; j < max; j++) {
-        phase = fmod(j * p, 1.0f);
-        float inc2 = j * inc;
-        float scale = 1.0/j;
+    for (uint j = 0; j < max; j++) {
+        float inc2 = (j + 1) * inc;
+        float scale = 1.0/ (j + 1);
         for (uint i = 0; i < samples; i++) {
-            phase += inc2;
-            if (phase >= 1.0f) phase -= 1.0f;
-            output[i] += scale * SIN(phase);
-       }
+            phases[j] += inc2;
+            if (phases[j] >= 1.0f) phases[j] -= 1.0f;
+            output[i] += scale * SIN(phases[j]);
+        }
     }
 
     // normalize
     for (uint i = 0; i < samples; i++) {
         output[i] *= -2.0f/M_PI;
     }
-
-    phase = end;
 }
 
-// TODO add pm support
 void AS::square(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
-    float p = phase;
     int max = std::min(40.0f * wt, sample_rate / 2.0f / freq);
 
-    // first
+    // reset
     for (uint i = 0; i < samples; i++) {
-        INC_PHASE()
-        output[i] = SIN(phase);
+        output[i] = 0;
     }
-    float end = phase;
 
-    // others
-    for (uint j = 3; j < max; j += 2) {
-        phase = fmod(j * p, 1.0f);
-        float inc2 = j * inc;
-        float scale = 1.0/j;
+    for (uint j = 0; j < max; j += 2) {
+        uint jj = j / 2;
+        float inc2 = (j + 1) * inc;
+        float scale = 1.0/ (j + 1);
         for (uint i = 0; i < samples; i++) {
-            phase += inc2;
-            if (phase >= 1.0f) phase -= 1.0f;
-            output[i] += scale * SIN(phase);
-       }
+            phases[jj] += inc2;
+            if (phases[jj] >= 1.0f) phases[jj] -= 1.0f;
+            output[i] += scale * SIN(phases[jj]);
+        }
     }
 
     // normalize
     for (uint i = 0; i < samples; i++) {
-        output[i] *= -4.0/M_PI;
+        output[i] *= -4.0f/M_PI;
     }
-
-    phase = end;
 }
 
-// TODO add pm support
 void AS::triangle(float* output, float* out_sync, int samples) {
     float inc = freq / sample_rate;
-    float p = phase;
     int max = std::min(40.0f * wt, sample_rate / 2.0f / freq);
 
-    // first
+    // reset
     for (uint i = 0; i < samples; i++) {
-        INC_PHASE()
-        output[i] = SIN(phase);
+        output[i] = 0;
     }
-    float end = phase;
 
-    // others
-    float inv = -1.0f;
-    for (uint j = 3; j < max; j += 2) {
-        phase = fmod(j * p, 1.0f);
-        float inc2 = j * inc;
-        float scale = inv * 1.0/(j*j);
+    float inv = 1.0f;
+    for (uint j = 0; j < max; j += 2) {
+        uint jj = j / 2;
+        float inc2 = (j + 1) * inc;
+        float scale = inv / ((j + 1) * (j + 1));
         for (uint i = 0; i < samples; i++) {
-            phase += inc2;
-            if (phase >= 1.0f) phase -= 1.0f;
-            output[i] += scale * SIN(phase);
-       }
-       inv *= -1.0f;
+            phases[jj] += inc2;
+            if (phases[jj] >= 1.0f) phases[jj] -= 1.0f;
+            output[i] += scale * SIN(phases[jj]);
+        }
+        inv *= -1.0f;
     }
 
     // normalize
     for (uint i = 0; i < samples; i++) {
         output[i] *= -8.0/(M_PI * M_PI);
     }
-
-    phase = end;
 }
 
 void AS::process(float* output, float* out_sync, int samples) {

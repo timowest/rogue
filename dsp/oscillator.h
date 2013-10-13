@@ -147,7 +147,11 @@ class AS : public Oscillator {
 
     enum {SAW, SQUARE, TRIANGLE};
 
+    float phases[20];
+
   public:
+    void clear();
+    void reset();
     void saw(float* output, float* sync, int samples);
     void square(float* output, float* sync, int samples);
     void triangle(float* output, float* sync, int samples);
