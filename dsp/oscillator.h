@@ -163,9 +163,6 @@ class AS : public Oscillator {
  */
 class SuperWave : public Oscillator {
 
-    // max detune values from How to Emulate the Supersaw
-    static const float detune[];
-
     enum {SAW, SQUARE, SAW2, SQUARE2};
 
     float phases[7];
