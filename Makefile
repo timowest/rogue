@@ -33,7 +33,7 @@ src/gui/config.gen:
 	./confgen.py
 
 src/gui/rogue-gui.mcpp:
-	moc src/gui/rogue-gui.cpp > src/gui/rogue-gui.mcpp
+	moc-qt4 src/gui/rogue-gui.cpp > src/gui/rogue-gui.mcpp
 
 install: $(BUNDLE)
 	mkdir -p $(INSTALL_DIR)
