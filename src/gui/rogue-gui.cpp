@@ -697,7 +697,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         osc.resetPhase();
         float* buffer = osc_wd[i]->getSamples();
         int width = OSC_WIDTH;
-        osc.process(type, 1.0f, w, w, buffer, sync_buffer, width);
+        osc.process(type, 44100.0 / OSC_WIDTH, w, w, buffer, sync_buffer, width);
         if (inv) {
             for (uint j = 0; j < width; j++) buffer[j] *= -1.0;
         }
@@ -877,7 +877,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         }
         container().setStyleSheet(styleSheet);
 
-        osc.setSamplerate(OSC_WIDTH);
+        osc.setSamplerate(44100.0);
         filter.setSamplerate(44100.0);
         lfo.setFreq(1.0);
         lfo.setSamplerate(LFO_WIDTH);

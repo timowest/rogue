@@ -224,14 +224,38 @@ static float norm_width(float w, float inc) {
 
 void Virtual::va_saw(float* output, float* out_sync, int samples) {
     el_saw(output, out_sync, samples);
+
+    filter.setType(4);
+    filter.setCoefficients(50, 0);
+    filter.process(output, output, samples);
+
+    for (uint i = 0; i < samples; i++) {
+        output[i] = 0.8 * output[i];
+    }
 }
 
 void Virtual::va_tri_saw(float* output, float* out_sync, int samples) {
     el_tri(output, out_sync, samples);
+
+    filter.setType(4);
+    filter.setCoefficients(50, 0);
+    filter.process(output, output, samples);
+
+    for (uint i = 0; i < samples; i++) {
+        output[i] = 0.8 * output[i];
+    }
 }
 
 void Virtual::va_pulse(float* output, float* out_sync, int samples) {
     el_pulse(output, out_sync, samples);
+
+    filter.setType(4);
+    filter.setCoefficients(50, 0);
+    filter.process(output, output, samples);
+
+    for (uint i = 0; i < samples; i++) {
+        output[i] = 0.8 * output[i];
+    }
 }
 
 // PD

@@ -96,7 +96,14 @@ class Virtual : public Oscillator {
 
     float prev = 0.0f;
 
+    AmSynthFilter filter;
+
   public:
+    void setSamplerate(float r) {
+        Oscillator::setSamplerate(r);
+        filter.setSamplerate(r);
+    }
+
     // VA
     void va_saw(float* output, float* sync, int samples);
     void va_tri_saw(float* output, float* sync, int samples);
@@ -171,7 +178,6 @@ class SuperWave : public Oscillator {
 
     float phases[7];
 
-    // TODO find better HP filter
     AmSynthFilter filter;
 
   public:

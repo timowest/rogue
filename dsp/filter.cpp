@@ -252,21 +252,21 @@ void AmSynthFilter::process(float* input, float* output, int samples) {
     double a0, a1, a2, b1, b2;
 
     switch (type_ % 3) {
-        case 0:
+        case 0: // low
             a0 = k2 / bh;
             a1 = a0 * 2.0;
             a2 = a0;
             b1 = (2.0 * (k2 - 1.0)) / bh;
             b2 = (1.0 - rk + k2) / bh;
             break;
-        case 1:
+        case 1: // high
             a0 =  1.0 / bh;
             a1 = -2.0 / bh;
             a2 =  a0;
             b1 = (2.0 * (k2 - 1.0)) / bh;
             b2 = (1.0 - rk + k2) / bh;
             break;
-        case 2:
+        case 2: // band
             a0 =  rk / bh;
             a1 =  0.0;
             a2 = -rk / bh;
