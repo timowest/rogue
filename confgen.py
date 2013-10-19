@@ -117,7 +117,7 @@ def controls(ttl, gui, idx, type, count, controls):
         prefix = type+str(i+1)+"_"
         for c in controls:
             # override default
-            c3 = 1 if (i == 0 and c[0] == "on") else c[3]
+            c3 = 1 if (i == 0 and c[0] in ["on", "level", "level_a"]) else c[3]
             ttl.append(ttl_control(idx, prefix+c[0], c[0], c[1], c[2], c3))
             gui.append(port_meta(prefix+c[0], c[1], c[2], c3, c[4]))
             idx += 1
