@@ -222,6 +222,16 @@ static float norm_width(float w, float inc) {
 
 // VA
 
+void Virtual::clear() {
+    Oscillator::clear();
+    filter.clear();
+}
+
+void Virtual::reset() {
+    Oscillator::reset();
+    filter.clear();
+}
+
 void Virtual::va_saw(float* output, float* out_sync, int samples) {
     el_saw(output, out_sync, samples);
 
@@ -1162,6 +1172,7 @@ void AS::process(float* output, float* out_sync, int samples) {
 
 void SuperWave::clear() {
     Oscillator::clear();
+    filter.clear();
     for (uint i = 0; i < 7; i++) {
         phases[i] = start * rand() / (RAND_MAX + 1.0f);
     }
@@ -1169,6 +1180,7 @@ void SuperWave::clear() {
 
 void SuperWave::reset() {
     Oscillator::reset();
+    filter.clear();
     for (uint i = 0; i < 7; i++) {
         phases[i] = start * rand() / (RAND_MAX + 1.0f);
     }

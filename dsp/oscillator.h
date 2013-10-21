@@ -104,6 +104,9 @@ class Virtual : public Oscillator {
         filter.setSamplerate(r);
     }
 
+    void clear();
+    void reset();
+
     // VA
     void va_saw(float* output, float* sync, int samples);
     void va_tri_saw(float* output, float* sync, int samples);
