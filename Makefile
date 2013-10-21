@@ -41,6 +41,9 @@ install: $(BUNDLE)
 	cp -R $(BUNDLE) $(INSTALL_DIR)
 
 run:
+	jalv.gtk http://www.github.com/timowest/rogue
+
+run-qt:
 	jalv.qt http://www.github.com/timowest/rogue
 
 clean:
