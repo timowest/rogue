@@ -43,16 +43,6 @@ class rogueSynth : public lvtk::Synth<rogueVoice, rogueSynth> {
     void post_process(uint from, uint to);
     void update();
 
-    template <typename T>
-    T v(uint port) {
-        float* pv = p(port);
-        return (T)pv;
-    }
-
-    float v(uint port) {
-        return *p(port);
-    }
-
   private:
     float sample_rate;
     dsp::DCBlocker ldcBlocker, rdcBlocker;

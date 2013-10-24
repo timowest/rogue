@@ -71,14 +71,14 @@ unsigned rogueSynth::find_free_voice(unsigned char key, unsigned char velocity) 
 //parameter change
 void rogueSynth::update() {
     // TODO scale dB parameters
-    data.bus_a_level = v(p_bus_a_level); // scale
-    data.bus_a_pan   = v(p_bus_a_pan);
-    data.bus_b_level = v(p_bus_b_level); // scale
-    data.bus_b_pan   = v(p_bus_b_pan);
-    data.volume      = v(p_volume); // scale
-    data.playmode    = v(p_play_mode);
-    data.glide_time  = v(p_glide_time);
-    data.bend_range  = v(p_pitchbend_range);
+    data.bus_a_level = *p(p_bus_a_level); // scale
+    data.bus_a_pan   = *p(p_bus_a_pan);
+    data.bus_b_level = *p(p_bus_b_level); // scale
+    data.bus_b_pan   = *p(p_bus_b_pan);
+    data.volume      = *p(p_volume); // scale
+    data.playmode    = *p(p_play_mode);
+    data.glide_time  = *p(p_glide_time);
+    data.bend_range  = *p(p_pitchbend_range);
 
     const float rate = sample_rate;
 
@@ -87,77 +87,77 @@ void rogueSynth::update() {
     // oscs
     for (uint i = 0; i < NOSC; i++) {
         uint off = i * OSC_OFF;
-        data.oscs[i].on          = v(p_osc1_on + off);
-        data.oscs[i].type        = v(p_osc1_type + off);
-        data.oscs[i].inv         = v(p_osc1_inv + off);
-        data.oscs[i].free        = v(p_osc1_free + off);
-        data.oscs[i].tracking    = v(p_osc1_tracking + off);
-        data.oscs[i].ratio       = v(p_osc1_ratio + off);
-        data.oscs[i].coarse      = v(p_osc1_coarse + off);
-        data.oscs[i].fine        = v(p_osc1_fine + off);
-        data.oscs[i].start       = v(p_osc1_start + off);
-        data.oscs[i].width       = v(p_osc1_width + off);
-        data.oscs[i].level_a     = v(p_osc1_level_a + off); // scale
-        data.oscs[i].level_b     = v(p_osc1_level_b + off); // scale
-        data.oscs[i].level       = v(p_osc1_level + off);   // scale
+        data.oscs[i].on          = *p(p_osc1_on + off);
+        data.oscs[i].type        = *p(p_osc1_type + off);
+        data.oscs[i].inv         = *p(p_osc1_inv + off);
+        data.oscs[i].free        = *p(p_osc1_free + off);
+        data.oscs[i].tracking    = *p(p_osc1_tracking + off);
+        data.oscs[i].ratio       = *p(p_osc1_ratio + off);
+        data.oscs[i].coarse      = *p(p_osc1_coarse + off);
+        data.oscs[i].fine        = *p(p_osc1_fine + off);
+        data.oscs[i].start       = *p(p_osc1_start + off);
+        data.oscs[i].width       = *p(p_osc1_width + off);
+        data.oscs[i].level_a     = *p(p_osc1_level_a + off); // scale
+        data.oscs[i].level_b     = *p(p_osc1_level_b + off); // scale
+        data.oscs[i].level       = *p(p_osc1_level + off);   // scale
 
-        data.oscs[i].input       = v(p_osc1_input + off);
-        data.oscs[i].pm          = v(p_osc1_pm + off);
-        data.oscs[i].sync        = v(p_osc1_sync + off);
-        data.oscs[i].input2      = v(p_osc1_input2 + off);
-        data.oscs[i].out_mod     = v(p_osc1_out_mod + off);
+        data.oscs[i].input       = *p(p_osc1_input + off);
+        data.oscs[i].pm          = *p(p_osc1_pm + off);
+        data.oscs[i].sync        = *p(p_osc1_sync + off);
+        data.oscs[i].input2      = *p(p_osc1_input2 + off);
+        data.oscs[i].out_mod     = *p(p_osc1_out_mod + off);
     }
 
     // filters
     for (uint i = 0; i < NDCF; i++) {
         uint off = i * DCF_OFF;
-        data.filters[i].on       = v(p_filter1_on + off);
-        data.filters[i].type     = v(p_filter1_type + off);
-        data.filters[i].source   = v(p_filter1_source + off);
-        data.filters[i].freq     = v(p_filter1_freq + off);
-        data.filters[i].q        = v(p_filter1_q + off);
-        data.filters[i].distortion = v(p_filter1_distortion + off);
-        data.filters[i].level    = v(p_filter1_level + off); // scale
-        data.filters[i].pan      = v(p_filter1_pan + off);
+        data.filters[i].on       = *p(p_filter1_on + off);
+        data.filters[i].type     = *p(p_filter1_type + off);
+        data.filters[i].source   = *p(p_filter1_source + off);
+        data.filters[i].freq     = *p(p_filter1_freq + off);
+        data.filters[i].q        = *p(p_filter1_q + off);
+        data.filters[i].distortion = *p(p_filter1_distortion + off);
+        data.filters[i].level    = *p(p_filter1_level + off); // scale
+        data.filters[i].pan      = *p(p_filter1_pan + off);
 
-        data.filters[i].key_to_f = v(p_filter1_key_to_f + off);
-        data.filters[i].vel_to_f = v(p_filter1_vel_to_f + off);
+        data.filters[i].key_to_f = *p(p_filter1_key_to_f + off);
+        data.filters[i].vel_to_f = *p(p_filter1_vel_to_f + off);
     }
 
     // lfos
     for (uint i = 0; i < NLFO; i++) {
         uint off = i * LFO_OFF;
-        data.lfos[i].on          = v(p_lfo1_on + off);
-        data.lfos[i].type        = v(p_lfo1_type + off);
-        data.lfos[i].inv         = v(p_lfo1_inv + off);
-        data.lfos[i].reset_type  = v(p_lfo1_reset_type + off);
-        data.lfos[i].freq        = v(p_lfo1_freq + off);
-        data.lfos[i].start       = v(p_lfo1_start + off);
-        data.lfos[i].width       = v(p_lfo1_width + off);
-        data.lfos[i].humanize    = v(p_lfo1_humanize + off);
+        data.lfos[i].on          = *p(p_lfo1_on + off);
+        data.lfos[i].type        = *p(p_lfo1_type + off);
+        data.lfos[i].inv         = *p(p_lfo1_inv + off);
+        data.lfos[i].reset_type  = *p(p_lfo1_reset_type + off);
+        data.lfos[i].freq        = *p(p_lfo1_freq + off);
+        data.lfos[i].start       = *p(p_lfo1_start + off);
+        data.lfos[i].width       = *p(p_lfo1_width + off);
+        data.lfos[i].humanize    = *p(p_lfo1_humanize + off);
     }
 
     // envs
     for (uint i = 0; i < NENV; i++) {
         uint off = i * ENV_OFF;
-        data.envs[i].on          = v(p_env1_on + off);
-        data.envs[i].pre_delay   = v(p_env1_pre_delay + off) * rate;
-        data.envs[i].attack      = v(p_env1_attack + off) * rate;
-        data.envs[i].hold        = v(p_env1_hold + off) * rate;
-        data.envs[i].decay       = v(p_env1_decay + off) * rate;
-        data.envs[i].sustain     = v(p_env1_sustain + off);
-        data.envs[i].release     = v(p_env1_release + off) * rate;
-        data.envs[i].curve       = v(p_env1_curve + off);
-        data.envs[i].retrigger   = v(p_env1_retrigger + off);
+        data.envs[i].on          = *p(p_env1_on + off);
+        data.envs[i].pre_delay   = *p(p_env1_pre_delay + off) * rate;
+        data.envs[i].attack      = *p(p_env1_attack + off) * rate;
+        data.envs[i].hold        = *p(p_env1_hold + off) * rate;
+        data.envs[i].decay       = *p(p_env1_decay + off) * rate;
+        data.envs[i].sustain     = *p(p_env1_sustain + off);
+        data.envs[i].release     = *p(p_env1_release + off) * rate;
+        data.envs[i].curve       = *p(p_env1_curve + off);
+        data.envs[i].retrigger   = *p(p_env1_retrigger + off);
     }
 
     // mods
     int mod_count = 0;
     for (uint i = 0; i < NMOD; i++) {
         uint off = i * MOD_OFF;
-        data.mods[i].src         = v(p_mod1_src + off);
-        data.mods[i].target      = v(p_mod1_target + off);
-        data.mods[i].amount      = v(p_mod1_amount + off);
+        data.mods[i].src         = *p(p_mod1_src + off);
+        data.mods[i].target      = *p(p_mod1_target + off);
+        data.mods[i].amount      = *p(p_mod1_amount + off);
         if (data.mods[i].src > 0 && data.mods[i].target > 0) {
             mod_count = i + 1;
         }

@@ -1,5 +1,7 @@
 #include <iostream>
 #include <omp.h>
+
+#include "delay.cpp"
 #include "filter.cpp"
 #include "oscillator.cpp"
 #include "tables.cpp"

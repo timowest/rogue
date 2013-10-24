@@ -32,6 +32,7 @@ int main() {
     rogue::SynthData data;
     data.playmode = 0;
     data.volume = 0.5;
+    data.oversample = 1;
     data.bus_a_level = 0.5;
     data.bus_a_pan = 0.5;
 
@@ -81,7 +82,7 @@ int main() {
     data.filters[1].key_to_f = 0.5;
     data.filters[1].vel_to_f = 0.0;
 
-    rogue::rogueVoice voice(SR, &data);
+    rogue::rogueVoice voice(SR, &data, buffer_l, buffer_r);
     voice.set_port_buffers(ports);
 
     double start = omp_get_wtime();
