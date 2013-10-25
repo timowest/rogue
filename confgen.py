@@ -77,6 +77,9 @@ static const port_meta_t p_port_meta[] = {
     {"right", 0, 0, 0, 1},"""
 
 def ttl_control(idx, symbol, name, min, max, default):
+    _min = float(min)
+    _max = float(max)
+    _default = float(default)
     if (min == 0 and max == 1 and isinstance(max, int) and default == 0):
         return """ , [
     a lv2:ControlPort, lv2:InputPort;
@@ -84,9 +87,9 @@ def ttl_control(idx, symbol, name, min, max, default):
     lv2:symbol "%s";
     lv2:name "%s";
     lv2:minimum %s;
-    lv2:default 0;
+    lv2:default 0.0;
     lv2:portProperty lv2:toggled
-  ]""" % (idx, symbol, name, min)
+  ]""" % (idx, symbol, name, _min)
     elif isinstance(max, int):
         return """ , [
     a lv2:ControlPort, lv2:InputPort;
@@ -97,7 +100,7 @@ def ttl_control(idx, symbol, name, min, max, default):
     lv2:maximum %s;
     lv2:default %s;
     lv2:portProperty lv2:integer
-  ]""" % (idx, symbol, name, min, max, default)
+  ]""" % (idx, symbol, name, _min, _max, _default)
     else:
         return """ , [
     a lv2:ControlPort, lv2:InputPort;
@@ -107,7 +110,7 @@ def ttl_control(idx, symbol, name, min, max, default):
     lv2:minimum %s;
     lv2:maximum %s;
     lv2:default %s
-  ]""" % (idx, symbol, name, min, max, default)
+  ]""" % (idx, symbol, name, _min, _max, _default)
 
 def port_meta(symbol, min, max, default, step):
     return '    {"%s", %s, %s, %s, %s},' % (symbol, min, max, default, step)
@@ -115,7 +118,7 @@ def port_meta(symbol, min, max, default, step):
 def controls(ttl, gui, idx, type, count, controls):
     for i in range(count):
         prefix = type+str(i+1)+"_"
-        for c in controls:
+        for c in controls:            
             # override default
             c3 = 1 if (i == 0 and c[0] in ["on", "level", "level_a"]) else c[3]
             ttl.append(ttl_control(idx, prefix+c[0], c[0], c[1], c[2], c3))
@@ -125,7 +128,7 @@ def controls(ttl, gui, idx, type, count, controls):
 
 def main():
 
-    #        suffix        min max default 
+    #        suffix        min max default step
 
     oscs = [["on"         , 0, 1, 0, 1], # toggled
             ["type"       , 0, 39, 0, 1],
