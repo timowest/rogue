@@ -1090,15 +1090,28 @@ void AS::saw(float* output, float* out_sync, int samples) {
         output[i] = 0;
     }
 
-    for (uint j = 0; j < max; j++) {
-        float inc2 = (j + 1) * inc;
-        float scale = 1.0/ (j + 1);
-        for (uint i = 0; i < samples; i++) {
-            phases[j] += inc2;
-            if (phases[j] >= 1.0f) phases[j] -= 1.0f;
-            output[i] += scale * SIN(phases[j]);
+    if (pm > 0.0) {
+        for (uint j = 0; j < max; j++) {
+            float inc2 = (j + 1) * inc;
+            float scale = 1.0/ (j + 1);
+            for (uint i = 0; i < samples; i++) {
+                phases[j] += inc2;
+                if (phases[j] >= 1.0f) phases[j] -= 1.0f;
+                output[i] += scale * SIN(pmod(phases[j], i));
+            }
+        }
+    } else {
+        for (uint j = 0; j < max; j++) {
+            float inc2 = (j + 1) * inc;
+            float scale = 1.0/ (j + 1);
+            for (uint i = 0; i < samples; i++) {
+                phases[j] += inc2;
+                if (phases[j] >= 1.0f) phases[j] -= 1.0f;
+                output[i] += scale * SIN(phases[j]);
+            }
         }
     }
+
 
     // normalize
     for (uint i = 0; i < samples; i++) {
@@ -1115,16 +1128,30 @@ void AS::square(float* output, float* out_sync, int samples) {
         output[i] = 0;
     }
 
-    for (uint j = 0; j < max; j += 2) {
-        uint jj = j / 2;
-        float inc2 = (j + 1) * inc;
-        float scale = 1.0/ (j + 1);
-        for (uint i = 0; i < samples; i++) {
-            phases[jj] += inc2;
-            if (phases[jj] >= 1.0f) phases[jj] -= 1.0f;
-            output[i] += scale * SIN(phases[jj]);
+    if (pm > 0.0) {
+        for (uint j = 0; j < max; j += 2) {
+            uint jj = j / 2;
+            float inc2 = (j + 1) * inc;
+            float scale = 1.0/ (j + 1);
+            for (uint i = 0; i < samples; i++) {
+                phases[jj] += inc2;
+                if (phases[jj] >= 1.0f) phases[jj] -= 1.0f;
+                output[i] += scale * SIN(pmod(phases[jj], i));
+            }
+        }
+    } else {
+        for (uint j = 0; j < max; j += 2) {
+            uint jj = j / 2;
+            float inc2 = (j + 1) * inc;
+            float scale = 1.0/ (j + 1);
+            for (uint i = 0; i < samples; i++) {
+                phases[jj] += inc2;
+                if (phases[jj] >= 1.0f) phases[jj] -= 1.0f;
+                output[i] += scale * SIN(phases[jj]);
+            }
         }
     }
+
 
     // normalize
     for (uint i = 0; i < samples; i++) {
@@ -1141,18 +1168,34 @@ void AS::triangle(float* output, float* out_sync, int samples) {
         output[i] = 0;
     }
 
-    float inv = 1.0f;
-    for (uint j = 0; j < max; j += 2) {
-        uint jj = j / 2;
-        float inc2 = (j + 1) * inc;
-        float scale = inv / ((j + 1) * (j + 1));
-        for (uint i = 0; i < samples; i++) {
-            phases[jj] += inc2;
-            if (phases[jj] >= 1.0f) phases[jj] -= 1.0f;
-            output[i] += scale * SIN(phases[jj]);
+    if (pm > 0.0) {
+        float inv = 1.0f;
+        for (uint j = 0; j < max; j += 2) {
+            uint jj = j / 2;
+            float inc2 = (j + 1) * inc;
+            float scale = inv / ((j + 1) * (j + 1));
+            for (uint i = 0; i < samples; i++) {
+                phases[jj] += inc2;
+                if (phases[jj] >= 1.0f) phases[jj] -= 1.0f;
+                output[i] += scale * SIN(pmod(phases[jj], i));
+            }
+            inv *= -1.0f;
         }
-        inv *= -1.0f;
+    } else {
+        float inv = 1.0f;
+            for (uint j = 0; j < max; j += 2) {
+            uint jj = j / 2;
+            float inc2 = (j + 1) * inc;
+            float scale = inv / ((j + 1) * (j + 1));
+            for (uint i = 0; i < samples; i++) {
+                phases[jj] += inc2;
+                if (phases[jj] >= 1.0f) phases[jj] -= 1.0f;
+                output[i] += scale * SIN(phases[jj]);
+            }
+            inv *= -1.0f;
+        }
     }
+
 
     // normalize
     for (uint i = 0; i < samples; i++) {
