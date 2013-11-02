@@ -12,6 +12,32 @@
 namespace dsp {
 
 /**
+* non-interpolating delay line class.
+*
+* This class implements a non-interpolating digital delay-line. If
+* the delay and maximum length are not specified during
+* instantiation, a fixed maximum length of 4095 and a delay of zero
+* is set.
+*/
+class Delay {
+
+  public:
+    Delay(uint l = 4096);
+    ~Delay();
+    void setDelay(uint d);
+    void setMax(uint d);
+    void clear();
+    float nextOut();
+    float process(float in);
+
+  private:
+    float* buffer;
+    uint length, delay = 0, inPoint = 0, outPoint = 0;
+    float last = 0.0;
+
+};
+
+/**
 * allpass interpolating delay line class.
 *
 * This class implements a fractional-length digital delay-line using

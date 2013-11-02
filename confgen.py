@@ -214,33 +214,24 @@ def main():
                ["pitchbend_range",  0, 24.0, 0, 0.1],
 
                ["chorus_on",     0, 1, 0, 1],
-               ["chorus_t",      2.5, 25, 8.1, 0.1],
-               ["chorus_width",  0.5, 10, 1, 0.1],
-               ["chorus_rate",   0, 1, 0.25, 0.01],
-               ["chorus_blend",  0, 1, 0.25, 0.01],
+               ["chorus_delay",  0.001, 0.03, 0.01, 0.001],
+               ["chorus_amount", 0, 1.0, 0.5, 0.01],
+               ["chorus_rate",   0, 10, 1, 0.1],
                ["chorus_feedforward", 0, 1, 1, 0.1],
                ["chorus_feedback", 0, 1, 0.5, 0.1],
 
                ["phaser_on",     0, 1, 0, 1],
-               ["phaser_rate",   0, 1, 0.25, 0.01],
-               ["phaser_depth",  0, 1, 1, 0.01],
-               ["phaser_spread", 0, 1, 0.5, 0.01],
-               ["phaser_resonance", 0, 1, 0, 0.01],
+               ["phaser_delay",  0.001, 0.03, 0.01, 0.001],
+               ["phaser_amount", 0, 1.0, 0.5, 0.01],
+               ["phaser_rate",   0, 10, 1, 0.1],
+               ["phaser_depth", 0, 1, 1, 0.1],
+               ["phaser_feedback", 0, 1, 0.5, 0.1],
 
                ["delay_on",      0, 1, 0, 1],
                ["delay_bpm",     30, 164, 97, 0.1],
                ["delay_divider", 2, 4, 3, 1],
-               ["delay_feedback",0, 1, 0.75, 0.01],
-               ["delay_dry",     0, 1, 0.5, 0.01],
-               ["delay_blend",   0, 1, 1, 0.01],
-               ["delay_tune",    415, 467, 440, 0.1],
-
-               ["reverb_on",     0, 1, 0, 1],
-               ["reverb_bandwidth", 0, 1, 0.75, 0.01],
-               ["reverb_tail",   0, 1, 0.5, 0.01],
-               ["reverb_damping",0, 1, 0.25, 0.01],
-               ["reverb_blend",  0, 1, 0.25, 0.01]]
-
+               ["delay_amount",  0, 1, 0.75, 0.01],
+               ["delay_feedback",0, 1, 0.75, 0.01]]
 
     for c in globals:
         ttl.append(ttl_control(idx, c[0], c[0], c[1], c[2], c[3]))

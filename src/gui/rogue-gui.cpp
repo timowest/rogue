@@ -168,29 +168,26 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         connectBox(p_chorus_on, parent);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(p_chorus_t), 0, 0);
-        grid->addWidget(createDial(p_chorus_width), 0, 1);
+        grid->addWidget(createDial(p_chorus_delay), 0, 0);
+        grid->addWidget(createDial(p_chorus_amount), 0, 1);
         grid->addWidget(createDial(p_chorus_rate), 0, 2);
-        grid->addWidget(createDial(p_chorus_blend), 0, 3);
-        grid->addWidget(createDial(p_chorus_feedforward), 0, 4);
-        grid->addWidget(createDial(p_chorus_feedback), 0, 5);
+        grid->addWidget(createDial(p_chorus_feedforward), 0, 3);
+        grid->addWidget(createDial(p_chorus_feedback), 0, 4);
         // row 2
-        grid->addWidget(new QLabel("T"), 1, 0);
-        grid->addWidget(new QLabel("Width"), 1, 1);
+        grid->addWidget(new QLabel("Delay"), 1, 0);
+        grid->addWidget(new QLabel("Amount"), 1, 1);
         grid->addWidget(new QLabel("Rate"), 1, 2);
-        grid->addWidget(new QLabel("Blend"), 1, 3);
-        grid->addWidget(new QLabel("Feedf"), 1, 4);
-        grid->addWidget(new QLabel("Feedb"), 1, 5);
+        grid->addWidget(new QLabel("Feedf"), 1, 3);
+        grid->addWidget(new QLabel("Feedb"), 1, 4);
         // row 3
-        grid->addWidget(createLabel(p_chorus_t), 2, 0);
-        grid->addWidget(createLabel(p_chorus_width), 2, 1);
+        grid->addWidget(createLabel(p_chorus_delay), 2, 0);
+        grid->addWidget(createLabel(p_chorus_amount), 2, 1);
         grid->addWidget(createLabel(p_chorus_rate), 2, 2);
-        grid->addWidget(createLabel(p_chorus_blend), 2, 3);
-        grid->addWidget(createLabel(p_chorus_feedforward), 2, 4);
-        grid->addWidget(createLabel(p_chorus_feedback), 2, 5);
+        grid->addWidget(createLabel(p_chorus_feedforward), 2,3);
+        grid->addWidget(createLabel(p_chorus_feedback), 2, 4);
         grid->setHorizontalSpacing(2);
         grid->setVerticalSpacing(0);
-        grid->setColumnStretch(6, 1);
+        grid->setColumnStretch(5, 1);
         return parent;
     }
 
@@ -200,23 +197,26 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         connectBox(p_phaser_on, parent);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(p_phaser_rate), 0, 0);
-        grid->addWidget(createDial(p_phaser_depth), 0, 1);
-        grid->addWidget(createDial(p_phaser_spread), 0, 2);
-        grid->addWidget(createDial(p_phaser_resonance), 0, 3);
+        grid->addWidget(createDial(p_phaser_delay), 0, 0);
+        grid->addWidget(createDial(p_phaser_amount), 0, 1);
+        grid->addWidget(createDial(p_phaser_rate), 0, 2);
+        grid->addWidget(createDial(p_phaser_depth), 0, 3);
+        grid->addWidget(createDial(p_phaser_feedback), 0, 4);
         // row 2
-        grid->addWidget(new QLabel("Rate"), 1, 0);
-        grid->addWidget(new QLabel("Depth"), 1, 1);
-        grid->addWidget(new QLabel("Spread"), 1, 2);
-        grid->addWidget(new QLabel("Res"), 1, 3);
+        grid->addWidget(new QLabel("Delay"), 1, 0);
+        grid->addWidget(new QLabel("Amount"), 1, 1);
+        grid->addWidget(new QLabel("Rate"), 1, 2);
+        grid->addWidget(new QLabel("Depth"), 1, 3);
+        grid->addWidget(new QLabel("Feedb"), 1, 4);
         // row 3
-        grid->addWidget(createLabel(p_phaser_rate), 2, 0);
-        grid->addWidget(createLabel(p_phaser_depth), 2, 1);
-        grid->addWidget(createLabel(p_phaser_spread), 2, 2);
-        grid->addWidget(createLabel(p_phaser_resonance), 2, 3);
+        grid->addWidget(createLabel(p_phaser_delay), 2, 0);
+        grid->addWidget(createLabel(p_phaser_amount), 2, 1);
+        grid->addWidget(createLabel(p_phaser_rate), 2, 2);
+        grid->addWidget(createLabel(p_phaser_depth), 2, 3);
+        grid->addWidget(createLabel(p_phaser_feedback), 2, 4);
         grid->setHorizontalSpacing(2);
         grid->setVerticalSpacing(0);
-        grid->setColumnStretch(4, 1);
+        grid->setColumnStretch(5, 1);
         return parent;
     }
 
@@ -228,31 +228,25 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         // row 1
         grid->addWidget(createDial(p_delay_bpm), 0, 0);
         grid->addWidget(createDial(p_delay_divider), 0, 1);
-        grid->addWidget(createDial(p_delay_feedback), 0, 2);
-        grid->addWidget(createDial(p_delay_dry), 0, 3);
-        grid->addWidget(createDial(p_delay_blend), 0, 4);
-        grid->addWidget(createDial(p_delay_tune), 0, 5);
+        grid->addWidget(createDial(p_delay_amount), 0, 2);
+        grid->addWidget(createDial(p_delay_feedback), 0, 3);
         // row 2
         grid->addWidget(new QLabel("BPM"), 1, 0);
         grid->addWidget(new QLabel("Divider"), 1, 1);
-        grid->addWidget(new QLabel("Feedb"), 1, 2);
-        grid->addWidget(new QLabel("Dry"), 1, 3);
-        grid->addWidget(new QLabel("Blend"), 1, 4);
-        grid->addWidget(new QLabel("Tune"), 1, 5);
+        grid->addWidget(new QLabel("Amount"), 1, 2);
+        grid->addWidget(new QLabel("Feedb"), 1, 3);
         // row 3
         grid->addWidget(createLabel(p_delay_bpm), 2, 0);
         grid->addWidget(createLabel(p_delay_divider), 2, 1);
-        grid->addWidget(createLabel(p_delay_feedback), 2, 2);
-        grid->addWidget(createLabel(p_delay_dry), 2, 3);
-        grid->addWidget(createLabel(p_delay_blend), 2, 4);
-        grid->addWidget(createLabel(p_delay_tune), 2, 5);
+        grid->addWidget(createLabel(p_delay_amount), 2, 2);
+        grid->addWidget(createLabel(p_delay_feedback), 2, 3);
         grid->setHorizontalSpacing(2);
         grid->setVerticalSpacing(0);
-        grid->setColumnStretch(6, 1);
+        grid->setColumnStretch(4, 1);
         return parent;
     }
 
-    QWidget* createReverb(QGroupBox* parent) {
+    /*QWidget* createReverb(QGroupBox* parent) {
         parent->setObjectName("reverb");
         parent->setCheckable(true);
         connectBox(p_reverb_on, parent);
@@ -276,7 +270,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->setVerticalSpacing(0);
         grid->setColumnStretch(4, 1);
         return parent;
-    }
+    }*/
 
     QWidget* createEffects(QWidget* parent) {
         parent->setObjectName("effects");
@@ -285,7 +279,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createChorus(new QGroupBox("Chorus")), 0, 0);
         grid->addWidget(createPhaser(new QGroupBox("Phaser")), 0, 1);
         grid->addWidget(createDelay(new QGroupBox("Delay")), 0, 2);
-        grid->addWidget(createReverb(new QGroupBox("Reverb")), 0, 3);
+        //grid->addWidget(createReverb(new QGroupBox("Reverb")), 0, 3);
         grid->setRowStretch(1, 1);
         return parent;
     }

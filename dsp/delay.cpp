@@ -8,6 +8,54 @@
 
 namespace dsp {
 
+// Delay
+
+Delay::Delay(uint l) {
+    buffer = new float[l];
+    length = l;
+    clear();
+}
+
+Delay::~Delay() {
+    delete buffer;
+}
+
+void Delay::setDelay(uint d) {
+    if (inPoint >= d) outPoint = inPoint - d;
+    else outPoint = length + inPoint - d;
+    delay = d;
+}
+
+void Delay::setMax(uint d) {
+    if (d > length) {
+        delete buffer;
+        buffer = new float[d];
+        for (uint i = 0; i < d; i++) {
+            buffer[i] = 0;
+        }
+    }
+    length = d;
+}
+
+void Delay::clear() {
+    for (uint i = 0; i < length; i++) {
+        buffer[i] = 0;
+    }
+    last = 0;
+}
+
+float Delay::nextOut() {
+    return buffer[outPoint];
+}
+
+float Delay::process(float in) {
+    buffer[inPoint++] = in;
+    if (inPoint == length) inPoint = 0;
+    last = buffer[outPoint++];
+    if (outPoint == length) outPoint = 0;
+    return last;
+}
+
 // DelayA
 
 DelayA::DelayA() {

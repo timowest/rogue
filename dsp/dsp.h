@@ -8,6 +8,7 @@
 #define DSP_DSP_H
 
 #include "delay.h"
+#include "effects.h"
 #include "envelope.h"
 #include "filter.h"
 #include "lfo.h"

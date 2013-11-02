@@ -22,22 +22,10 @@ rogueSynth::rogueSynth(double rate)
         add_voices(voices[i]);
     }
 
-    ::Plugin* effects[] = {&chorus, &phaser, &delay, &reverb};
-    for (uint i = 0; i < 4; i++) {
-    	// instantiate
-    	effects[i]->fs = rate;
-    	effects[i]->over_fs = 1.0/rate;
-    	effects[i]->normal = NOISE_FLOOR;
-    }
-
-    chorus.ports = chorus_ports;
-    chorus.init();
-    phaser.ports = phaser_ports;
-    phaser.init();
-    delay.ports = delay_ports;
-    delay.init();
-    reverb.ports = reverb_ports;
-    reverb.init();
+    chorus_fx.setSamplerate(sample_rate);
+    phaser_fx.setSamplerate(sample_rate);
+    delay_fx.setSamplerate(sample_rate);
+    // TODO reverb
 
     add_audio_outputs(p_left, p_right);
 
@@ -210,70 +198,37 @@ void rogueSynth::post_process(uint from, uint to) {
     ldcBlocker.process(pleft, pleft, samples);
     rdcBlocker.process(pright, pright, samples);
 
-    if (!effects_activated) {
-        chorus_ports[0] = p(p_chorus_t);
-        chorus_ports[1] = p(p_chorus_width);
-        chorus_ports[2] = p(p_chorus_rate);
-        chorus_ports[3] = p(p_chorus_blend);
-        chorus_ports[4] = p(p_chorus_feedforward);
-        chorus_ports[5] = p(p_chorus_feedback);
-        chorus.activate();
-
-        phaser_ports[2] = p(p_phaser_rate);
-        phaser_ports[3] = p(p_phaser_depth);
-        phaser_ports[4] = p(p_phaser_spread);
-        phaser_ports[5] = p(p_phaser_resonance);
-        phaser.activate();
-
-        delay_ports[2] = p(p_delay_bpm);
-        delay_ports[3] = p(p_delay_divider);
-        delay_ports[4] = p(p_delay_feedback);
-        delay_ports[5] = p(p_delay_dry);
-        delay_ports[6] = p(p_delay_blend);
-        delay_ports[7] = p(p_delay_tune);
-        delay.activate();
-
-        reverb_ports[2] = p(p_reverb_bandwidth);
-        reverb_ports[3] = p(p_reverb_tail);
-        reverb_ports[4] = p(p_reverb_damping);
-        reverb_ports[5] = p(p_reverb_blend);
-        reverb.activate();
-
-    	effects_activated = true;
-    }
-
     // chorus
     if (*p(p_chorus_on) > 0.0) {
-    	chorus_ports[6] = pleft;
-    	chorus_ports[7] = pright;
-    	chorus_ports[8] = pleft;
-    	chorus_ports[9] = pright;
-    	chorus.run(samples);
+        float d = *p(p_chorus_delay);
+        float a = *p(p_chorus_amount);
+        float r = *p(p_chorus_rate);
+        float ff = *p(p_chorus_feedforward);
+        float fb = *p(p_chorus_feedback);
+    	chorus_fx.setCoefficients(d, a, r, ff, fb);
+    	chorus_fx.process(pleft, pright, samples);
     }
     // phaser
     if (*p(p_phaser_on) > 0.0) {
-    	phaser_ports[0] = pleft;
-    	phaser_ports[1] = pright;
-    	phaser_ports[6] = pleft;
-    	phaser_ports[7] = pright;
-    	phaser.run(samples);
+    	float del = *p(p_phaser_delay);
+    	float a = *p(p_phaser_amount);
+    	float r = *p(p_phaser_rate);
+    	float d = *p(p_phaser_depth);
+    	float fb = *p(p_phaser_feedback);
+    	phaser_fx.setCoefficients(del, a, r, d, fb);
+    	phaser_fx.process(pleft, pright, samples);
     }
     // delay
     if (*p(p_delay_on) > 0.0) {
-        delay_ports[0] = pleft;
-        delay_ports[1] = pright;
-        delay_ports[8] = pleft;
-        delay_ports[9] = pright;
-        delay.run(samples);
+        float bpm = *p(p_delay_bpm);
+        float div = *p(p_delay_divider);
+        float a = *p(p_delay_amount);
+        float fb = *p(p_delay_feedback);
+        delay_fx.setCoefficients(bpm, div, a, fb);
+        delay_fx.process(pleft, pright, samples);
     }
     // reverb
-    if (*p(p_reverb_on) > 0.0) {
-    	reverb_ports[0] = pleft;
-    	reverb_ports[1] = pright;
-    	reverb_ports[6] = pleft;
-    	reverb_ports[7] = pright;
-    	reverb.run(samples);
-    }
+    // TODO
 
     // volume
     for (uint i = 0; i < samples; i++) {
