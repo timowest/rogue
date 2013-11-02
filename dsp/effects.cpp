@@ -37,14 +37,18 @@ void ChorusEffect::setSamplerate(float r) {
 }
 
 void ChorusEffect::process(float* left, float* right, int samples) {
-    float ll = lfo_l.tick(samples);
-    float lr = lfo_r.tick(samples);
-    float dl = (1.0 + amount * ll) * delay * sample_rate;
-    float dr = (1.0 + amount * lr) * delay * sample_rate;
-    delay_l.setDelay(dl);
-    delay_r.setDelay(dr);
+    float dsamples = delay * sample_rate;
 
     for (uint i = 0; i < samples; i++) {
+        // configure
+        float ll = lfo_l.tick();
+        float lr = lfo_r.tick();
+        float dl = (1.0 + amount * ll) * dsamples;
+        float dr = (1.0 + amount * lr) * dsamples;
+        delay_l.setDelay(dl);
+        delay_r.setDelay(dr);
+
+        // process
         float dl_out = delay_l.process(left[i] + feedback * last_l);
         float dr_out = delay_r.process(right[i] + feedback * last_r);
         last_l = left[i] + feedforward * dl_out;
@@ -99,10 +103,12 @@ void PhaserEffect::setSamplerate(float r) {
 }
 
 void PhaserEffect::process(float* left, float* right, int samples) {
+    float dsamples = delay * sample_rate;
+
     float ll = lfo_l.tick(samples);
     float lr = lfo_r.tick(samples);
-    float dl = (1.0 + amount * ll) * delay * sample_rate;
-    float dr = (1.0 + amount * lr) * delay * sample_rate;
+    float dl = (1.0 + amount * ll) * dsamples;
+    float dr = (1.0 + amount * lr) * dsamples;
 
     for (uint i = 0; i < 8; i++) {
         filters_l[i].setDelay(dl);

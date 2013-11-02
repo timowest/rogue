@@ -26,7 +26,7 @@ class ChorusEffect : Effect {
     DelayA delay_l, delay_r;
     LFO lfo_l, lfo_r;
     float delay, amount, rate, feedforward, feedback;
-    float last_l, last_r;
+    float last_l = 0, last_r = 0;
     float sample_rate;
 
   public:
@@ -55,7 +55,7 @@ class PhaserEffect : Effect {
     AllpassDelay filters_r[8];
     LFO lfo_l, lfo_r;
     float delay, amount, rate, depth, feedback;
-    float last_l, last_r;
+    float last_l = 0, last_r = 0;
     float sample_rate;
 
   public:
@@ -73,7 +73,7 @@ class PhaserEffect : Effect {
 class DelayEffect : Effect {
     Delay delay_l, delay_r;
     float delay,  amount, feedback;
-    float last_l, last_r;
+    float last_l = 0, last_r = 0;
     float sample_rate;
 
   public:
