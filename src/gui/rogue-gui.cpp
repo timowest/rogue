@@ -227,22 +227,25 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
         grid->addWidget(createDial(p_delay_bpm), 0, 0);
-        grid->addWidget(createDial(p_delay_divider), 0, 1);
-        grid->addWidget(createDial(p_delay_amount), 0, 2);
-        grid->addWidget(createDial(p_delay_feedback), 0, 3);
+        grid->addWidget(createDial(p_delay_divider_l), 0, 1);
+        grid->addWidget(createDial(p_delay_divider_r), 0, 2);
+        grid->addWidget(createDial(p_delay_amount), 0, 3);
+        grid->addWidget(createDial(p_delay_feedback), 0, 4);
         // row 2
         grid->addWidget(new QLabel("BPM"), 1, 0);
-        grid->addWidget(new QLabel("Divider"), 1, 1);
-        grid->addWidget(new QLabel("Amount"), 1, 2);
-        grid->addWidget(new QLabel("Feedb"), 1, 3);
+        grid->addWidget(new QLabel("Divider L"), 1, 1);
+        grid->addWidget(new QLabel("Divider R"), 1, 2);
+        grid->addWidget(new QLabel("Amount"), 1, 3);
+        grid->addWidget(new QLabel("Feedb"), 1, 4);
         // row 3
         grid->addWidget(createLabel(p_delay_bpm), 2, 0);
-        grid->addWidget(createLabel(p_delay_divider), 2, 1);
-        grid->addWidget(createLabel(p_delay_amount), 2, 2);
-        grid->addWidget(createLabel(p_delay_feedback), 2, 3);
+        grid->addWidget(createLabel(p_delay_divider_l), 2, 1);
+        grid->addWidget(createLabel(p_delay_divider_r), 2, 2);
+        grid->addWidget(createLabel(p_delay_amount), 2, 3);
+        grid->addWidget(createLabel(p_delay_feedback), 2, 4);
         grid->setHorizontalSpacing(2);
         grid->setVerticalSpacing(0);
-        grid->setColumnStretch(4, 1);
+        grid->setColumnStretch(5, 1);
         return parent;
     }
 

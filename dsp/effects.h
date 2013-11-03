@@ -9,7 +9,6 @@
 
 #include "types.h"
 #include "delay.h"
-#include "lfo.h"
 
 namespace dsp {
 
@@ -24,15 +23,13 @@ class Effect {
 
 class ChorusEffect : Effect {
     DelayA delay_l, delay_r;
-    LFO lfo_l, lfo_r;
+    float lfo_phase = 0, lfo_inc;
     float delay, amount, rate, feedforward, feedback;
     float last_l = 0, last_r = 0;
     float sample_rate;
 
   public:
-    ChorusEffect() {
-        lfo_r.setStart(0.5);
-    }
+    ChorusEffect() {}
     void clear();
     void process(float* left, float* right, int samples);
     void setCoefficients(float d, float a, float r, float ff, float fb);
@@ -53,15 +50,13 @@ class AllpassDelay {
 class PhaserEffect : Effect {
     AllpassDelay filters_l[8];
     AllpassDelay filters_r[8];
-    LFO lfo_l, lfo_r;
+    float lfo_phase = 0, lfo_inc;
     float delay, amount, rate, depth, feedback;
     float last_l = 0, last_r = 0;
     float sample_rate;
 
   public:
-    PhaserEffect() {
-        lfo_r.setStart(0.5);
-    }
+    PhaserEffect() {}
     void clear();
     void process(float* left, float* right, int samples);
     void setCoefficients(float del, float a, float r, float d, float fb);
@@ -72,7 +67,7 @@ class PhaserEffect : Effect {
 
 class DelayEffect : Effect {
     Delay delay_l, delay_r;
-    float delay,  amount, feedback;
+    float amount, feedback;
     float last_l = 0, last_r = 0;
     float sample_rate;
 
@@ -80,7 +75,7 @@ class DelayEffect : Effect {
     DelayEffect() {}
     void clear();
     void process(float* left, float* right, int samples);
-    void setCoefficients(float b, float di, float a, float fb);
+    void setCoefficients(float b, float di_l, float di_r, float a, float fb);
     void setSamplerate(float r);
 };
 

@@ -5,6 +5,7 @@
  */
 
 #include "effects.h"
+#include "tables.h"
 
 namespace dsp {
 
@@ -13,9 +14,7 @@ namespace dsp {
 void ChorusEffect::clear() {
     delay_l.clear();
     delay_r.clear();
-    lfo_l.clear();
-    lfo_r.clear();
-
+    lfo_phase = 0.0;
     last_l = last_r = 0.0;
 }
 
@@ -26,14 +25,11 @@ void ChorusEffect::setCoefficients(float d, float a, float r, float ff, float fb
     feedforward = ff;
     feedback = fb;
 
-    lfo_l.setFreq(r);
-    lfo_r.setFreq(r);
+    lfo_inc = r / sample_rate;
 }
 
 void ChorusEffect::setSamplerate(float r) {
     sample_rate = r;
-    lfo_l.setSamplerate(r);
-    lfo_r.setSamplerate(r);
 }
 
 void ChorusEffect::process(float* left, float* right, int samples) {
@@ -41,10 +37,13 @@ void ChorusEffect::process(float* left, float* right, int samples) {
 
     for (uint i = 0; i < samples; i++) {
         // configure
-        float ll = lfo_l.tick();
-        float lr = lfo_r.tick();
-        float dl = (1.0 + amount * ll) * dsamples;
-        float dr = (1.0 + amount * lr) * dsamples;
+        lfo_phase += lfo_inc;
+        if (lfo_phase >= 1.0f) {
+            lfo_phase -= 1.0f;
+        }
+        float lfo_val = sin_.linear(lfo_phase);
+        float dl = (1.0 + amount * lfo_val) * dsamples;
+        float dr = (1.0 - amount * lfo_val) * dsamples;
         delay_l.setDelay(dl);
         delay_r.setDelay(dr);
 
@@ -78,6 +77,7 @@ float AllpassDelay::process(float in) {
 
 void PhaserEffect::clear() {
     last_l = last_r = 0.0;
+    lfo_phase = 0.0;
 
     for (uint i = 0; i < 8; i++) {
         filters_l[i].clear();
@@ -92,36 +92,35 @@ void PhaserEffect::setCoefficients(float del, float a, float r, float d, float f
     depth = d;
     feedback = fb;
 
-    lfo_l.setFreq(r);
-    lfo_r.setFreq(r);
+    lfo_inc = r / sample_rate;
 }
 
 void PhaserEffect::setSamplerate(float r) {
     sample_rate = r;
-    lfo_l.setSamplerate(r);
-    lfo_r.setSamplerate(r);
 }
 
 void PhaserEffect::process(float* left, float* right, int samples) {
     float dsamples = delay * sample_rate;
 
-    float ll = lfo_l.tick(samples);
-    float lr = lfo_r.tick(samples);
-    float dl = (1.0 + amount * ll) * dsamples;
-    float dr = (1.0 + amount * lr) * dsamples;
-
-    for (uint i = 0; i < 8; i++) {
-        filters_l[i].setDelay(dl);
-        filters_r[i].setDelay(dr);
-    }
-
     for (uint i = 0; i < samples; i++) {
+        // configure
+        lfo_phase += lfo_inc;
+        if (lfo_phase >= 1.0f) {
+            lfo_phase -= 1.0f;
+        }
+        float lfo_val = sin_.linear(lfo_phase);
+        float dl = (1.0 + amount * lfo_val) * dsamples;
+        float dr = (1.0 - amount * lfo_val) * dsamples;
+
+        // process
         float dl_out = left[i] + feedback * last_l;
         float dr_out = right[i] + feedback * last_r;
 
         for (uint j = 0; j < 8; j++) {
-            dl_out = filters_l[i].process(dl_out);
-            dr_out = filters_r[i].process(dr_out);
+            filters_l[j].setDelay(dl);
+            filters_r[j].setDelay(dr);
+            dl_out = filters_l[j].process(dl_out);
+            dr_out = filters_r[j].process(dr_out);
         }
 
         last_l = left[i] + depth * dl_out;
@@ -139,8 +138,9 @@ void DelayEffect::clear() {
     delay_r.clear();
 }
 
-void DelayEffect::setCoefficients(float bpm, float di, float a, float fb) {
-    delay = sample_rate / (bpm / 60 / di);
+void DelayEffect::setCoefficients(float bpm, float di_l, float di_r, float a, float fb) {
+    delay_l.setDelay(sample_rate / (bpm / 60 / di_l));
+    delay_r.setDelay(sample_rate / (bpm / 60 / di_r));
     amount = a;
     feedback = fb;
 }
@@ -152,9 +152,6 @@ void DelayEffect::setSamplerate(float r) {
 }
 
 void DelayEffect::process(float* left, float* right, int samples) {
-    delay_l.setDelay(delay);
-    delay_r.setDelay(delay);
-
     for (uint i = 0; i < samples; i++) {
         last_l = delay_l.process(left[i] + feedback * last_l);
         last_r = delay_r.process(right[i] + feedback * last_r);
