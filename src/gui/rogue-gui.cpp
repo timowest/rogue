@@ -171,19 +171,19 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createDial(p_chorus_delay), 0, 0);
         grid->addWidget(createDial(p_chorus_amount), 0, 1);
         grid->addWidget(createDial(p_chorus_rate), 0, 2);
-        grid->addWidget(createDial(p_chorus_feedforward), 0, 3);
+        grid->addWidget(createDial(p_chorus_depth), 0, 3);
         grid->addWidget(createDial(p_chorus_feedback), 0, 4);
         // row 2
         grid->addWidget(new QLabel("Delay"), 1, 0);
-        grid->addWidget(new QLabel("Amount"), 1, 1);
-        grid->addWidget(new QLabel("Rate"), 1, 2);
-        grid->addWidget(new QLabel("Feedf"), 1, 3);
+        grid->addWidget(new QLabel("Mod amt"), 1, 1);
+        grid->addWidget(new QLabel("Mod frq"), 1, 2);
+        grid->addWidget(new QLabel("Depth"), 1, 3);
         grid->addWidget(new QLabel("Feedb"), 1, 4);
         // row 3
         grid->addWidget(createLabel(p_chorus_delay), 2, 0);
         grid->addWidget(createLabel(p_chorus_amount), 2, 1);
         grid->addWidget(createLabel(p_chorus_rate), 2, 2);
-        grid->addWidget(createLabel(p_chorus_feedforward), 2,3);
+        grid->addWidget(createLabel(p_chorus_depth), 2,3);
         grid->addWidget(createLabel(p_chorus_feedback), 2, 4);
         grid->setHorizontalSpacing(2);
         grid->setVerticalSpacing(0);
@@ -204,8 +204,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createDial(p_phaser_feedback), 0, 4);
         // row 2
         grid->addWidget(new QLabel("Delay"), 1, 0);
-        grid->addWidget(new QLabel("Amount"), 1, 1);
-        grid->addWidget(new QLabel("Rate"), 1, 2);
+        grid->addWidget(new QLabel("Mod amt"), 1, 1);
+        grid->addWidget(new QLabel("Mod frq"), 1, 2);
         grid->addWidget(new QLabel("Depth"), 1, 3);
         grid->addWidget(new QLabel("Feedb"), 1, 4);
         // row 3
@@ -229,19 +229,19 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createDial(p_delay_bpm), 0, 0);
         grid->addWidget(createDial(p_delay_divider_l), 0, 1);
         grid->addWidget(createDial(p_delay_divider_r), 0, 2);
-        grid->addWidget(createDial(p_delay_amount), 0, 3);
+        grid->addWidget(createDial(p_delay_depth), 0, 3);
         grid->addWidget(createDial(p_delay_feedback), 0, 4);
         // row 2
         grid->addWidget(new QLabel("BPM"), 1, 0);
         grid->addWidget(new QLabel("Divider L"), 1, 1);
         grid->addWidget(new QLabel("Divider R"), 1, 2);
-        grid->addWidget(new QLabel("Amount"), 1, 3);
+        grid->addWidget(new QLabel("Depth"), 1, 3);
         grid->addWidget(new QLabel("Feedb"), 1, 4);
         // row 3
         grid->addWidget(createLabel(p_delay_bpm), 2, 0);
         grid->addWidget(createLabel(p_delay_divider_l), 2, 1);
         grid->addWidget(createLabel(p_delay_divider_r), 2, 2);
-        grid->addWidget(createLabel(p_delay_amount), 2, 3);
+        grid->addWidget(createLabel(p_delay_depth), 2, 3);
         grid->addWidget(createLabel(p_delay_feedback), 2, 4);
         grid->setHorizontalSpacing(2);
         grid->setVerticalSpacing(0);

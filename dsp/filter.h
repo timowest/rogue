@@ -45,6 +45,8 @@ class OnePole : Filter {
     void clear();
     void setCoefficients(float b0, float a1);
     void setPole(double p);
+    void setLowpass(double fc);
+    void setHighpass(double fc);
     float process(float input);
     void process(float* input, float* output, int samples);
 

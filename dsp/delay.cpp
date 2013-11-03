@@ -94,6 +94,7 @@ void DelayA::clear() {
         buffer_[i] = 0.0f;
     }
     last_ = 0.0;
+    inPoint_ = 0;
     apInput_ = 0.0;
 }
 
@@ -116,7 +117,65 @@ float DelayA::process(float input) {
     doNextOut_ = true;
     // Save the allpass input and increment modulo length.
     apInput_ = buffer_[outPoint_++];
-    if (outPoint_ == 4096) {
+    if (outPoint_ == length) {
+        outPoint_ = 0;
+    }
+    return last_;
+}
+
+// DelayL
+
+DelayL::DelayL() {
+    for (uint i = 0; i < length; i++) {
+        buffer_[i] = 0.0f;
+    }
+    last_ = 0.0;
+    inPoint_ = 0;
+}
+
+void DelayL::setDelay(float delay) {
+    float outPointer = inPoint_ - delay;  // read chases write
+    delay_ = delay;
+
+    while (outPointer < 0) {
+        outPointer += length; // modulo maximum length
+    }
+
+    outPoint_ = (uint) outPointer;   // integer part
+    if (outPoint_ == length) outPoint_ = 0;
+    alpha_ = outPointer - outPoint_; // fractional part
+    omAlpha_ = (float) 1.0 - alpha_;
+}
+
+void DelayL::clear() {
+    for (uint i = 0; i < length; i++) {
+        buffer_[i] = 0.0f;
+    }
+    last_ = 0.0;
+}
+
+float DelayL::nextOut() {
+    if (doNextOut_) {
+        // First 1/2 of interpolation
+        nextOutput_ = buffer_[outPoint_] * omAlpha_;
+        // Second 1/2 of interpolation
+        if (outPoint_+ 1 < length)
+          nextOutput_ += buffer_[outPoint_+1] * alpha_;
+        else
+          nextOutput_ += buffer_[0] * alpha_;
+        doNextOut_ = false;
+    }
+    return nextOutput_;
+}
+
+float DelayL::process(float input) {
+    buffer_[inPoint_++] = input;
+    if (inPoint_ == length) {
+        inPoint_ = 0;
+    }
+    last_ = nextOut();
+    doNextOut_ = true;
+    if (++outPoint_ == length) {
         outPoint_ = 0;
     }
     return last_;

@@ -214,25 +214,25 @@ def main():
                ["pitchbend_range",  0, 24.0, 0, 0.1],
 
                ["chorus_on",     0, 1, 0, 1],
-               ["chorus_delay",  0.001, 0.03, 0.01, 0.001],
-               ["chorus_amount", 0, 1.0, 0.5, 0.01],
-               ["chorus_rate",   0, 10, 1, 0.1],
-               ["chorus_feedforward", 0, 1, 1, 0.01],
-               ["chorus_feedback", 0, 1, 0.5, 0.01],
+               ["chorus_delay",  0.001, 0.05, 0.02, 0.001],
+               ["chorus_amount", 0, 1.0, 0.3, 0.01],
+               ["chorus_rate",   0, 10, 0.2, 0.1],
+               ["chorus_depth",  0, 1, 0.3, 0.01],
+               ["chorus_feedback", 0, 0.99, 0.0, 0.01],
 
                ["phaser_on",     0, 1, 0, 1],
-               ["phaser_delay",  0.001, 0.03, 0.01, 0.001],
+               ["phaser_delay",  0.001, 0.05, 0.01, 0.001],
                ["phaser_amount", 0, 1.0, 0.5, 0.01],
                ["phaser_rate",   0, 10, 1, 0.1],
-               ["phaser_depth", 0, 1, 1, 0.01],
-               ["phaser_feedback", 0, 1, 0.5, 0.01],
+               ["phaser_depth", 0, 1, 0.3, 0.01],
+               ["phaser_feedback", 0, 0.99, 0.5, 0.01],
 
                ["delay_on",      0, 1, 0, 1],
                ["delay_bpm",     30, 164, 97, 0.1],
                ["delay_divider_l", 0.01, 1.0, 1, 0.01],
                ["delay_divider_r", 0.01, 1.0, 1, 0.01],
-               ["delay_amount",  0, 1, 0.75, 0.01],
-               ["delay_feedback",0, 1, 0.75, 0.01]]
+               ["delay_depth",   0, 1, 0.75, 0.01],
+               ["delay_feedback",0, 0.99, 0.75, 0.01]]
 
     for c in globals:
         ttl.append(ttl_control(idx, c[0], c[0], c[1], c[2], c[3]))

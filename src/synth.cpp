@@ -203,9 +203,9 @@ void rogueSynth::post_process(uint from, uint to) {
         float d = *p(p_chorus_delay);
         float a = *p(p_chorus_amount);
         float r = *p(p_chorus_rate);
-        float ff = *p(p_chorus_feedforward);
+        float de = *p(p_chorus_depth);
         float fb = *p(p_chorus_feedback);
-    	chorus_fx.setCoefficients(d, a, r, ff, fb);
+    	chorus_fx.setCoefficients(d, a, r, de, fb);
     	chorus_fx.process(pleft, pright, samples);
     }
     // phaser
@@ -213,9 +213,9 @@ void rogueSynth::post_process(uint from, uint to) {
     	float del = *p(p_phaser_delay);
     	float a = *p(p_phaser_amount);
     	float r = *p(p_phaser_rate);
-    	float d = *p(p_phaser_depth);
+    	float de = *p(p_phaser_depth);
     	float fb = *p(p_phaser_feedback);
-    	phaser_fx.setCoefficients(del, a, r, d, fb);
+    	phaser_fx.setCoefficients(del, a, r, de, fb);
     	phaser_fx.process(pleft, pright, samples);
     }
     // delay
@@ -223,9 +223,9 @@ void rogueSynth::post_process(uint from, uint to) {
         float bpm = *p(p_delay_bpm);
         float div_l = *p(p_delay_divider_l);
         float div_r = *p(p_delay_divider_r);
-        float a = *p(p_delay_amount);
+        float de = *p(p_delay_depth);
         float fb = *p(p_delay_feedback);
-        delay_fx.setCoefficients(bpm, div_l, div_r, a, fb);
+        delay_fx.setCoefficients(bpm, div_l, div_r, de, fb);
         delay_fx.process(pleft, pright, samples);
     }
     // reverb

@@ -18,11 +18,11 @@ void ChorusEffect::clear() {
     last_l = last_r = 0.0;
 }
 
-void ChorusEffect::setCoefficients(float d, float a, float r, float ff, float fb) {
+void ChorusEffect::setCoefficients(float d, float a, float r, float de, float fb) {
     delay = d;
     amount = a;
     rate = r;
-    feedforward = ff;
+    depth = de;
     feedback = fb;
 
     lfo_inc = r / sample_rate;
@@ -48,12 +48,10 @@ void ChorusEffect::process(float* left, float* right, int samples) {
         delay_r.setDelay(dr);
 
         // process
-        float dl_out = delay_l.process(left[i] + feedback * last_l);
-        float dr_out = delay_r.process(right[i] + feedback * last_r);
-        last_l = left[i] + feedforward * dl_out;
-        last_r = right[i] + feedforward * dr_out;
-        left[i] = last_l;
-        right[i] = last_r;
+        last_l = delay_l.process(left[i] + feedback * last_l);
+        last_r = delay_r.process(right[i] + feedback * last_r);
+        left[i] += depth * last_l;
+        right[i] += depth * last_r;
     }
 }
 
@@ -115,18 +113,16 @@ void PhaserEffect::process(float* left, float* right, int samples) {
         // process
         float dl_out = left[i] + feedback * last_l;
         float dr_out = right[i] + feedback * last_r;
-
         for (uint j = 0; j < 8; j++) {
             filters_l[j].setDelay(dl);
             filters_r[j].setDelay(dr);
             dl_out = filters_l[j].process(dl_out);
             dr_out = filters_r[j].process(dr_out);
         }
-
-        last_l = left[i] + depth * dl_out;
-        last_r = right[i] + depth * dr_out;
-        left[i] = last_l;
-        right[i] = last_r;
+        last_l = dl_out;
+        last_r = dr_out;
+        left[i] += depth * last_l;
+        right[i] += depth * last_r;
     }
 }
 
@@ -138,10 +134,10 @@ void DelayEffect::clear() {
     delay_r.clear();
 }
 
-void DelayEffect::setCoefficients(float bpm, float di_l, float di_r, float a, float fb) {
+void DelayEffect::setCoefficients(float bpm, float di_l, float di_r, float de, float fb) {
     delay_l.setDelay(sample_rate / (bpm / 60 / di_l));
     delay_r.setDelay(sample_rate / (bpm / 60 / di_r));
-    amount = a;
+    depth = de;
     feedback = fb;
 }
 
@@ -155,8 +151,8 @@ void DelayEffect::process(float* left, float* right, int samples) {
     for (uint i = 0; i < samples; i++) {
         last_l = delay_l.process(left[i] + feedback * last_l);
         last_r = delay_r.process(right[i] + feedback * last_r);
-        left[i] += amount * last_l;
-        right[i] += amount * last_r;
+        left[i] += depth * last_l;
+        right[i] += depth * last_r;
     }
 }
 

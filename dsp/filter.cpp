@@ -51,6 +51,16 @@ void OnePole::setPole(double p) {
     a1_ = -p;
 }
 
+void OnePole::setLowpass(double fc) {
+    a1_ = exp(-2.0 * M_PI * fc);
+    b0_ = 1.0 - a1_;
+}
+
+void OnePole::setHighpass(double fc) {
+    a1_ = -exp(-2.0 * M_PI * (0.5 - fc));
+    b0_ = 1.0 + a1_;
+}
+
 float OnePole::process(float input) {
     last_ = b0_ * input - a1_ * last_;
     return last_;
