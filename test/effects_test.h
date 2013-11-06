@@ -22,7 +22,7 @@ void effects_test() {
     chorus_fx.process(buffer, buffer2, SIZE);
 
     // phaser
-    phaser_fx.setCoefficients(0.01, 0.5, 0.5, 0.5, 0.5);
+    phaser_fx.setCoefficients(300.0, 0.5, 0.5, 0.5, 0.5);
     phaser_fx.process(buffer, buffer2, SIZE);
 
     // delay

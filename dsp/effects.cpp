@@ -81,8 +81,8 @@ void PhaserEffect::clear() {
     }
 }
 
-void PhaserEffect::setCoefficients(float del, float a, float r, float d, float fb) {
-    delay = del * sample_rate;
+void PhaserEffect::setCoefficients(float fr, float a, float r, float d, float fb) {
+    delay = sample_rate / fr;
     amount = a;
     rate = r;
     depth = d;

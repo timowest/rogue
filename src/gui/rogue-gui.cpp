@@ -197,19 +197,19 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         connectBox(p_phaser_on, parent);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(p_phaser_delay), 0, 0);
+        grid->addWidget(createDial(p_phaser_freq), 0, 0);
         grid->addWidget(createDial(p_phaser_amount), 0, 1);
         grid->addWidget(createDial(p_phaser_rate), 0, 2);
         grid->addWidget(createDial(p_phaser_depth), 0, 3);
         grid->addWidget(createDial(p_phaser_feedback), 0, 4);
         // row 2
-        grid->addWidget(new QLabel("Delay"), 1, 0);
+        grid->addWidget(new QLabel("Freq"), 1, 0);
         grid->addWidget(new QLabel("Mod amt"), 1, 1);
         grid->addWidget(new QLabel("Mod frq"), 1, 2);
         grid->addWidget(new QLabel("Depth"), 1, 3);
         grid->addWidget(new QLabel("Feedb"), 1, 4);
         // row 3
-        grid->addWidget(createLabel(p_phaser_delay), 2, 0);
+        grid->addWidget(createLabel(p_phaser_freq), 2, 0);
         grid->addWidget(createLabel(p_phaser_amount), 2, 1);
         grid->addWidget(createLabel(p_phaser_rate), 2, 2);
         grid->addWidget(createLabel(p_phaser_depth), 2, 3);

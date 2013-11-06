@@ -221,7 +221,7 @@ def main():
                ["chorus_feedback", 0, 0.99, 0.0, 0.01],
 
                ["phaser_on",     0, 1, 0, 1],
-               ["phaser_delay",  0.001, 0.05, 0.01, 0.001],
+               ["phaser_freq",   300, 10000, 300, 50],
                ["phaser_amount", 0, 1.0, 0.5, 0.01],
                ["phaser_rate",   0, 10, 1, 0.1],
                ["phaser_depth", 0, 1, 0.3, 0.01],

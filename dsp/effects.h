@@ -62,7 +62,7 @@ class PhaserEffect : Effect {
     PhaserEffect() {}
     void clear();
     void process(float* left, float* right, int samples);
-    void setCoefficients(float del, float a, float r, float d, float fb);
+    void setCoefficients(float fr, float a, float r, float d, float fb);
     void setSamplerate(float r);
 };
 

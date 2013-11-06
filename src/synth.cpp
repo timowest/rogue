@@ -210,12 +210,12 @@ void rogueSynth::post_process(uint from, uint to) {
     }
     // phaser
     if (*p(p_phaser_on) > 0.0) {
-    	float del = *p(p_phaser_delay);
+    	float fr = *p(p_phaser_freq);
     	float a = *p(p_phaser_amount);
     	float r = *p(p_phaser_rate);
     	float de = *p(p_phaser_depth);
     	float fb = *p(p_phaser_feedback);
-    	phaser_fx.setCoefficients(del, a, r, de, fb);
+    	phaser_fx.setCoefficients(fr, a, r, de, fb);
     	phaser_fx.process(pleft, pright, samples);
     }
     // delay
