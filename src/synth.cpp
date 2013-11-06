@@ -225,7 +225,9 @@ void rogueSynth::post_process(uint from, uint to) {
         float div_r = *p(p_delay_divider_r);
         float de = *p(p_delay_depth);
         float fb = *p(p_delay_feedback);
-        delay_fx.setCoefficients(bpm, div_l, div_r, de, fb);
+        float lc = *p(p_delay_lowcut);
+        float hc = *p(p_delay_highcut);
+        delay_fx.setCoefficients(bpm, div_l, div_r, de, fb, lc, hc);
         delay_fx.process(pleft, pright, samples);
     }
     // reverb

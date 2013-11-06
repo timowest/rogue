@@ -231,21 +231,27 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createDial(p_delay_divider_r), 0, 2);
         grid->addWidget(createDial(p_delay_depth), 0, 3);
         grid->addWidget(createDial(p_delay_feedback), 0, 4);
+        grid->addWidget(createDial(p_delay_lowcut), 0, 5);
+        grid->addWidget(createDial(p_delay_highcut), 0, 6);
         // row 2
         grid->addWidget(new QLabel("BPM"), 1, 0);
         grid->addWidget(new QLabel("Divider L"), 1, 1);
         grid->addWidget(new QLabel("Divider R"), 1, 2);
         grid->addWidget(new QLabel("Depth"), 1, 3);
         grid->addWidget(new QLabel("Feedb"), 1, 4);
+        grid->addWidget(new QLabel("Lowcut"), 1, 5);
+        grid->addWidget(new QLabel("Highcut"), 1, 6);
         // row 3
         grid->addWidget(createLabel(p_delay_bpm), 2, 0);
         grid->addWidget(createLabel(p_delay_divider_l), 2, 1);
         grid->addWidget(createLabel(p_delay_divider_r), 2, 2);
         grid->addWidget(createLabel(p_delay_depth), 2, 3);
         grid->addWidget(createLabel(p_delay_feedback), 2, 4);
+        grid->addWidget(createLabel(p_delay_lowcut), 2, 5);
+        grid->addWidget(createLabel(p_delay_highcut), 2, 6);
         grid->setHorizontalSpacing(2);
         grid->setVerticalSpacing(0);
-        grid->setColumnStretch(5, 1);
+        grid->setColumnStretch(7, 1);
         return parent;
     }
 

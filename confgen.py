@@ -232,7 +232,9 @@ def main():
                ["delay_divider_l", 0.01, 1.0, 1, 0.01],
                ["delay_divider_r", 0.01, 1.0, 1, 0.01],
                ["delay_depth",   0, 1, 0.75, 0.01],
-               ["delay_feedback",0, 0.99, 0.75, 0.01]]
+               ["delay_feedback",0, 0.99, 0.75, 0.01],
+               ["delay_lowcut",  10, 10000, 10, 100],
+               ["delay_highcut", 100, 15000, 10000, 100]]
 
     for c in globals:
         ttl.append(ttl_control(idx, c[0], c[0], c[1], c[2], c[3]))

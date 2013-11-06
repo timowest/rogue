@@ -39,7 +39,7 @@ class ChorusEffect : Effect {
 };
 
 // Phaser
-// TODO - lp after delay or in feedback
+// TODO inline allpass delays
 
 class AllpassDelay {
     float a1 = 0, zm1 = 0;
@@ -67,11 +67,12 @@ class PhaserEffect : Effect {
 };
 
 // Delay
-// TODO - low cut and hi cut
 
 class DelayEffect : Effect {
     Delay delay_l, delay_r;
+    OnePole filter_1l, filter_2l, filter_1r, filter_2r;
     float depth, feedback;
+    float lowcut, highcut;
     float last_l = 0, last_r = 0;
     float sample_rate;
 
@@ -79,7 +80,7 @@ class DelayEffect : Effect {
     DelayEffect() {}
     void clear();
     void process(float* left, float* right, int samples);
-    void setCoefficients(float b, float di_l, float di_r, float de, float fb);
+    void setCoefficients(float b, float di_l, float di_r, float de, float fb, float lc, float hc);
     void setSamplerate(float r);
 };
 
