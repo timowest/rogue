@@ -47,6 +47,7 @@ class AllpassDelay {
   public:
     void clear();
     float process(float in);
+    float process(float a1, float in);
     void setDelay(float d);
 };
 

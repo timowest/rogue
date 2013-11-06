@@ -69,6 +69,12 @@ float AllpassDelay::process(float in) {
     return y;
 }
 
+float AllpassDelay::process(float a1, float in) {
+    float y = in * -a1 + zm1;
+    zm1 = y * a1 + in;
+    return y;
+}
+
 // PhaserEffect
 
 void PhaserEffect::clear() {
@@ -82,7 +88,7 @@ void PhaserEffect::clear() {
 }
 
 void PhaserEffect::setCoefficients(float fr, float a, float r, float d, float fb) {
-    delay = sample_rate / fr;
+    delay = 2.0 * fr / sample_rate;
     amount = a;
     rate = r;
     depth = d;
@@ -109,11 +115,11 @@ void PhaserEffect::process(float* left, float* right, int samples) {
         // process
         last_l = left[i] + feedback * last_l;
         last_r = right[i] + feedback * last_r;
+        float a1l = (1.0 - dl) / (1.0 + dl);
+        float a1r = (1.0 - dr) / (1.0 + dr);
         for (uint j = 0; j < 8; j++) {
-            filters_l[j].setDelay(dl);
-            filters_r[j].setDelay(dr);
-            last_l = filters_l[j].process(last_l);
-            last_r = filters_r[j].process(last_r);
+            last_l = filters_l[j].process(a1l, last_l);
+            last_r = filters_r[j].process(a1r, last_r);
         }
         left[i] += depth * last_l;
         right[i] += depth * last_r;
