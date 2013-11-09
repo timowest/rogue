@@ -210,12 +210,12 @@ void rogueSynth::post_process(uint from, uint to) {
     }
     // phaser
     if (*p(p_phaser_on) > 0.0) {
-    	float fr = *p(p_phaser_freq);
-    	float a = *p(p_phaser_amount);
+    	float min_fr = *p(p_phaser_min_freq);
+    	float max_fr = *p(p_phaser_max_freq);
     	float r = *p(p_phaser_rate);
     	float de = *p(p_phaser_depth);
     	float fb = *p(p_phaser_feedback);
-    	phaser_fx.setCoefficients(fr, a, r, de, fb);
+    	phaser_fx.setCoefficients(min_fr, max_fr, r, de, fb);
     	phaser_fx.process(pleft, pright, samples);
     }
     // delay
@@ -225,9 +225,10 @@ void rogueSynth::post_process(uint from, uint to) {
         float div_r = *p(p_delay_divider_r);
         float de = *p(p_delay_depth);
         float fb = *p(p_delay_feedback);
+        float pp = *p(p_delay_pingpong);
         float lc = *p(p_delay_lowcut);
         float hc = *p(p_delay_highcut);
-        delay_fx.setCoefficients(bpm, div_l, div_r, de, fb, lc, hc);
+        delay_fx.setCoefficients(bpm, div_l, div_r, de, fb, pp, lc, hc);
         delay_fx.process(pleft, pright, samples);
     }
     // reverb

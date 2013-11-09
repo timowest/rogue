@@ -197,20 +197,20 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         connectBox(p_phaser_on, parent);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(p_phaser_freq), 0, 0);
-        grid->addWidget(createDial(p_phaser_amount), 0, 1);
+        grid->addWidget(createDial(p_phaser_min_freq), 0, 0);
+        grid->addWidget(createDial(p_phaser_max_freq), 0, 1);
         grid->addWidget(createDial(p_phaser_rate), 0, 2);
         grid->addWidget(createDial(p_phaser_depth), 0, 3);
         grid->addWidget(createDial(p_phaser_feedback), 0, 4);
         // row 2
-        grid->addWidget(new QLabel("Freq"), 1, 0);
-        grid->addWidget(new QLabel("Mod amt"), 1, 1);
+        grid->addWidget(new QLabel("Min Fr"), 1, 0);
+        grid->addWidget(new QLabel("Max Fr"), 1, 1);
         grid->addWidget(new QLabel("Mod frq"), 1, 2);
         grid->addWidget(new QLabel("Depth"), 1, 3);
         grid->addWidget(new QLabel("Feedb"), 1, 4);
         // row 3
-        grid->addWidget(createLabel(p_phaser_freq), 2, 0);
-        grid->addWidget(createLabel(p_phaser_amount), 2, 1);
+        grid->addWidget(createLabel(p_phaser_min_freq), 2, 0);
+        grid->addWidget(createLabel(p_phaser_max_freq), 2, 1);
         grid->addWidget(createLabel(p_phaser_rate), 2, 2);
         grid->addWidget(createLabel(p_phaser_depth), 2, 3);
         grid->addWidget(createLabel(p_phaser_feedback), 2, 4);
@@ -231,27 +231,30 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createDial(p_delay_divider_r), 0, 2);
         grid->addWidget(createDial(p_delay_depth), 0, 3);
         grid->addWidget(createDial(p_delay_feedback), 0, 4);
-        grid->addWidget(createDial(p_delay_lowcut), 0, 5);
-        grid->addWidget(createDial(p_delay_highcut), 0, 6);
+        grid->addWidget(createDial(p_delay_pingpong), 0, 5);
+        grid->addWidget(createDial(p_delay_lowcut), 0, 6);
+        grid->addWidget(createDial(p_delay_highcut), 0, 7);
         // row 2
         grid->addWidget(new QLabel("BPM"), 1, 0);
         grid->addWidget(new QLabel("Divider L"), 1, 1);
         grid->addWidget(new QLabel("Divider R"), 1, 2);
         grid->addWidget(new QLabel("Depth"), 1, 3);
         grid->addWidget(new QLabel("Feedb"), 1, 4);
-        grid->addWidget(new QLabel("Lowcut"), 1, 5);
-        grid->addWidget(new QLabel("Highcut"), 1, 6);
+        grid->addWidget(new QLabel("Pingpong"), 1, 5);
+        grid->addWidget(new QLabel("Lowcut"), 1, 6);
+        grid->addWidget(new QLabel("Highcut"), 1, 7);
         // row 3
         grid->addWidget(createLabel(p_delay_bpm), 2, 0);
         grid->addWidget(createLabel(p_delay_divider_l), 2, 1);
         grid->addWidget(createLabel(p_delay_divider_r), 2, 2);
         grid->addWidget(createLabel(p_delay_depth), 2, 3);
         grid->addWidget(createLabel(p_delay_feedback), 2, 4);
-        grid->addWidget(createLabel(p_delay_lowcut), 2, 5);
-        grid->addWidget(createLabel(p_delay_highcut), 2, 6);
+        grid->addWidget(createLabel(p_delay_pingpong), 2, 5);
+        grid->addWidget(createLabel(p_delay_lowcut), 2, 6);
+        grid->addWidget(createLabel(p_delay_highcut), 2, 7);
         grid->setHorizontalSpacing(2);
         grid->setVerticalSpacing(0);
-        grid->setColumnStretch(7, 1);
+        grid->setColumnStretch(8, 1);
         return parent;
     }
 

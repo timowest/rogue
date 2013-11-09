@@ -221,8 +221,8 @@ def main():
                ["chorus_feedback", 0, 0.99, 0.0, 0.01],
 
                ["phaser_on",     0, 1, 0, 1],
-               ["phaser_freq",   300, 10000, 300, 50],
-               ["phaser_amount", 0, 1.0, 0.5, 0.01],
+               ["phaser_min_freq",   300, 10000, 300, 50],
+               ["phaser_max_freq",   300, 10000, 1000, 50],
                ["phaser_rate",   0, 10, 1, 0.1],
                ["phaser_depth", 0, 1, 0.3, 0.01],
                ["phaser_feedback", 0, 0.99, 0.5, 0.01],
@@ -233,6 +233,7 @@ def main():
                ["delay_divider_r", 0.01, 1.0, 1, 0.01],
                ["delay_depth",   0, 1, 0.75, 0.01],
                ["delay_feedback",0, 0.99, 0.75, 0.01],
+               ["delay_pingpong",0, 1.0, 0.0, 0.01],
                ["delay_lowcut",  10, 10000, 10, 100],
                ["delay_highcut", 100, 15000, 10000, 100]]
 

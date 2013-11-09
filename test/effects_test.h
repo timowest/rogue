@@ -26,6 +26,6 @@ void effects_test() {
     phaser_fx.process(buffer, buffer2, SIZE);
 
     // delay
-    delay_fx.setCoefficients(120.0, 1.0, 1.0, 0.5, 0.5, 10, 10000);
+    delay_fx.setCoefficients(120.0, 1.0, 1.0, 0.5, 0.5, 0.5, 10, 10000);
     delay_fx.process(buffer, buffer2, SIZE);
 }

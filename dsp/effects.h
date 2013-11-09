@@ -39,7 +39,6 @@ class ChorusEffect : Effect {
 };
 
 // Phaser
-// TODO inline allpass delays
 
 class AllpassDelay {
     float a1 = 0, zm1 = 0;
@@ -55,7 +54,7 @@ class PhaserEffect : Effect {
     AllpassDelay filters_l[8];
     AllpassDelay filters_r[8];
     float lfo_phase = 0, lfo_inc;
-    float delay, amount, rate, depth, feedback;
+    float min_d, max_d, delta_d, rate, depth, feedback;
     float last_l = 0, last_r = 0;
     float sample_rate;
 
@@ -63,7 +62,7 @@ class PhaserEffect : Effect {
     PhaserEffect() {}
     void clear();
     void process(float* left, float* right, int samples);
-    void setCoefficients(float fr, float a, float r, float d, float fb);
+    void setCoefficients(float min_fr, float max_fr, float r, float d, float fb);
     void setSamplerate(float r);
 };
 
@@ -72,7 +71,7 @@ class PhaserEffect : Effect {
 class DelayEffect : Effect {
     Delay delay_l, delay_r;
     OnePole filter_1l, filter_2l, filter_1r, filter_2r;
-    float depth, feedback;
+    float depth, feedback, direct, pingpong;
     float lowcut, highcut;
     float last_l = 0, last_r = 0;
     float sample_rate;
@@ -81,7 +80,7 @@ class DelayEffect : Effect {
     DelayEffect() {}
     void clear();
     void process(float* left, float* right, int samples);
-    void setCoefficients(float b, float di_l, float di_r, float de, float fb, float lc, float hc);
+    void setCoefficients(float b, float di_l, float di_r, float de, float fb, float pp, float lc, float hc);
     void setSamplerate(float r);
 };
 

@@ -87,9 +87,10 @@ void PhaserEffect::clear() {
     }
 }
 
-void PhaserEffect::setCoefficients(float fr, float a, float r, float d, float fb) {
-    delay = 2.0 * fr / sample_rate;
-    amount = a;
+void PhaserEffect::setCoefficients(float min_fr, float max_fr, float r, float d, float fb) {
+    min_d = 2.0 * min_fr / sample_rate;
+    max_d = 2.0 * max_fr / sample_rate;
+    delta_d = max_d - min_d;
     rate = r;
     depth = d;
     feedback = fb;
@@ -108,9 +109,9 @@ void PhaserEffect::process(float* left, float* right, int samples) {
         if (lfo_phase >= 1.0f) {
             lfo_phase -= 1.0f;
         }
-        float lfo_val = sin_.linear(lfo_phase);
-        float dl = (1.0 + amount * lfo_val) * delay;
-        float dr = (1.0 - amount * lfo_val) * delay;
+        float lfo_val = 0.5 * (sin_.linear(lfo_phase) + 1);
+        float dl = min_d + lfo_val * delta_d;
+        float dr = max_d - lfo_val * delta_d;
 
         // process
         last_l = left[i] + feedback * last_l;
@@ -138,11 +139,13 @@ void DelayEffect::clear() {
     filter_2r.clear();
 }
 
-void DelayEffect::setCoefficients(float bpm, float di_l, float di_r, float de, float fb, float lc, float hc) {
+void DelayEffect::setCoefficients(float bpm, float di_l, float di_r, float de, float fb, float pp, float lc, float hc) {
     delay_l.setDelay(sample_rate / (bpm / 60 / di_l));
     delay_r.setDelay(sample_rate / (bpm / 60 / di_r));
     depth = de;
     feedback = fb;
+    direct = 1.0 - pp;
+    pingpong = pp;
 
     filter_1l.setHighpass(lc / sample_rate);
     filter_1r.setHighpass(lc / sample_rate);
@@ -158,8 +161,8 @@ void DelayEffect::setSamplerate(float r) {
 
 void DelayEffect::process(float* left, float* right, int samples) {
     for (uint i = 0; i < samples; i++) {
-        float filtered_l = filter_2l.process(filter_1l.process(last_l));
-        float filtered_r = filter_2r.process(filter_1r.process(last_r));
+        float filtered_l = filter_2l.process(filter_1l.process(direct * last_l + pingpong * last_r));
+        float filtered_r = filter_2r.process(filter_1r.process(direct * last_r + pingpong * last_l));
         last_l = delay_l.process(left[i] + feedback * filtered_l);
         last_r = delay_r.process(right[i] + feedback * filtered_r);
         left[i] += depth * last_l;
