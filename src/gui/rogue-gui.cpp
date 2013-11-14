@@ -258,31 +258,31 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         return parent;
     }
 
-    /*QWidget* createReverb(QGroupBox* parent) {
+    QWidget* createReverb(QGroupBox* parent) {
         parent->setObjectName("reverb");
         parent->setCheckable(true);
         connectBox(p_reverb_on, parent);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(p_reverb_bandwidth), 0, 0);
-        grid->addWidget(createDial(p_reverb_tail), 0, 1);
-        grid->addWidget(createDial(p_reverb_damping), 0, 2);
-        grid->addWidget(createDial(p_reverb_blend), 0, 3);
+        grid->addWidget(createDial(p_reverb_gain), 0, 0);
+        grid->addWidget(createDial(p_reverb_pitchmod), 0, 1);
+        grid->addWidget(createDial(p_reverb_tone), 0, 2);
+        grid->addWidget(createDial(p_reverb_depth), 0, 3);
         // row 2
-        grid->addWidget(new QLabel("Bandw"), 1, 0);
-        grid->addWidget(new QLabel("Tail"), 1, 1);
-        grid->addWidget(new QLabel("Damp"), 1, 2);
-        grid->addWidget(new QLabel("Blend"), 1, 3);
+        grid->addWidget(new QLabel("Gain"), 1, 0);
+        grid->addWidget(new QLabel("Pitchmod"), 1, 1);
+        grid->addWidget(new QLabel("Tone"), 1, 2);
+        grid->addWidget(new QLabel("Depth"), 1, 3);
         // row 4
-        grid->addWidget(createLabel(p_reverb_bandwidth), 2, 0);
-        grid->addWidget(createLabel(p_reverb_tail), 2, 1);
-        grid->addWidget(createLabel(p_reverb_damping), 2, 2);
-        grid->addWidget(createLabel(p_reverb_blend), 2, 3);
+        grid->addWidget(createLabel(p_reverb_gain), 2, 0);
+        grid->addWidget(createLabel(p_reverb_pitchmod), 2, 1);
+        grid->addWidget(createLabel(p_reverb_tone), 2, 2);
+        grid->addWidget(createLabel(p_reverb_depth), 2, 3);
         grid->setHorizontalSpacing(2);
         grid->setVerticalSpacing(0);
         grid->setColumnStretch(4, 1);
         return parent;
-    }*/
+    }
 
     QWidget* createEffects(QWidget* parent) {
         parent->setObjectName("effects");
@@ -291,8 +291,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createChorus(new QGroupBox("Chorus")), 0, 0);
         grid->addWidget(createPhaser(new QGroupBox("Phaser")), 0, 1);
         grid->addWidget(createDelay(new QGroupBox("Delay")), 0, 2);
-        //grid->addWidget(createReverb(new QGroupBox("Reverb")), 0, 3);
-        grid->setRowStretch(1, 1);
+        grid->addWidget(createReverb(new QGroupBox("Reverb")), 1, 0);
+        grid->setRowStretch(2, 1);
         return parent;
     }
 

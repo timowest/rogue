@@ -41,6 +41,10 @@ void OnePole::clear(){
     last_ = 0.0;
 }
 
+float OnePole::getLast() {
+    return last_;
+}
+
 void OnePole::setCoefficients(float b0, float a1) {
     b0_ = b0;
     a1_ = a1;

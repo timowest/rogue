@@ -172,7 +172,74 @@ void DelayEffect::process(float* left, float* right, int samples) {
 
 
 // ReverbEffect
+// Csound orchestra version coded by Sean Costello, October 1999
+// C implementation (C) 2005 Istvan Varga
 
-// TODO
+/* reverbParams[n][0] = delay time (in seconds)                     */
+/* reverbParams[n][1] = random variation in delay time (in seconds) */
+/* reverbParams[n][2] = random variation frequency (in 1/sec)       */
+/* reverbParams[n][3] = random seed (0 - 32767)*/
+static const double reverbParams[8][4] = {
+    { (2473.0 / 44100.0), 0.0010, 3.100,  1966.0 },
+    { (2767.0 / 44100.0), 0.0011, 3.500, 29491.0 },
+    { (3217.0 / 44100.0), 0.0017, 1.110, 22937.0 },
+    { (3557.0 / 44100.0), 0.0006, 3.973,  9830.0 },
+    { (3907.0 / 44100.0), 0.0010, 2.341, 20643.0 },
+    { (4127.0 / 44100.0), 0.0011, 1.897, 22937.0 },
+    { (2143.0 / 44100.0), 0.0017, 0.891, 29491.0 },
+    { (1933.0 / 44100.0), 0.0006, 3.221, 14417.0 }
+};
+
+void ReverbEffect::clear() {
+    for (uint i = 0; i < 8; i++) {
+        delays[i].clear();
+        filters[i].clear();
+        lfos[i].clear();
+    }
+}
+
+void ReverbEffect::setSamplerate(float r) {
+    sample_rate = r;
+
+    for (uint i = 0; i < 8; i++) {
+        lfos[i].setSamplerate(r);
+        lfos[i].setType(4);
+        lfos[i].setFreq(reverbParams[i][2]);
+    }
+}
+
+void ReverbEffect::setCoefficients(float g, float pm, float t, float d) {
+    gain = g;
+    pitchmod = pm;
+    tone = t;
+    depth = d;
+
+    for (uint i = 0; i < 8; i++) {
+        filters[i].setLowpass(tone);
+    }
+}
+
+void ReverbEffect::process(float* left, float* right, int samples) {
+    for (uint i = 0; i < samples; i++) {
+        // calculate junction pressure
+        float apj = 0.0;
+        for (uint j = 0; j < 8; j++) apj += filters[j].getLast();
+        apj *= 0.25;
+        float l = left[i];
+        float r = right[i];
+        for (uint j = 0; j < 8; j++) {
+            float d = reverbParams[j][0] + lfos[j].tick() * pitchmod * reverbParams[j][2];
+            delays[j].setDelay(sample_rate * d);
+            // send input signal and feedback to delay line
+            float fb = filters[j].getLast();
+            filters[j].process(gain * delays[j].process(j & 1 ? r : l + apj - fb));
+        }
+        // mix
+        float lout = filters[0].getLast() + filters[2].getLast() + filters[4].getLast() + filters[6].getLast();
+        float rout = filters[1].getLast() + filters[3].getLast() + filters[5].getLast() + filters[7].getLast();
+        left[i] += depth * lout;
+        right[i] += depth * rout;
+    }
+}
 
 }

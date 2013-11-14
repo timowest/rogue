@@ -235,7 +235,13 @@ def main():
                ["delay_feedback",0, 0.99, 0.75, 0.01],
                ["delay_pingpong",0, 1.0, 0.0, 0.01],
                ["delay_lowcut",  10, 10000, 10, 100],
-               ["delay_highcut", 100, 15000, 10000, 100]]
+               ["delay_highcut", 100, 15000, 10000, 100],
+               
+               ["reverb_on",     0, 1, 0, 1],
+               ["reverb_gain",   0, 0.99, 0.9, 0.01],
+               ["reverb_pitchmod", 0, 1, 0.9, 0.01],
+               ["reverb_tone",   0, 10000, 50000, 100],
+               ["reverb_depth",  0, 1, 0.75, 0.01]]
 
     for c in globals:
         ttl.append(ttl_control(idx, c[0], c[0], c[1], c[2], c[3]))

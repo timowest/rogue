@@ -10,6 +10,7 @@
 #include "types.h"
 #include "delay.h"
 #include "filter.h"
+#include "lfo.h"
 
 namespace dsp {
 
@@ -84,11 +85,29 @@ class DelayEffect : Effect {
     void setSamplerate(float r);
 };
 
-// Reverb
+// Reverb (FDN based)
 
-/*class ReverbEffect : Effect {
+// Csound orchestra version coded by Sean Costello, October 1999
+// C implementation (C) 2005 Istvan Varga
 
-};*/
+class ReverbEffect : Effect {
+    DelayL delays[8];
+    OnePole filters[8];
+    LFO lfos[8];
+    float sample_rate;
+
+    float gain = 0.9;
+    float pitchmod = 1.0;
+    float tone = 5000.0;
+    float depth = 0.0;
+
+  public:
+    ReverbEffect() {}
+    void clear();
+    void setCoefficients(float gain, float pitchmod, float tone, float depth);
+    void process(float* left, float* right, int samples);
+    void setSamplerate(float r);
+};
 
 }
 

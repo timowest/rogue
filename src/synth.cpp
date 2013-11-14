@@ -25,7 +25,7 @@ rogueSynth::rogueSynth(double rate)
     chorus_fx.setSamplerate(sample_rate);
     phaser_fx.setSamplerate(sample_rate);
     delay_fx.setSamplerate(sample_rate);
-    // TODO reverb
+    reverb_fx.setSamplerate(sample_rate);
 
     add_audio_outputs(p_left, p_right);
 
@@ -232,7 +232,14 @@ void rogueSynth::post_process(uint from, uint to) {
         delay_fx.process(pleft, pright, samples);
     }
     // reverb
-    // TODO
+    if (*p(p_reverb_on) > 0.0) {
+        float g = *p(p_reverb_gain);
+        float pm = *p(p_reverb_pitchmod);
+        float t = *p(p_reverb_tone);
+        float d = *p(p_reverb_depth);
+        reverb_fx.setCoefficients(g, pm, t, d);
+        reverb_fx.process(pleft, pright, samples);
+    }
 
     // volume
     for (uint i = 0; i < samples; i++) {

@@ -52,7 +52,7 @@ class rogueSynth : public lvtk::Synth<rogueVoice, rogueSynth> {
     dsp::ChorusEffect chorus_fx;
     dsp::PhaserEffect phaser_fx;
     dsp::DelayEffect  delay_fx;
-    // TODO reverb
+    dsp::ReverbEffect reverb_fx;
 };
 
 }

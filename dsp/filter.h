@@ -43,6 +43,7 @@ class DCBlocker : Filter {
 class OnePole : Filter {
   public:
     void clear();
+    float getLast();
     void setCoefficients(float b0, float a1);
     void setPole(double p);
     void setLowpass(double fc);

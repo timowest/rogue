@@ -14,7 +14,7 @@ namespace dsp {
 // LFO
 
 void LFO::clear() {
-    type = 0;
+    //type = 0;
     phase = start;
     prev_phase = start;
 }

@@ -15,7 +15,8 @@ void effects_test() {
     dsp::DelayEffect delay_fx;
     delay_fx.setSamplerate(SR);
 
-    // TODO reverb
+    dsp::ReverbEffect reverb_fx;
+    reverb_fx.setSamplerate(SR);
 
     // chorus
     chorus_fx.setCoefficients(0.01, 0.75, 0.3, 0.5, 0.5);
@@ -28,4 +29,8 @@ void effects_test() {
     // delay
     delay_fx.setCoefficients(120.0, 1.0, 1.0, 0.5, 0.5, 0.5, 10, 10000);
     delay_fx.process(buffer, buffer2, SIZE);
+
+    // reverb
+    reverb_fx.setCoefficients(0.9, 1.0, 5000.0, 0.1);
+    reverb_fx.process(buffer, buffer2, SIZE);
 }
