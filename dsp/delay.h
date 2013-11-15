@@ -37,7 +37,7 @@ class Delay {
 
   private:
     float* buffer;
-    uint length, delay = 0, inPoint = 0, outPoint = 0;
+    uint length = 4096, delay = 0, inPoint = 0, outPoint = 0;
     float last = 0.0;
 
 };
@@ -49,18 +49,19 @@ class Delay {
  * a first-order allpass filter.
  */
 class DelayA {
-   static const uint length = 4096;
 
   public:
-    DelayA();
+    DelayA(uint l = 4096);
+    ~DelayA();
     void setDelay(float d);
+    void setMax(uint d);
     void clear();
     float nextOut();
     float process(float in);
 
   private:
-    float buffer_[length];
-    uint inPoint_, outPoint_;
+    float* buffer;
+    uint length = 4096, inPoint_, outPoint_;
     float delay_, alpha_, coeff_, last_ = 0.0;
     float apInput_ = 0.0, nextOutput_ = 0.0;
     bool doNextOut_ = true;
@@ -75,18 +76,19 @@ class DelayA {
  * 4095 and a delay of zero is set.
  */
 class DelayL {
-    static const uint length = 4096;
 
   public:
-    DelayL();
+    DelayL(uint l = 4096);
+    ~DelayL();
     void setDelay(float d);
+    void setMax(uint d);
     void clear();
     float nextOut();
     float process(float in);
 
   private:
-    float buffer_[length];
-    uint inPoint_, outPoint_;
+    float* buffer;
+    uint length = 4096, inPoint_, outPoint_;
     float delay_, alpha_, omAlpha_, last_ = 0.0;
     float nextOutput_ = 0.0;
     bool doNextOut_ = true;

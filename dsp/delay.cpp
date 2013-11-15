@@ -58,12 +58,14 @@ float Delay::process(float in) {
 
 // DelayA
 
-DelayA::DelayA() {
-    for (uint i = 0; i < length; i++) {
-        buffer_[i] = 0.0f;
-    }
-    last_ = 0.0;
-    apInput_ = 0.0;
+DelayA::DelayA(uint l) {
+    buffer = new float[l];
+    length = l;
+    clear();
+}
+
+DelayA::~DelayA() {
+    delete buffer;
 }
 
 void DelayA::setDelay(float delay) {
@@ -89,9 +91,20 @@ void DelayA::setDelay(float delay) {
     coeff_ = (1.0 - alpha_) / (1.0 + alpha_); // coefficient for allpass
 }
 
+void DelayA::setMax(uint d) {
+    if (d > length) {
+        delete buffer;
+        buffer = new float[d];
+        for (uint i = 0; i < d; i++) {
+            buffer[i] = 0;
+        }
+    }
+    length = d;
+}
+
 void DelayA::clear() {
     for (uint i = 0; i < length; i++) {
-        buffer_[i] = 0.0f;
+        buffer[i] = 0.0f;
     }
     last_ = 0.0;
     inPoint_ = 0;
@@ -102,21 +115,21 @@ float DelayA::nextOut() {
     if (doNextOut_) {
         // Do allpass interpolation delay.
         nextOutput_ = -coeff_ * last_;
-        nextOutput_ += apInput_ + (coeff_ * buffer_[outPoint_]);
+        nextOutput_ += apInput_ + (coeff_ * buffer[outPoint_]);
         doNextOut_ = false;
     }
     return nextOutput_;
 }
 
 float DelayA::process(float input) {
-    buffer_[inPoint_++] = input;
+    buffer[inPoint_++] = input;
     if (inPoint_ == length) {
         inPoint_ = 0;
     }
     last_ = nextOut();
     doNextOut_ = true;
     // Save the allpass input and increment modulo length.
-    apInput_ = buffer_[outPoint_++];
+    apInput_ = buffer[outPoint_++];
     if (outPoint_ == length) {
         outPoint_ = 0;
     }
@@ -125,12 +138,15 @@ float DelayA::process(float input) {
 
 // DelayL
 
-DelayL::DelayL() {
-    for (uint i = 0; i < length; i++) {
-        buffer_[i] = 0.0f;
-    }
-    last_ = 0.0;
+DelayL::DelayL(uint l) {
+    buffer = new float[l];
+    length = l;
     inPoint_ = 0;
+    clear();
+}
+
+DelayL::~DelayL() {
+    delete buffer;
 }
 
 void DelayL::setDelay(float delay) {
@@ -147,9 +163,20 @@ void DelayL::setDelay(float delay) {
     omAlpha_ = (float) 1.0 - alpha_;
 }
 
+void DelayL::setMax(uint d) {
+    if (d > length) {
+        delete buffer;
+        buffer = new float[d];
+        for (uint i = 0; i < d; i++) {
+            buffer[i] = 0;
+        }
+    }
+    length = d;
+}
+
 void DelayL::clear() {
     for (uint i = 0; i < length; i++) {
-        buffer_[i] = 0.0f;
+        buffer[i] = 0.0f;
     }
     last_ = 0.0;
 }
@@ -157,19 +184,19 @@ void DelayL::clear() {
 float DelayL::nextOut() {
     if (doNextOut_) {
         // First 1/2 of interpolation
-        nextOutput_ = buffer_[outPoint_] * omAlpha_;
+        nextOutput_ = buffer[outPoint_] * omAlpha_;
         // Second 1/2 of interpolation
         if (outPoint_+ 1 < length)
-          nextOutput_ += buffer_[outPoint_+1] * alpha_;
+          nextOutput_ += buffer[outPoint_+1] * alpha_;
         else
-          nextOutput_ += buffer_[0] * alpha_;
+          nextOutput_ += buffer[0] * alpha_;
         doNextOut_ = false;
     }
     return nextOutput_;
 }
 
 float DelayL::process(float input) {
-    buffer_[inPoint_++] = input;
+    buffer[inPoint_++] = input;
     if (inPoint_ == length) {
         inPoint_ = 0;
     }

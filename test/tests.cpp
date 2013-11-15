@@ -29,6 +29,7 @@ static void error(const char* text, T val, U val2) {
 }
 
 #include "wavutils.h"
+#include "delay_test.h"
 #include "effects_test.h"
 #include "envelope_test.h"
 #include "filter_test.h"
@@ -40,6 +41,7 @@ int main() {
     dsp::DCBlocker dcBlocker;
     dcBlocker.setSamplerate(SR);
 
+    delay_test();
     effects_test();
     envelope_test();
     filter_test();
