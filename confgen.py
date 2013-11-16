@@ -238,10 +238,10 @@ def main():
                ["delay_highcut", 100, 15000, 10000, 100],
                
                ["reverb_on",     0, 1, 0, 1],
-               ["reverb_gain",   0, 0.99, 0.9, 0.01],
+               ["reverb_gain",   0, 0.99, 0.6, 0.01],
                ["reverb_pitchmod", 0, 1, 0.9, 0.01],
                ["reverb_tone",   0, 10000, 5000, 100],
-               ["reverb_depth",  0, 1, 0.75, 0.01]]
+               ["reverb_depth",  0, 1, 0.3, 0.01]]
 
     for c in globals:
         ttl.append(ttl_control(idx, c[0], c[0], c[1], c[2], c[3]))
