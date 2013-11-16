@@ -60,7 +60,7 @@ class DelayA {
     float process(float in);
 
   private:
-    float* buffer;
+    float* buffer = 0;
     uint length = 4096, inPoint_, outPoint_;
     float delay_, alpha_, coeff_, last_ = 0.0;
     float apInput_ = 0.0, nextOutput_ = 0.0;

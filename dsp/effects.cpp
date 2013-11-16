@@ -204,7 +204,7 @@ void ReverbEffect::setSamplerate(float r) {
     for (uint i = 0; i < 8; i++) {
         delays[i].setMax(8192);
         lfos[i].setSamplerate(r);
-        lfos[i].setType(0);
+        lfos[i].setType(0); // sine
         lfos[i].setFreq(reverbParams[i][2]);
     }
 }
@@ -228,14 +228,14 @@ void ReverbEffect::process(float* left, float* right, int samples) {
         apj *= 0.25;
 
         // delay lines
-        float l = left[i];
-        float r = right[i];
+        float l = left[i] + apj;
+        float r = right[i] + apj;
         for (uint j = 0; j < 8; j++) {
             float d = reverbParams[j][0] + lfos[j].tick() * pitchmod * reverbParams[j][1];
             delays[j].setDelay(sample_rate * d);
             // send input signal and feedback to delay line
             float fb = filters[j].getLast();
-            filters[j].process(gain * delays[j].process(j & 1 ? r : l + apj - fb));
+            filters[j].process(gain * delays[j].process((j & 1 ? r : l) - fb));
         }
 
         // mix

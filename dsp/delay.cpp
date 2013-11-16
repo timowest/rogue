@@ -65,7 +65,7 @@ DelayA::DelayA(uint l) {
 }
 
 DelayA::~DelayA() {
-    delete buffer;
+    //delete buffer; FIXME
 }
 
 void DelayA::setDelay(float delay) {
