@@ -7,12 +7,11 @@ Features
 * 4 oscillators with 
  * Virtual Analog, Phase Distortion, FM and other waveforms
  * PWM, PM, Sync, RM and AM modulation
-* 2 filters with Moog and SVF style modes
+* 2 filters with Biquad, Moog and SVF style modes
 * 4 AHDSR envelopes with customizable curve
 * 4 LFOs
 * 20 Modulation matrix slots
-* Effects: Chorus, Phaser, Delay and Reverb 
- * based on CAPS http://www.quitte.de/dsp/caps.html
+* Effects: Chorus, Phaser, Delay and Reverb
 * Qt4 based UI
 
 Dependencies

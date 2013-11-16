@@ -1,7 +1,7 @@
 BUNDLE = lv2-rogue.lv2
 INSTALL_DIR = /usr/local/lib/lv2
 
-SOURCES = dsp/*.cpp src/*.cpp fx/*.cc
+SOURCES = dsp/*.cpp src/*.cpp
 SOURCES_UI = dsp/*.cpp src/gui/rogue-gui.cpp
 FLAGS = -fPIC -DPIC -std=c++11 
 FAST = -Ofast -ffast-math
@@ -18,7 +18,7 @@ $(BUNDLE): manifest.ttl rogue.ttl presets.ttl rogue.so rogue-gui.so presets styl
 	cp -r $^ $(BUNDLE)
 
 rogue.so: $(SOURCES) src/rogue.gen
-	$(CXX) $(FLAGS) $(FAST) -g -shared $(SOURCES) $(LVTK) $(LIBSRC) -Idsp -Isrc -Ifx -Ifx/dsp -o $@
+	$(CXX) $(FLAGS) $(FAST) -g -shared $(SOURCES) $(LVTK) $(LIBSRC) -Idsp -Isrc -o $@
 	
 rogue-gui.so: $(SOURCES_UI) src/rogue.gen src/gui/config.gen src/gui/rogue-gui.mcpp
 	$(CXX) $(FLAGS) -g -shared $(SOURCES_UI) $(QT) $(LVTK) $(LVTK_UI) $(FFTW) -Idsp -Isrc -o $@	
