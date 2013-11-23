@@ -264,35 +264,23 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         connectBox(p_reverb_on, parent);
         QGridLayout* grid = new QGridLayout(parent);
         // row 1
-        grid->addWidget(createDial(p_reverb_er_distance), 0, 0);
-        grid->addWidget(createDial(p_reverb_er_width), 0, 1);
-        grid->addWidget(createDial(p_reverb_er_shape), 0, 2);
-        grid->addWidget(createDial(p_reverb_er_height), 0, 3);
-        grid->addWidget(createDial(p_reverb_gain), 0, 4);
-        grid->addWidget(createDial(p_reverb_pitchmod), 0, 5);
-        grid->addWidget(createDial(p_reverb_tone), 0, 6);
-        grid->addWidget(createDial(p_reverb_depth), 0, 7);
+        grid->addWidget(createDial(p_reverb_gain), 0, 0);
+        grid->addWidget(createDial(p_reverb_pitchmod), 0, 1);
+        grid->addWidget(createDial(p_reverb_tone), 0, 2);
+        grid->addWidget(createDial(p_reverb_depth), 0, 3);
         // row 2
-        grid->addWidget(new QLabel("ER Dist"), 1, 0);
-        grid->addWidget(new QLabel("ER Width"), 1, 1);
-        grid->addWidget(new QLabel("ER Shape"), 1, 2);
-        grid->addWidget(new QLabel("ER Height"), 1, 3);
-        grid->addWidget(new QLabel("Gain"), 1, 4);
-        grid->addWidget(new QLabel("Pitchmod"), 1, 5);
-        grid->addWidget(new QLabel("Tone"), 1, 6);
-        grid->addWidget(new QLabel("Depth"), 1, 7);
+        grid->addWidget(new QLabel("Gain"), 1, 0);
+        grid->addWidget(new QLabel("Pitchmod"), 1, 1);
+        grid->addWidget(new QLabel("Tone"), 1, 2);
+        grid->addWidget(new QLabel("Depth"), 1, 3);
         // row 4
-        grid->addWidget(createLabel(p_reverb_er_distance), 2, 0);
-        grid->addWidget(createLabel(p_reverb_er_width), 2, 1);
-        grid->addWidget(createLabel(p_reverb_er_shape), 2, 2);
-        grid->addWidget(createLabel(p_reverb_er_height), 2, 3);
-        grid->addWidget(createLabel(p_reverb_gain), 2, 4);
-        grid->addWidget(createLabel(p_reverb_pitchmod), 2, 5);
-        grid->addWidget(createLabel(p_reverb_tone), 2, 6);
-        grid->addWidget(createLabel(p_reverb_depth), 2, 7);
+        grid->addWidget(createLabel(p_reverb_gain), 2, 0);
+        grid->addWidget(createLabel(p_reverb_pitchmod), 2, 1);
+        grid->addWidget(createLabel(p_reverb_tone), 2, 2);
+        grid->addWidget(createLabel(p_reverb_depth), 2, 3);
         grid->setHorizontalSpacing(2);
         grid->setVerticalSpacing(0);
-        grid->setColumnStretch(8, 1);
+        grid->setColumnStretch(4, 1);
         return parent;
     }
 
@@ -303,7 +291,7 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         grid->addWidget(createChorus(new QGroupBox("Chorus")), 0, 0);
         grid->addWidget(createPhaser(new QGroupBox("Phaser")), 0, 1);
         grid->addWidget(createDelay(new QGroupBox("Delay")), 0, 2);
-        grid->addWidget(createReverb(new QGroupBox("Reverb")), 1, 0, 1, 2);
+        grid->addWidget(createReverb(new QGroupBox("Reverb")), 1, 0);
         grid->setRowStretch(2, 1);
         return parent;
     }

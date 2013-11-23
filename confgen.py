@@ -238,13 +238,9 @@ def main():
                ["delay_highcut", 100, 15000, 10000, 100],
                
                ["reverb_on",     0, 1, 0, 1],
-               ["reverb_er_distance", 0.1, 0.9, 0.5, 0.01],
-               ["reverb_er_width", 0.1, 20, 10, 0.1],
-               ["reverb_er_shape", 0.01, 1, 0.5, 0.01],
-               ["reverb_er_height", 1, 10, 2, 0.1],
                ["reverb_gain",   0, 0.99, 0.6, 0.01],
                ["reverb_pitchmod", 0, 1, 0.9, 0.01],
-               ["reverb_tone",   0, 10000, 5000, 100],
+               ["reverb_tone",   0, 20000, 5000, 100],
                ["reverb_depth",  0, 1, 0.3, 0.01]]
 
     for c in globals:
