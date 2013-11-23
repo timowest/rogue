@@ -31,6 +31,7 @@ void effects_test() {
     delay_fx.process(buffer, buffer2, SIZE);
 
     // reverb
+    reverb_fx.setErCoefficients(0.5, 10.0, 1.0, 2.0);
     reverb_fx.setCoefficients(0.9, 1.0, 5000.0, 0.1);
     reverb_fx.process(buffer, buffer2, SIZE);
 }

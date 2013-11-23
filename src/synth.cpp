@@ -233,10 +233,15 @@ void rogueSynth::post_process(uint from, uint to) {
     }
     // reverb
     if (*p(p_reverb_on) > 0.0) {
+        float er_d = *p(p_reverb_er_distance);
+        float er_w = *p(p_reverb_er_width);
+        float er_s = *p(p_reverb_er_shape);
+        float er_h = *p(p_reverb_er_height);
         float g = *p(p_reverb_gain);
         float pm = *p(p_reverb_pitchmod);
         float t = *p(p_reverb_tone);
         float d = *p(p_reverb_depth);
+        reverb_fx.setErCoefficients(er_d, er_w, er_s, er_h);
         reverb_fx.setCoefficients(g, pm, t, d);
         reverb_fx.process(pleft, pright, samples);
     }

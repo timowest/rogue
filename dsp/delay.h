@@ -43,6 +43,25 @@ class Delay {
 };
 
 /**
+ * Multi tap delay
+ */
+class MDelay {
+
+public:
+  MDelay(uint l = 4096);
+  ~MDelay();
+  void setMax(uint d);
+  void clear();
+  float at(int samples);
+  void tick(float in);
+
+private:
+  float* buffer;
+  uint length = 4096, inPoint = 0;
+
+};
+
+/**
  * allpass interpolating delay line class.
  *
  * This class implements a fractional-length digital delay-line using

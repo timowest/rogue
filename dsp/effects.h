@@ -7,6 +7,7 @@
 #ifndef DSP_EFFECTS_H
 #define DSP_EFFECTS_H
 
+#include <math.h>
 #include "types.h"
 #include "delay.h"
 #include "filter.h"
@@ -91,19 +92,22 @@ class DelayEffect : Effect {
 // C implementation (C) 2005 Istvan Varga
 
 class ReverbEffect : Effect {
+    // early reflections
+    uint direct, side, backSide, ceiling;
+    MDelay erDelays[2]; // stereo delay
+    OnePole erFilters[4];
+
+    // late reverb
     DelayL delays[8];
     OnePole filters[8];
     LFO lfos[8];
-    float sample_rate;
-
-    float gain = 0.9;
-    float pitchmod = 1.0;
-    float tone = 5000.0;
-    float depth = 0.0;
+    float sample_rate, samples_per_meter;
+    float gain = 0.9, pitchmod = 1.0, tone = 5000.0, depth = 0.0;
 
   public:
     ReverbEffect() {}
     void clear();
+    void setErCoefficients(float distance, float width, float shape, float height);
     void setCoefficients(float gain, float pitchmod, float tone, float depth);
     void process(float* left, float* right, int samples);
     void setSamplerate(float r);

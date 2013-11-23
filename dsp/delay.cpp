@@ -56,6 +56,46 @@ float Delay::process(float in) {
     return last;
 }
 
+// MDelay
+
+MDelay::MDelay(uint l) {
+    buffer = new float[l];
+    length = l;
+    clear();
+}
+
+MDelay::~MDelay() {
+    delete buffer;
+}
+
+void MDelay::setMax(uint d) {
+    if (d > length) {
+        delete buffer;
+        buffer = new float[d];
+        for (uint i = 0; i < d; i++) {
+            buffer[i] = 0;
+        }
+    }
+    length = d;
+}
+
+void MDelay::clear() {
+    for (uint i = 0; i < length; i++) {
+        buffer[i] = 0;
+    }
+}
+
+float MDelay::at(int samples) {
+    int outPoint = int(inPoint) - samples;
+    if (outPoint < 0) outPoint += length;
+    return buffer[outPoint];
+}
+
+void MDelay::tick(float in) {
+    buffer[inPoint++] = in;
+    if (inPoint == length) inPoint = 0;
+}
+
 // DelayA
 
 DelayA::DelayA(uint l) {
