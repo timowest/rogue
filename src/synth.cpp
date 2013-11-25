@@ -233,16 +233,13 @@ void rogueSynth::post_process(uint from, uint to) {
     }
     // reverb
     if (*p(p_reverb_on) > 0.0) {
+        float pd = *p(p_reverb_predelay);
+        float sp = *p(p_reverb_spread);
         float g = *p(p_reverb_gain);
         float pm = *p(p_reverb_pitchmod);
         float t = *p(p_reverb_tone);
         float d = *p(p_reverb_depth);
-        // early reflections (derived)
-        /*float er_d = 0.8;
-        float er_w = g * 50.0;
-        float er_s = 0.8;
-        float er_h = 0.5 * er_w;
-        reverb_fx.setErCoefficients(er_d, er_w, er_s, er_h);*/
+        reverb_fx.setErCoefficients(pd, sp);
         reverb_fx.setCoefficients(g, pm, t, d);
         reverb_fx.process(pleft, pright, samples);
     }
