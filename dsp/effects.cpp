@@ -203,6 +203,7 @@ void ReverbEffect::clear() {
     for (uint i = 0; i < 2; i++) {
         erDelays[i].clear();
         erFilters[i].clear();
+        erAfterDelays[i].clear();
     }
 
     for (uint i = 0; i < 8; i++) {
@@ -217,6 +218,7 @@ void ReverbEffect::setSamplerate(float r) {
 
     for (uint i = 0; i < 2; i++) {
         erDelays[i].setMax(0.22 * r);
+        erAfterDelays[i].setMax(0.1 * r);
     }
     for (uint i = 0; i < 8; i++) {
         delays[i].setMax(8192);
@@ -227,6 +229,7 @@ void ReverbEffect::setSamplerate(float r) {
 }
 
 void ReverbEffect::setErCoefficients(float pre_delay, float spread) {
+    // set er tap delays
     for (uint i = 0; i < 6; i++) {
         float dl = pre_delay + left_random[i] * spread;
         float dr = pre_delay + right_random[i] * spread;
@@ -235,6 +238,11 @@ void ReverbEffect::setErCoefficients(float pre_delay, float spread) {
         left_scales[i] = pow(0.05, dl);
         right_scales[i] = pow(0.05, dr);
     }
+
+    // calculate separator delay
+    const float erAfterDelay = 0.8 * spread * sample_rate;
+    erAfterDelays[0].setDelay(erAfterDelay);
+    erAfterDelays[1].setDelay(erAfterDelay);
 }
 
 void ReverbEffect::setCoefficients(float g, float pm, float t, float d) {
@@ -269,8 +277,8 @@ void ReverbEffect::process(float* left, float* right, int samples) {
         apj *= 0.25;
 
         // FDN delay lines
-        float l = erL + apj;
-        float r = erR + apj;
+        float l = erAfterDelays[0].process(erL) + apj;
+        float r = erAfterDelays[1].process(erR) + apj;
         for (uint j = 0; j < 8; j++) {
             float d = reverbParams[j][0] + lfos[j].tick() * pitchmod * reverbParams[j][1];
             delays[j].setDelay(sample_rate * d);

@@ -102,6 +102,9 @@ class ReverbEffect : Effect {
     float left_random[6];
     float right_random[6];
 
+    // to separate er from late reverb
+    Delay erAfterDelays[2];
+
     // late reverb
     DelayL delays[8];
     OnePole filters[8];
