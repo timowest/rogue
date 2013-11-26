@@ -99,6 +99,8 @@ class ReverbEffect : Effect {
     uint right_delays[6];
     float left_scales[6];
     float right_scales[6];
+    float left_random[6];
+    float right_random[6];
 
     // late reverb
     DelayL delays[8];
@@ -108,7 +110,7 @@ class ReverbEffect : Effect {
     float gain = 0.9, pitchmod = 1.0, tone = 5000.0, depth = 0.0;
 
   public:
-    ReverbEffect() {}
+    ReverbEffect();
     void clear();
     void setErCoefficients(float pre_delay, float spread);
     void setCoefficients(float gain, float pitchmod, float tone, float depth);

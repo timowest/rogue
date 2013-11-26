@@ -192,6 +192,13 @@ static const double reverbParams[8][4] = {
     { (1933.0 / 44100.0), 0.0006, 3.221, 14417.0 }
 };
 
+ReverbEffect::ReverbEffect() {
+    for (uint i = 0; i < 6; i++) {
+        left_random[i] = rand() / float(RAND_MAX + 1.0f);
+        right_random[i] = rand() / float(RAND_MAX + 1.0f);
+    }
+}
+
 void ReverbEffect::clear() {
     for (uint i = 0; i < 2; i++) {
         erDelays[i].clear();
@@ -221,8 +228,8 @@ void ReverbEffect::setSamplerate(float r) {
 
 void ReverbEffect::setErCoefficients(float pre_delay, float spread) {
     for (uint i = 0; i < 6; i++) {
-        float dl = pre_delay + rand() / float(RAND_MAX + 1.0f) * spread;
-        float dr = pre_delay + rand() / float(RAND_MAX + 1.0f) * spread;
+        float dl = pre_delay + left_random[i] * spread;
+        float dr = pre_delay + right_random[i] * spread;
         left_delays[i] = dl * sample_rate;
         right_delays[i] = dr * sample_rate;
         left_scales[i] = pow(0.05, dl);
