@@ -193,20 +193,17 @@ static const double reverbParams[8][4] = {
 };
 
 ReverbEffect::ReverbEffect() {
-    for (uint i = 0; i < 6; i++) {
-        left_random[i] = rand() / float(RAND_MAX + 1.0f);
-        right_random[i] = rand() / float(RAND_MAX + 1.0f);
+    for (uint i = 0; i < 8; i++) {
+        adelays[0].setDelay((i & 1) ? 0.6 : -0.6);
     }
 }
 
 void ReverbEffect::clear() {
-    for (uint i = 0; i < 2; i++) {
-        erDelays[i].clear();
-        erFilters[i].clear();
-        erAfterDelays[i].clear();
-    }
+    erDelays[0].clear();
+    erDelays[1].clear();
 
     for (uint i = 0; i < 8; i++) {
+        adelays[i].clear();
         delays[i].clear();
         filters[i].clear();
         lfos[i].clear();
@@ -216,10 +213,9 @@ void ReverbEffect::clear() {
 void ReverbEffect::setSamplerate(float r) {
     sample_rate = r;
 
-    for (uint i = 0; i < 2; i++) {
-        erDelays[i].setMax(0.22 * r);
-        erAfterDelays[i].setMax(0.1 * r);
-    }
+    erDelays[0].setMax(0.12 * r);
+    erDelays[1].setMax(0.12 * r);
+
     for (uint i = 0; i < 8; i++) {
         delays[i].setMax(8192);
         lfos[i].setSamplerate(r);
@@ -229,24 +225,12 @@ void ReverbEffect::setSamplerate(float r) {
 }
 
 void ReverbEffect::setErCoefficients(float pre_delay, float spread) {
-    // set er tap delays
-    for (uint i = 0; i < 6; i++) {
-        float dl = pre_delay + left_random[i] * spread;
-        float dr = pre_delay + right_random[i] * spread;
-        left_delays[i] = dl * sample_rate;
-        right_delays[i] = dr * sample_rate;
-        left_scales[i] = pow(0.05, dl);
-        right_scales[i] = pow(0.05, dr);
-    }
-
-    // calculate separator delay
-    const float erAfterDelay = 0.8 * spread * sample_rate;
-    erAfterDelays[0].setDelay(erAfterDelay);
-    erAfterDelays[1].setDelay(erAfterDelay);
+    erDelays[0].setDelay(pre_delay * sample_rate);
+    erDelays[1].setDelay(pre_delay * sample_rate);
 }
 
 void ReverbEffect::setCoefficients(float g, float pm, float t, float d) {
-    gain = g;
+    gain = sqrt(g);
     pitchmod = pm;
     tone = t / sample_rate;
     depth = d;
@@ -254,22 +238,13 @@ void ReverbEffect::setCoefficients(float g, float pm, float t, float d) {
     for (uint i = 0; i < 8; i++) {
         filters[i].setLowpass(tone);
     }
-    erFilters[0].setLowpass(tone);
-    erFilters[1].setLowpass(tone);
 }
 
 void ReverbEffect::process(float* left, float* right, int samples) {
     for (uint i = 0; i < samples; i++) {
-        // early reflections
-        erDelays[0].tick(left[i]);
-        erDelays[1].tick(right[i]);
-        float erL = 0.0, erR = 0.0;
-        for (uint i = 0; i < 6; i++) {
-            erL += left_scales[i] * erDelays[0].at(left_delays[i]);
-            erR += right_scales[i] * erDelays[1].at(right_delays[i]);
-        }
-        erL = erFilters[0].process(erL);
-        erR = erFilters[1].process(erR);
+        // pre delay
+        float pleft = erDelays[0].process(left[i]);
+        float pright = erDelays[1].process(right[i]);
 
         // calculate junction pressure
         float apj = 0.0;
@@ -277,24 +252,26 @@ void ReverbEffect::process(float* left, float* right, int samples) {
         apj *= 0.25;
 
         // FDN delay lines
-        float l = erAfterDelays[0].process(erL) + apj;
-        float r = erAfterDelays[1].process(erR) + apj;
+        float l = pleft + apj;
+        float r = pright + apj;
         for (uint j = 0; j < 8; j++) {
             float d = reverbParams[j][0] + lfos[j].tick() * pitchmod * reverbParams[j][1];
             delays[j].setDelay(sample_rate * d);
             // send input signal and feedback to delay line
             // TODO add filtered noise
             float fb = filters[j].getLast();
-            filters[j].process(gain * delays[j].process((j & 1 ? r : l) - fb));
+            float aout = adelays[j].process((j & 1 ? r : l) - fb);
+            filters[j].process(gain * delays[j].process(aout));
         }
 
         // mix
-        float lout = erL + filters[0].getLast() + filters[2].getLast()
-                         + filters[4].getLast() + filters[6].getLast();
-        float rout = erR + filters[1].getLast() + filters[3].getLast()
-                         + filters[5].getLast() + filters[7].getLast();
-        left[i] += depth * lout;
-        right[i] += depth * rout;
+        float lout = filters[0].getLast() + filters[2].getLast()
+                   + filters[4].getLast() + filters[6].getLast();
+        float rout = filters[1].getLast() + filters[3].getLast()
+                   + filters[5].getLast() + filters[7].getLast();
+        float dry = 1.0f - depth;
+        left[i] = dry * left[i] + depth * lout;
+        right[i] = dry * right[i] + depth * rout;
     }
 }
 

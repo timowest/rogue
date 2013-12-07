@@ -56,7 +56,7 @@ tests: src/rogue.gen
 	$(CXX) -g -std=c++11 test/tests.cpp $(SNDFILE) $(FAST) -Idsp -Itest -o tests.out
 	$(CXX) -g -std=c++11 test/voice_tests.cpp $(SNDFILE) $(LVTK) $(LIBSRC) -Idsp -Isrc -o voice_tests.out
 	$(CXX) -g -std=c++11 test/fftw_tests.cpp $(FFTW) -o fftw_tests.out	
-	mkdir -p wavs wavs/osc wavs/filter wavs/env wavs/lfo
+	mkdir -p wavs wavs/osc wavs/filter wavs/env wavs/lfo wavs/fx
 	./tests.out	
 	./voice_tests.out
 	./fftw_tests.out

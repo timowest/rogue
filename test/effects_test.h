@@ -21,17 +21,33 @@ void effects_test() {
     // chorus
     chorus_fx.setCoefficients(0.01, 0.75, 0.3, 0.5, 0.5);
     chorus_fx.process(buffer, buffer2, SIZE);
+    write_wav((char*)"wavs/fx/chorus.wav", buffer);
+
+    for (uint i = 0; i < SIZE; i++) {
+        buffer[i] = buffer2[i] = (i == 0) ? 1 : 0;
+    }
 
     // phaser
     phaser_fx.setCoefficients(300.0, 0.5, 0.5, 0.5, 0.5);
     phaser_fx.process(buffer, buffer2, SIZE);
+    write_wav((char*)"wavs/fx/phaser.wav", buffer);
+
+    for (uint i = 0; i < SIZE; i++) {
+        buffer[i] = buffer2[i] = (i == 0) ? 1 : 0;
+    }
 
     // delay
     delay_fx.setCoefficients(120.0, 1.0, 1.0, 0.5, 0.5, 0.5, 10, 10000);
     delay_fx.process(buffer, buffer2, SIZE);
+    write_wav((char*)"wavs/fx/delay.wav", buffer);
+
+    for (uint i = 0; i < SIZE; i++) {
+        buffer[i] = buffer2[i] = (i == 0) ? 1 : 0;
+    }
 
     // reverb
-    reverb_fx.setErCoefficients(0.5, 10.0, 1.0, 2.0);
-    reverb_fx.setCoefficients(0.9, 1.0, 5000.0, 0.1);
+    reverb_fx.setErCoefficients(0.01, 0.05);
+    reverb_fx.setCoefficients(0.9, 1.0, 5000.0, 0.5);
     reverb_fx.process(buffer, buffer2, SIZE);
+    write_wav((char*)"wavs/fx/reverb.wav", buffer);
 }

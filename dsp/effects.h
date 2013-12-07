@@ -92,20 +92,13 @@ class DelayEffect : Effect {
 // C implementation (C) 2005 Istvan Varga
 
 class ReverbEffect : Effect {
-    // early reflections
-    MDelay erDelays[2]; // stereo delay
-    OnePole erFilters[2];
-    uint left_delays[6];
-    uint right_delays[6];
-    float left_scales[6];
-    float right_scales[6];
-    float left_random[6];
-    float right_random[6];
+    static const uint ER_DELAYS = 12;
 
-    // to separate er from late reverb
-    Delay erAfterDelays[2];
+    // early reflections
+    DelayL erDelays[2]; // stereo delay
 
     // late reverb
+    AllpassDelay adelays[8];
     DelayL delays[8];
     OnePole filters[8];
     LFO lfos[8];
