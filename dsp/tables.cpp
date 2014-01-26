@@ -23,7 +23,7 @@ sintable::sintable() {
 
 float sintable::fast(float val) {
     // XXX doesn't check for boundaries
-    return values[int(8000 * val)];
+    return values[int(8000 * val) % 8000];
 }
 
 float sintable::linear(float val) {
