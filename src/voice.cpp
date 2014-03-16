@@ -239,7 +239,7 @@ void rogueVoice::runOsc(uint i, uint from, uint to) {
         uint samples = to - from;
         // pitch modulation
         float f = 440.0;
-        float pmod = modulate(0.0f, M_OSC1_P + 4 * i, add_mod);
+        float pmod = 48.0f * modulate(0.0f, M_OSC1_P + 4 * i, add_mod);
         if (oscData.tracking) {
             f = midi2hz(key + oscData.coarse + oscData.fine + data->pitch_bend + pmod);
         } else if (pmod > 0.0f) {
@@ -324,7 +324,6 @@ void rogueVoice::configFilter(uint i) {
     } else {
         filter.key_vel_to_f = 1.0;
     }
-
 }
 
 void rogueVoice::runFilter(uint i, uint from, uint to) {
