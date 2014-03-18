@@ -3,55 +3,25 @@
 @prefix pset: <http://lv2plug.in/ns/ext/presets#> .
 @prefix base: <http://www.github.com/timowest/>.
 
-<http://www.github.com/timowest/rogue#basic-saw>
+<http://www.github.com/timowest/rogue#double-pulse>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/basic-saw.ttl> .
-
-<http://www.github.com/timowest/rogue#pd-square>
-  a pset:Preset ;
-  lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/pd-square.ttl> .
-
-<http://www.github.com/timowest/rogue#stacked-saws>
-  a pset:Preset ;
-  lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/stacked-saws.ttl> .
-
-<http://www.github.com/timowest/rogue#pd-saw>
-  a pset:Preset ;
-  lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/pd-saw.ttl> .
-
-<http://www.github.com/timowest/rogue#basic-tri>
-  a pset:Preset ;
-  lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/basic-tri.ttl> .
-
-<http://www.github.com/timowest/rogue#stacked-pulses>
-  a pset:Preset ;
-  lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/stacked-pulses.ttl> .
+  rdfs:seeAlso  <presets/double-pulse.ttl> .
 
 <http://www.github.com/timowest/rogue#double-saw>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/double-saw.ttl> .
 
-<http://www.github.com/timowest/rogue#pd-pulse>
+<http://www.github.com/timowest/rogue#stacked-pulses>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/pd-pulse.ttl> .
+  rdfs:seeAlso  <presets/stacked-pulses.ttl> .
 
-<http://www.github.com/timowest/rogue#double-pulse>
+<http://www.github.com/timowest/rogue#stacked-saws>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/double-pulse.ttl> .
-
-<http://www.github.com/timowest/rogue#basic-pulse>
-  a pset:Preset ;
-  lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/basic-pulse.ttl> .
+  rdfs:seeAlso  <presets/stacked-saws.ttl> .
 
 <http://www.github.com/timowest/rogue#bass-fm>
   a pset:Preset ;
@@ -83,20 +53,200 @@
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/brass-2.ttl> .
 
+<http://www.github.com/timowest/rogue#bs-sawbreaker-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-sawbreaker-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-sawlight-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-sawlight-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-drop-in-pulse-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-drop-in-pulse-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-7th-gates-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-7th-gates-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-mixmiddle-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-mixmiddle-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-knarziger-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-knarziger-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-night-and-day-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-night-and-day-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-lfo-roller-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-lfo-roller-fn.ttl> .
+
 <http://www.github.com/timowest/rogue#kb-chimp-organ-tuc>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/kb-chimp-organ-tuc.ttl> .
 
-<http://www.github.com/timowest/rogue#kb-sawberry-milkshake-tu>
+<http://www.github.com/timowest/rogue#bs-bass-is-your-friend-f>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/kb-sawberry-milkshake-tu.ttl> .
+  rdfs:seeAlso  <presets/bs-bass-is-your-friend-f.ttl> .
 
-<http://www.github.com/timowest/rogue#kb-drops-tal>
+<http://www.github.com/timowest/rogue#bs-wobbler-ii-fn>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/kb-drops-tal.ttl> .
+  rdfs:seeAlso  <presets/bs-wobbler-ii-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-thin-lead-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-thin-lead-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-soft-bell-lead-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-soft-bell-lead-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-fat-side-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-fat-side-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-juicy-bass-tuc>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-juicy-bass-tuc.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-resolve-2-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-resolve-2-as.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-eager-beaver-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-eager-beaver-as.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-high-noon-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-high-noon-as.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-fm-sync-voice-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-fm-sync-voice-as.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-energyator-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-energyator-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-pleutonium-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-pleutonium-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-aggggro-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-aggggro-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-crystal-lead-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-crystal-lead-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-bass-deep-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-bass-deep-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-tock-sick-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-tock-sick-as.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-syncelead-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-syncelead-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-deep-driver-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-deep-driver-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-dark-night-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-dark-night-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-neon-knife-tuc>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-neon-knife-tuc.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-dark-bass-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-dark-bass-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-dirty-snow-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-dirty-snow-as.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-spring-bell-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-spring-bell-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-geiler-patch-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-geiler-patch-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-3d-game-boy-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-3d-game-boy-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-joop-joop-1-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-joop-joop-1-as.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-basspa-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-basspa-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-metal-lead-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-metal-lead-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-tripple-wobbler-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-tripple-wobbler-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-pwap-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-pwap-as.ttl> .
 
 <http://www.github.com/timowest/rogue#kb-smooth-sine-tal>
   a pset:Preset ;
@@ -108,45 +258,335 @@
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/kb-screetcher-tuc.ttl> .
 
+<http://www.github.com/timowest/rogue#ld-fm-pulse-train-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-fm-pulse-train-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-bon-voyage-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-bon-voyage-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-sci-fi-organ-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-sci-fi-organ-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-plastic-attack-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-plastic-attack-tal.ttl> .
+
 <http://www.github.com/timowest/rogue#kb-big-synth-fn>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/kb-big-synth-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-detuned-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-detuned-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-wobbler-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-wobbler-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-slop-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-slop-as.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-flaming-bass-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-flaming-bass-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-goodspeed-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-goodspeed-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-metal-wahuuu-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-metal-wahuuu-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-c64-octavebass-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-c64-octavebass-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-special-starter-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-special-starter-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-woholead-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-woholead-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-luxury-lead-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-luxury-lead-as.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-madskillz-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-madskillz-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-plucked-string-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-plucked-string-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-fuzzy-box-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-fuzzy-box-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-sci-fi-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-sci-fi-tal.ttl> .
 
 <http://www.github.com/timowest/rogue#kb-piano-house-tal>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/kb-piano-house-tal.ttl> .
 
+<http://www.github.com/timowest/rogue#ld-mellow-organ-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-mellow-organ-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-small-bassist-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-small-bassist-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-acid-saw-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-acid-saw-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-metal-spikes-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-metal-spikes-as.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-crazy-trumped-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-crazy-trumped-as.ttl> .
+
 <http://www.github.com/timowest/rogue#kb-white-noise-fn>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/kb-white-noise-fn.ttl> .
 
-<http://www.github.com/timowest/rogue#kb-e-piano-tal>
+<http://www.github.com/timowest/rogue#ld-basic-whapp-tuc>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/kb-e-piano-tal.ttl> .
+  rdfs:seeAlso  <presets/ld-basic-whapp-tuc.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-hard-80s-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-hard-80s-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-breadbin-burble-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-breadbin-burble-as.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-pluggiator-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-pluggiator-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-happy-go-mucky-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-happy-go-mucky-as.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-d-robot-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-d-robot-tal.ttl> .
 
 <http://www.github.com/timowest/rogue#kb-pop-pluck-tuc>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/kb-pop-pluck-tuc.ttl> .
 
+<http://www.github.com/timowest/rogue#bs-bassolead-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-bassolead-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-tranceline-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-tranceline-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-easy-listener-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-easy-listener-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-neon-bass-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-neon-bass-as.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-power-lead-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-power-lead-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-mellow-chord-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-mellow-chord-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-noizigian-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-noizigian-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-syncetel-bass-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-syncetel-bass-fn.ttl> .
+
 <http://www.github.com/timowest/rogue#kb-glockenschlag-fn>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/kb-glockenschlag-fn.ttl> .
 
-<http://www.github.com/timowest/rogue#kb-glass-star-tuc>
+<http://www.github.com/timowest/rogue#ld-noisy-sync-lead-tal>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
-  rdfs:seeAlso  <presets/kb-glass-star-tuc.ttl> .
+  rdfs:seeAlso  <presets/ld-noisy-sync-lead-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-slow-filter-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-slow-filter-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-ohm-duck-solo-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-ohm-duck-solo-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-triangle-madness-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-triangle-madness-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-resobells-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-resobells-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-acid-dist-noisy-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-acid-dist-noisy-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-open-bass-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-open-bass-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-mong-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-mong-as.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-spook-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-spook-as.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-we-felt-digital-tuc>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-we-felt-digital-tuc.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-jelly-mountain-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-jelly-mountain-as.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-electric-charged-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-electric-charged-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-morph-sync-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-morph-sync-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-whoppy-the-fifth-tuc>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-whoppy-the-fifth-tuc.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-take-up-strings-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-take-up-strings-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-ringing-lead-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-ringing-lead-tal.ttl> .
 
 <http://www.github.com/timowest/rogue#kb-ghostly-glomp-as>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/kb-ghostly-glomp-as.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-haunted-strings-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-haunted-strings-as.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-reso-bass-classic-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-reso-bass-classic-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-8bitter-ii-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-8bitter-ii-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#bs-clean-flat-bass-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/bs-clean-flat-bass-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-funky-mod-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-funky-mod-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-technoshocker-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-technoshocker-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#ld-green-glass-worm-tuc>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/ld-green-glass-worm-tuc.ttl> .
 
 <http://www.github.com/timowest/rogue#arctic-pad>
   a pset:Preset ;
