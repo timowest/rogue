@@ -29,7 +29,7 @@
   [ lv2:symbol "lfo3_start" ; pset:value 0.0000 ] ,
   [ lv2:symbol "mod1_target" ; pset:value 0.0000 ] ,
   [ lv2:symbol "osc4_tracking" ; pset:value 1.0000 ] ,
-  [ lv2:symbol "delay_feedback" ; pset:value 0.9900 ] ,
+  [ lv2:symbol "delay_feedback" ; pset:value 0.5000 ] ,
   [ lv2:symbol "env3_decay" ; pset:value 0.3040 ] ,
   [ lv2:symbol "mod8_amount" ; pset:value 0.0000 ] ,
   [ lv2:symbol "filter1_source" ; pset:value 0.0000 ] ,
