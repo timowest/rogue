@@ -239,10 +239,9 @@ def main():
                
                ["reverb_on",     0, 1, 0, 1],
                ["reverb_predelay", 0.01, 0.1, 0.01, 0.001],
-               ["reverb_spread", 0.01, 0.1, 0.01, 0.001],
-               ["reverb_gain",   0, 0.99, 0.6, 0.01],
-               ["reverb_pitchmod", 0, 1, 0.9, 0.01],
-               ["reverb_tone",   0, 20000, 5000, 100],
+               ["reverb_decay", 0.01, 1, 0.5, 0.01],
+               ["reverb_lowcut",  10, 10000, 10, 100],
+               ["reverb_highcut", 100, 15000, 10000, 100],
                ["reverb_depth",  0, 1, 0.3, 0.01]]
 
     for c in globals:

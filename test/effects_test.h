@@ -46,8 +46,7 @@ void effects_test() {
     }
 
     // reverb
-    reverb_fx.setErCoefficients(0.01, 0.05);
-    reverb_fx.setCoefficients(0.9, 1.0, 5000.0, 0.5);
+    reverb_fx.setCoefficients(0.01, 0.5, 100, 5000, 0.5);
     reverb_fx.process(buffer, buffer2, SIZE);
     write_wav((char*)"wavs/fx/reverb.wav", buffer);
 }

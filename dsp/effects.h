@@ -97,6 +97,9 @@ class ReverbEffect : Effect {
     // early reflections
     DelayL erDelays[2]; // stereo delay
 
+    OnePole lowCut[2];
+    OnePole highCut[2];
+
     // late reverb
     AllpassDelay adelays[8];
     DelayL delays[8];
@@ -108,8 +111,7 @@ class ReverbEffect : Effect {
   public:
     ReverbEffect();
     void clear();
-    void setErCoefficients(float pre_delay, float spread);
-    void setCoefficients(float gain, float pitchmod, float tone, float depth);
+    void setCoefficients(float _pre, float _decay, float _lowCut, float _highCut, float _depth);
     void process(float* left, float* right, int samples);
     void setSamplerate(float r);
 };

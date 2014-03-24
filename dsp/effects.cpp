@@ -208,6 +208,11 @@ void ReverbEffect::clear() {
         filters[i].clear();
         lfos[i].clear();
     }
+
+    for (uint i = 0; i < 2; i++) {
+        highCut[i].clear();
+        lowCut[i].clear();
+    }
 }
 
 void ReverbEffect::setSamplerate(float r) {
@@ -224,20 +229,26 @@ void ReverbEffect::setSamplerate(float r) {
     }
 }
 
-void ReverbEffect::setErCoefficients(float pre_delay, float spread) {
-    erDelays[0].setDelay(pre_delay * sample_rate);
-    erDelays[1].setDelay(pre_delay * sample_rate);
-}
+void ReverbEffect::setCoefficients(float _pre, float _decay, float _lowCut, float _highCut, float _depth) {
+    erDelays[0].setDelay(_pre * sample_rate);
+    erDelays[1].setDelay(_pre * sample_rate);
 
-void ReverbEffect::setCoefficients(float g, float pm, float t, float d) {
-    gain = sqrt(g);
-    pitchmod = pm;
-    tone = t / sample_rate;
-    depth = d;
+    gain = sqrt(_decay);
+    pitchmod = 0.6;
+    tone = 0.9;
+    depth = _depth;
 
     for (uint i = 0; i < 8; i++) {
         filters[i].setLowpass(tone);
     }
+
+    _lowCut /= sample_rate;
+    lowCut[0].setHighpass(_lowCut);
+    lowCut[1].setHighpass(_lowCut);
+
+    _highCut /= sample_rate;
+    highCut[0].setLowpass(_highCut);
+    highCut[1].setLowpass(_highCut);
 }
 
 void ReverbEffect::process(float* left, float* right, int samples) {
@@ -246,20 +257,27 @@ void ReverbEffect::process(float* left, float* right, int samples) {
         float pleft = erDelays[0].process(left[i]);
         float pright = erDelays[1].process(right[i]);
 
+        // pre filters
+        float fleft = highCut[0].process(pleft);
+        float fright = highCut[1].process(pright);
+        fleft = lowCut[0].process(fleft);
+        fright = lowCut[1].process(fright);
+
         // calculate junction pressure
         float apj = 0.0;
         for (uint j = 0; j < 8; j++) apj += filters[j].getLast();
         apj *= 0.25;
 
         // FDN delay lines
-        float l = pleft + apj;
-        float r = pright + apj;
+        float l = fleft + apj;
+        float r = fright + apj;
         for (uint j = 0; j < 8; j++) {
             float d = reverbParams[j][0] + lfos[j].tick() * pitchmod * reverbParams[j][1];
             delays[j].setDelay(sample_rate * d);
             // send input signal and feedback to delay line
-            // TODO add filtered noise
             float fb = filters[j].getLast();
+            float noise = (2.0f * rand() / (RAND_MAX + 1.0f) - 1.0f);
+            fb += fb * 0.001 * noise;
             float aout = adelays[j].process((j & 1 ? r : l) - fb);
             filters[j].process(gain * delays[j].process(aout));
         }
@@ -269,6 +287,7 @@ void ReverbEffect::process(float* left, float* right, int samples) {
                    + filters[4].getLast() + filters[6].getLast();
         float rout = filters[1].getLast() + filters[3].getLast()
                    + filters[5].getLast() + filters[7].getLast();
+
         float dry = 1.0f - depth;
         left[i] = dry * left[i] + depth * lout;
         right[i] = dry * right[i] + depth * rout;
