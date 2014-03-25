@@ -235,7 +235,7 @@ void ReverbEffect::setCoefficients(float _pre, float _decay, float _lowCut, floa
 
     gain = sqrt(_decay);
     pitchmod = 0.6;
-    tone = 0.9;
+    tone = 0.9; // TODO make this also configurable
     depth = _depth;
 
     for (uint i = 0; i < 8; i++) {
