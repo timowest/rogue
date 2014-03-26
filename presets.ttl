@@ -53,6 +53,96 @@
   lv2:appliesTo base:rogue ;
   rdfs:seeAlso  <presets/brass-2.ttl> .
 
+<http://www.github.com/timowest/rogue#pd-padwobbler-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-padwobbler-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-dark-animations-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-dark-animations-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-base-pad-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-base-pad-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-bit-orchestra-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-bit-orchestra-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-open-square-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-open-square-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-dream-of-86-tuc>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-dream-of-86-tuc.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-bursting-pad-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-bursting-pad-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-gated-pad-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-gated-pad-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-bellomatism-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-bellomatism-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-big-trancer-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-big-trancer-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-ringmodded-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-ringmodded-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-sun-rise-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-sun-rise-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-sweet-analogue-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-sweet-analogue-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-twoflower-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-twoflower-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-glasometer-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-glasometer-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-floating-pad-tal>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-floating-pad-tal.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-easymat-fn>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-easymat-fn.ttl> .
+
+<http://www.github.com/timowest/rogue#pd-luxury-strings-as>
+  a pset:Preset ;
+  lv2:appliesTo base:rogue ;
+  rdfs:seeAlso  <presets/pd-luxury-strings-as.ttl> .
+
 <http://www.github.com/timowest/rogue#arctic-pad>
   a pset:Preset ;
   lv2:appliesTo base:rogue ;
