@@ -327,7 +327,7 @@ void MoogFilter::clear() {
 }
 
 void MoogFilter::setCoefficients(float f_, float r_) {
-    float frequency = f_ / sample_rate;
+    float frequency = f_ / (0.5 * sample_rate);
     float resonance = r_;
 
     if (frequency < 0) frequency = 0;
