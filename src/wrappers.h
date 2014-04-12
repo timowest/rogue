@@ -23,10 +23,12 @@ struct Osc {
     float sync[BUFFER_SIZE];
     float prev_level;
     float width_prev = 0.5f;
+    float freq_prev = -1.0;
 
     void reset() {
         width_prev = 0.5;
         prev_level = 0.0f;
+        freq_prev = -1.0;
     }
 
     void setStart(float s) {
@@ -58,7 +60,7 @@ struct Osc {
         }
     }
 
-    void process(int type, float freq, float wf, float wt, float* buffer, float* sync, int samples) {
+    void process(int type, float ff, float ft, float wf, float wt, float* buffer, float* sync, int samples) {
         dsp::Oscillator* osc;
         if (type < 29) {
             osc = &virt;
@@ -73,7 +75,7 @@ struct Osc {
             type -= 36;
         }
         osc->setType(type);
-        osc->setFreq(freq);
+        osc->setFreq(ff, ft);
         osc->setWidth(wf, wt);
         osc->process(buffer, sync, samples);
     }

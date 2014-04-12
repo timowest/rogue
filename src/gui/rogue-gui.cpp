@@ -706,7 +706,8 @@ class rogueGUI : public QObject, public lvtk::UI<rogueGUI, lvtk::QtUI<true>, lvt
         osc.resetPhase();
         float* buffer = osc_wd[i]->getSamples();
         int width = OSC_WIDTH;
-        osc.process(type, 44100.0 / OSC_WIDTH, w, w, buffer, sync_buffer, width);
+        float f = 44100.0 / OSC_WIDTH;
+        osc.process(type, f, f, w, w, buffer, sync_buffer, width);
         if (inv) {
             for (uint j = 0; j < width; j++) buffer[j] *= -1.0;
         }
