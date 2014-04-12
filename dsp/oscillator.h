@@ -19,7 +19,7 @@ namespace dsp {
  */
 class Oscillator {
   protected:
-    float freq = 440.0f, sample_rate, phase = 0.0f, phase_ = 0.0f;
+    float ff = 440.0f, ft = 440.0f, sample_rate, phase = 0.0f, phase_ = 0.0f;
     float start = 0.0f, wf = 0.5f, wt = 0.5f;
     int type = 0;
 
@@ -32,7 +32,11 @@ class Oscillator {
   public:
     void setType(int t) { type = t; }
     virtual void setSamplerate(float r) { sample_rate = r; }
-    void setFreq(float f) { freq = f; }
+
+    void setFreq(float _ff, float _ft) { 
+        ff = _ff;
+        ft = _ft;
+    }
 
     /** phase modulation */
     float pmod(float phase, int i) {
@@ -64,7 +68,7 @@ class Oscillator {
     virtual void clear() {
         phase = start;
         phase_ = start;
-        freq = 440.0f;
+        ff = ft = 440.0;
         type = 0;
 
         wf = wt = 0.5;

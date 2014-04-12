@@ -257,7 +257,10 @@ void rogueVoice::runOsc(uint i, uint from, uint to) {
             float* sync = oscs[oscData.input].sync + from;
             osc.setModulation(oscData.type, in, sync, oscData.pm, oscData.sync);
         }
-        osc.process(oscData.type, f, osc.width_prev, width, osc.buffer + from, osc.sync + from, samples);
+        float ff = osc.freq_prev;
+        float ft = ft;
+        if (ff < 0.0) ff = ft;
+        osc.process(oscData.type, ff, ft, osc.width_prev, width, osc.buffer + from, osc.sync + from, samples);
 
         // amp modulation
         float v = oscData.level;
@@ -303,6 +306,7 @@ void rogueVoice::runOsc(uint i, uint from, uint to) {
         }
 
         osc.width_prev = width;
+        osc.freq_prev = f;
     }
 }
 

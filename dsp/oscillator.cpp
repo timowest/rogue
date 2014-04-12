@@ -51,33 +51,41 @@
 // phase loop
 
 #define PHASE_LOOP_SYNC(calc) \
-    float inc = freq / sample_rate; \
+    float inc = ff / sample_rate; \
+    float inc_step = (ft / sample_rate - inc) / (float)samples; \
     for (uint i = 0; i < samples; i++) { \
         INC_PHASE_SYNC() \
         calc \
+        inc += inc_step; \
     }
 
 #define PHASE_LOOP(calc) \
-    float inc = freq / sample_rate; \
+    float inc = ff / sample_rate; \
+    float inc_step = (ft / sample_rate - inc) / (float)samples; \
     for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
         calc \
+        inc += inc_step; \
     }
 
 #define PHASE_LOOP_PM_SYNC(calc) \
-    float inc = freq / sample_rate; \
+    float inc = ff / sample_rate; \
+    float inc_step = (ft / sample_rate - inc) / (float)samples; \
     for (uint i = 0; i < samples; i++) { \
         INC_PHASE_SYNC() \
         float phase = pmod(this->phase, i); \
         calc \
+        inc += inc_step; \
     }
 
 #define PHASE_LOOP_PM(calc) \
-    float inc = freq / sample_rate; \
+    float inc = ff / sample_rate; \
+    float inc_step = (ft / sample_rate - inc) / (float)samples; \
     for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
         float phase = pmod(this->phase, i); \
         calc \
+        inc += inc_step; \
     }
 
 #define PHASE_LOOP_BOTH(calc) \
@@ -96,27 +104,32 @@
 // pwdith loop
 
 #define PWIDTH_LOOP_SYNC(calc) \
-    float inc = freq / sample_rate; \
+    float inc = ff / sample_rate; \
+    float inc_step = (ft / sample_rate - inc) / (float)samples; \
     float width = norm_width(wf, inc); \
     float w_step = (norm_width(wt, inc) - width) / (float)samples; \
     for (uint i = 0; i < samples; i++) { \
         INC_PHASE_SYNC() \
         calc \
         width += w_step; \
+        inc += inc_step; \
     }
 
 #define PWIDTH_LOOP(calc) \
-    float inc = freq / sample_rate; \
+    float inc = ff / sample_rate; \
+    float inc_step = (ft / sample_rate - inc) / (float)samples; \
     float width = norm_width(wf, inc); \
     float w_step = (norm_width(wt, inc) - width) / (float)samples; \
     for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
         calc \
         width += w_step; \
+        inc += inc_step; \
     }
 
 #define PWIDTH_LOOP_PM_SYNC(calc) \
-    float inc = freq / sample_rate; \
+    float inc = ff / sample_rate; \
+    float inc_step = (ft / sample_rate - inc) / (float)samples; \
     float width = norm_width(wf, inc); \
     float w_step = (norm_width(wt, inc) - width) / (float)samples; \
     for (uint i = 0; i < samples; i++) { \
@@ -124,10 +137,12 @@
         float phase = pmod(this->phase, i); \
         calc \
         width += w_step; \
+        inc += inc_step; \
     }
 
 #define PWIDTH_LOOP_PM(calc) \
-    float inc = freq / sample_rate; \
+    float inc = ff / sample_rate; \
+    float inc_step = (ft / sample_rate - inc) / (float)samples; \
     float width = norm_width(wf, inc); \
     float w_step = (norm_width(wt, inc) - width) / (float)samples; \
     for (uint i = 0; i < samples; i++) { \
@@ -135,6 +150,7 @@
         float phase = pmod(this->phase, i); \
         calc \
         width += w_step; \
+        inc += inc_step; \
     }
 
 #define PWIDTH_LOOP_BOTH(calc) \
@@ -153,37 +169,45 @@
 // pmod loop
 
 #define PMOD_LOOP_SYNC(calc) \
-    float inc = freq / sample_rate; \
+    float inc = ff / sample_rate; \
+    float inc_step = (ft / sample_rate - inc) / (float)samples; \
     for (uint i = 0; i < samples; i++) { \
         INC_PHASE_SYNC() \
         calc \
         mod += m_step; \
+        inc += inc_step; \
     }
 
 #define PMOD_LOOP(calc) \
-    float inc = freq / sample_rate; \
+    float inc = ff / sample_rate; \
+    float inc_step = (ft / sample_rate - inc) / (float)samples; \
     for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
         calc \
         mod += m_step; \
+        inc += inc_step; \
     }
 
 #define PMOD_LOOP_PM_SYNC(calc) \
-    float inc = freq / sample_rate; \
+    float inc = ff / sample_rate; \
+    float inc_step = (ft / sample_rate - inc) / (float)samples; \
     for (uint i = 0; i < samples; i++) { \
         INC_PHASE_SYNC() \
         float phase = pmod(this->phase, i); \
         calc \
         mod += m_step; \
+        inc += inc_step; \
     }
 
 #define PMOD_LOOP_PM(calc) \
-    float inc = freq / sample_rate; \
+    float inc = ff / sample_rate; \
+    float inc_step = (ft / sample_rate - inc) / (float)samples; \
     for (uint i = 0; i < samples; i++) { \
         INC_PHASE() \
         float phase = pmod(this->phase, i); \
         calc \
         mod += m_step; \
+        inc += inc_step; \
     }
 
 #define PMOD_LOOP_BOTH(calc) \
@@ -645,10 +669,12 @@ void Virtual::el_slope(float* output, float* out_sync, int samples) {
 
 void Virtual::el_alpha1(float* output, float* out_sync, int samples) {
     // pulse
-    float f = freq;
+    float ff_old = ff;
+    float ft_old = ft;
     float p = phase;
     float p_ = phase_;
-    freq = 2.0f * freq;
+    ff = 2.0f * ff;
+    ft = 2.0f * ft;
     phase = fmod(2.0f * phase, 1.0);
     phase_ = fmod(2.0f * phase_, 1.0);
     el_pulse(output, out_sync, samples);
@@ -656,7 +682,8 @@ void Virtual::el_alpha1(float* output, float* out_sync, int samples) {
     // saw
     phase = p;
     phase_ = p_;
-    freq = f;
+    ff = ff_old;
+    ft = ft_old;
     if (pm > 0.0) {
         if (sync) {
             PHASE_LOOP_PM_SYNC(
@@ -685,10 +712,12 @@ void Virtual::el_alpha1(float* output, float* out_sync, int samples) {
 
 void Virtual::el_alpha2(float* output, float* out_sync, int samples) {
     // pulse
-    float f = freq;
+    float ff_old = ff;
+    float ft_old = ft;
     float p = phase;
     float p_ = phase_;
-    freq = 4.0f * freq;
+    ff = 4.0f * ff;
+    ft = 4.0f * ft;
     phase = fmod(4.0f * phase, 1.0);
     phase_ = fmod(4.0f * phase_, 1.0);
     el_pulse(output, out_sync, samples);
@@ -696,7 +725,8 @@ void Virtual::el_alpha2(float* output, float* out_sync, int samples) {
     // saw
     phase = p;
     phase_ = p_;
-    freq = f;
+    ff = ff_old;
+    ft = ft_old;
     if (pm > 0.0) {
         if (sync) {
             PHASE_LOOP_PM_SYNC(
@@ -1082,8 +1112,9 @@ void AS::reset() {
 }
 
 void AS::saw(float* output, float* out_sync, int samples) {
-    float inc = freq / sample_rate;
-    int max = std::min(20.0f * wt, sample_rate / 2.0f / freq);
+    // TODO interpolation between ff - ft
+    float inc = ff / sample_rate;
+    int max = std::min(20.0f * wt, sample_rate / 2.0f / ff);
 
     // reset
     for (uint i = 0; i < samples; i++) {
@@ -1120,8 +1151,9 @@ void AS::saw(float* output, float* out_sync, int samples) {
 }
 
 void AS::square(float* output, float* out_sync, int samples) {
-    float inc = freq / sample_rate;
-    int max = std::min(40.0f * wt, sample_rate / 2.0f / freq);
+    // TODO interpolation between ff - ft
+    float inc = ff / sample_rate;
+    int max = std::min(40.0f * wt, sample_rate / 2.0f / ff);
 
     // reset
     for (uint i = 0; i < samples; i++) {
@@ -1160,8 +1192,9 @@ void AS::square(float* output, float* out_sync, int samples) {
 }
 
 void AS::triangle(float* output, float* out_sync, int samples) {
-    float inc = freq / sample_rate;
-    int max = std::min(40.0f * wt, sample_rate / 2.0f / freq);
+    // TODO interpolation between ff - ft
+    float inc = ff / sample_rate;
+    int max = std::min(40.0f * wt, sample_rate / 2.0f / ff);
 
     // reset
     for (uint i = 0; i < samples; i++) {
@@ -1230,7 +1263,8 @@ void SuperWave::reset() {
 }
 
 void SuperWave::saw(float* output, float* out_sync, int samples) {
-    float inc = freq / sample_rate;
+    // TODO interpolation between ff - ft
+    float inc = ff / sample_rate;
     float incs[7];
 
     float off = -0.2;
@@ -1250,12 +1284,13 @@ void SuperWave::saw(float* output, float* out_sync, int samples) {
         output[i] = 0.8 * out;
     }
 
-    filter.setCoefficients(freq, 0.3);
+    filter.setCoefficients(ff, 0.3);
     filter.process(output, output, samples);
 }
 
 void SuperWave::square(float* output, float* out_sync, int samples) {
-    float inc = freq / sample_rate;
+    // TODO interpolation between ff - ft
+    float inc = ff / sample_rate;
     float incs[7];
 
     float off = -0.2;
@@ -1275,12 +1310,13 @@ void SuperWave::square(float* output, float* out_sync, int samples) {
         output[i] = 0.8 * out;
     }
 
-    filter.setCoefficients(freq, 0.3);
+    filter.setCoefficients(ff, 0.3);
     filter.process(output, output, samples);
 }
 
 void SuperWave::saw2(float* output, float* out_sync, int samples) {
-    float inc = freq / sample_rate;
+    // TODO interpolation between ff - ft
+    float inc = ff / sample_rate;
     float incs[7];
 
     float off = -0.2;
@@ -1303,7 +1339,8 @@ void SuperWave::saw2(float* output, float* out_sync, int samples) {
 }
 
 void SuperWave::square2(float* output, float* out_sync, int samples) {
-    float inc = freq / sample_rate;
+    // TODO interpolation between ff - ft
+    float inc = ff / sample_rate;
     float incs[7];
 
     float off = -0.2;
@@ -1355,11 +1392,11 @@ void Noise::process(float* output, float* out_sync, int samples) {
         }
     } else if (type == LP) {
         filter.setType(0);
-        filter.setCoefficients(freq, wf);
+        filter.setCoefficients(ff, wf);
         filter.process(output, output, samples);
     } else if (type == BP) {
         filter.setType(2);
-        filter.setCoefficients(freq, wf);
+        filter.setCoefficients(ff, wf);
         filter.process(output, output, samples);
     }
 }
