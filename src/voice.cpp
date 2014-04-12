@@ -258,7 +258,7 @@ void rogueVoice::runOsc(uint i, uint from, uint to) {
             osc.setModulation(oscData.type, in, sync, oscData.pm, oscData.sync);
         }
         float ff = osc.freq_prev;
-        float ft = ft;
+        float ft = f;
         if (ff < 0.0) ff = ft;
         osc.process(oscData.type, ff, ft, osc.width_prev, width, osc.buffer + from, osc.sync + from, samples);
 
