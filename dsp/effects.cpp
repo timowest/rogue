@@ -242,6 +242,7 @@ void ReverbEffect::setCoefficients(float _pre, float _decay, float _lowCut, floa
         filters[i].setLowpass(tone);
     }
 
+    // TODO use filters with steeper slopes
     _lowCut /= sample_rate;
     lowCut[0].setHighpass(_lowCut);
     lowCut[1].setHighpass(_lowCut);
