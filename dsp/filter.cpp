@@ -239,6 +239,67 @@ void BiQuad::process(float* input, float* output, int samples) {
     }
 }
 
+// BiQuadDF2
+
+void BiQuadDF2::clear() {
+    z1_ = z2_ = 0.0;
+}
+
+void BiQuadDF2::setCoefficients(float b0, float b1, float b2, float a1, float a2) {
+    b0_ = b0;
+    b1_ = b1;
+    b2_ = b2;
+    a1_ = a1;
+    a2_ = a2;
+}
+
+void BiQuadDF2::setLowpass(float w, float res) {
+    float r = std::max(0.001, 2.0 * (1.0 - res));
+    float k = tan(w * M_PI);
+    float k2 = k * k;
+    float rk = r * k;
+    float bh = 1.0 + rk + k2;
+
+    float b0 = k2 / bh;
+    float b1 = b0 * 2.0;
+    float b2 = b0;
+    float a1 = (2.0 * (k2 - 1.0)) / bh;
+    float a2 = (1.0 - rk + k2) / bh;
+    setCoefficients(b0, b1, b2, a1, a2);
+}
+
+void BiQuadDF2::setHighpass(float w, float res) {
+    float r = std::max(0.001, 2.0 * (1.0 - res));
+    float k = tan(w * M_PI);
+    float k2 = k * k;
+    float rk = r * k;
+    float bh = 1.0 + rk + k2;
+
+    float b0 = 1.0 / bh;
+    float b1 = -2.0 / bh;
+    float b2 = b0;
+    float a1 = (2.0 * (k2 - 1.0)) / bh;
+    float a2 = (1.0 - rk + k2) / bh;
+    setCoefficients(b0, b1, b2, a1, a2);
+}
+
+float BiQuadDF2::process(float x) {
+    float y  = (b0_ * x) + z1_;
+    z1_ = z2_ + (b1_ * x) - (a1_ * y);
+    z2_ = (b2_ * x) - (a2_ * y);
+    return y;
+}
+
+void BiQuadDF2::process(float* input, float* output, int samples) {
+    for (uint i = 0; i < samples; i++) {
+        float x = input[i];
+        float y  = (b0_ * x) + z1_;
+        z1_ = z2_ + (b1_ * x) - (a1_ * y);
+        z2_ = (b2_ * x) - (a2_ * y);
+        output[i] = y;
+    }
+}
+
 // AmSynth
 
 void AmSynthFilter::clear() {
