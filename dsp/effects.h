@@ -97,8 +97,8 @@ class ReverbEffect : Effect {
     // early reflections
     DelayL erDelays[2]; // stereo delay
 
-    OnePole lowCut[2];
-    OnePole highCut[2];
+    BiQuadDF2 lowCut[2];
+    BiQuadDF2 highCut[2];
 
     // late reverb
     AllpassDelay adelays[8];

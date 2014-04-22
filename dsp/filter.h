@@ -150,6 +150,19 @@ class BiQuad : Filter {
     float b0_, b1_, b2_, a1_, a2_, last_, prevIn_, prevIn__, last__;
 };
 
+class BiQuadDF2 : Filter {
+  public:
+    void clear();
+    void setCoefficients(float b0, float b1, float b2, float a1, float a2);
+    void setLowpass(float fc, float res);
+    void setHighpass(float fc, float res);
+    float process(float input);
+    void process(float* input, float* output, int samples);
+
+  private:
+    float b0_, b1_, b2_, a1_, a2_, z1_, z2_;
+};
+
 /**
  * AmSynth filter
  * Copyright (c) 2001-2012 Nick Dowell
